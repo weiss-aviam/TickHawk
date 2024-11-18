@@ -1,0 +1,20 @@
+{
+  "name": "tickhawk",
+  "version": "1.0.0",
+  "description": "",
+  "workspaces": [
+    "api",
+    "app"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "prettier": "^3.3.3",
+    "turbo": "^2.3.0"
+  },
+  "packageManager": "npm@9.0.0"
+}

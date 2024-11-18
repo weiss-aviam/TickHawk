@@ -1,0 +1,31 @@
+# Ingore all node_modules in subfolders
+node_modules/
+**/node_modules/
+
+# Ignore all .env files in subfolders
+.env
+**/.env
+
+# Ignore all .DS_Store files in subfolders
+.DS_Store
+**/.DS_Store
+
+# Ignore all .vscode files in subfolders
+.vscode
+**/.vscode
+
+# Ignore all .idea files in subfolders
+.idea
+**/.idea
+
+# Ignore all .git files in subfolders
+.git
+**/.git
+
+# Ignore dist folder in subfolders
+dist/
+**/dist/
+
+# Ignore .turbo folder in subfolders
+.turbo/
+**/.turbo/
