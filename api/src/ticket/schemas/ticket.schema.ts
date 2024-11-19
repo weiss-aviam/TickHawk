@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types, now } from 'mongoose';
 import { Comment, CommentSchema } from './comment.schema';
+import { Event, EventSchema } from './event.schema';
 
 export type TicketSchema = HydratedDocument<Ticket>;
 
@@ -47,6 +48,9 @@ export class Ticket {
 
   @Prop({ type: [CommentSchema], default: [] })
   comments: Comment[];
+
+  @Prop({ type: [EventSchema], default: [] })
+  events: Event[];
 
   @Prop({ default: now() })
   createdAt: Date;
