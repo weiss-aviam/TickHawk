@@ -17,7 +17,7 @@ export class Ticket {
     ref: 'companies',
   })
   companyId: Types.ObjectId;
-  
+
   @Prop({
     type: Types.ObjectId,
     ref: 'user',
@@ -39,7 +39,7 @@ export class Ticket {
     required: true,
   })
   content: string;
-  
+
   @Prop({
     required: true,
   })
@@ -48,10 +48,10 @@ export class Ticket {
   @Prop({ type: [CommentSchema], default: [] })
   comments: Comment[];
 
-  @Prop({default: now()})
+  @Prop({ default: now() })
   createdAt: Date;
 
-  @Prop({default: now()})
+  @Prop({ default: now() })
   updatedAt: Date;
 }
 
@@ -59,3 +59,20 @@ export const TicketSchema = SchemaFactory.createForClass(Ticket);
 
 // Index by companyId and status
 TicketSchema.index({ companyId: 1, status: 1 });
+
+// Update hours
+TicketSchema.pre('save', function (next) {
+  if (!this.isModified('comments')) {
+    return next();
+  }
+
+  this.hours = this.comments
+    .map((comment) => comment.hours) as [number];
+  next();
+});
+
+// Update updatedAt
+TicketSchema.pre('save', function (next) {
+  this.updatedAt = now();
+  next();
+});
