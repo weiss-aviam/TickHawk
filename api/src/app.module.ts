@@ -6,6 +6,7 @@ import { CompaniesModule } from './companies/companies.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { TicketModule } from './ticket/ticket.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { MongooseModule } from '@nestjs/mongoose';
     }),
     AuthModule,
     CompaniesModule,
-    UsersModule
+    UsersModule,
+    TicketModule
   ],
   controllers: [AppController],
   providers: [],
