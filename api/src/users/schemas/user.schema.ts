@@ -24,7 +24,7 @@ export class User {
   @Prop({
     required: true,
     type: Types.ObjectId,
-    ref: 'Companies',
+    ref: 'companies',
   })
   companyId: Types.ObjectId;
 
