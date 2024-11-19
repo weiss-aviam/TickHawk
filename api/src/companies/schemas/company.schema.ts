@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 
-export type CompanyDocument = HydratedDocument<Company>;
+export type CompanySchema = HydratedDocument<Company>;
 
 @Schema()
 export class Company {
@@ -16,4 +16,4 @@ export class Company {
   unlimited_hours: boolean;
 }
 
-export const CompanyDocument = SchemaFactory.createForClass(Company);
+export const CompanySchema = SchemaFactory.createForClass(Company);

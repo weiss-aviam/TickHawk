@@ -1,10 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { Permission, PermissionSchema } from './permission.shema';
 
-export type UserDocument = HydratedDocument<Users>;
+export type UserSchema = HydratedDocument<User>;
 
 @Schema()
-export class Users {
+export class User {
   @Prop({
     required: true,
   })
@@ -34,11 +35,12 @@ export class Users {
   })
   kind: string;
 
-  @Prop([String])
-  permissions: string[];
+  @Prop({ type: [PermissionSchema], default: [] })
+  permissions: Permission[];
+
 }
 
-export const UserDocument = SchemaFactory.createForClass(Users);
+export const UserSchema = SchemaFactory.createForClass(User);
 
 // Index by email
-UserDocument.index({ email: 1 }, { unique: true });
+UserSchema.index({ email: 1 }, { unique: true });

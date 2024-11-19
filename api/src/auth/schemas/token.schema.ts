@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 
-export type TokenDocument = HydratedDocument<Tokens>;
+export type TokenDocument = HydratedDocument<Token>;
 
 @Schema()
-export class Tokens {
+export class Token {
   @Prop({
     required: true,
   })
@@ -33,16 +33,16 @@ export class Tokens {
   //TODO: Data about location, device, etc.
 }
 
-export const TokensDocument = SchemaFactory.createForClass(Tokens);
+export const TokenSchema = SchemaFactory.createForClass(Token);
 
 // Expire 1d after createdAt field value
-TokensDocument.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 });
+TokenSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 });
 
 // Find by token
-TokensDocument.index({ token: 1 });
+TokenSchema.index({ token: 1 });
 
 // Find by refreshToken
-TokensDocument.index({ refreshToken: 1 });
+TokenSchema.index({ refreshToken: 1 });
 
 // Find by accessToken and refreshToken
-TokensDocument.index({ accessToken: 1, refreshToken: 1 });
+TokenSchema.index({ accessToken: 1, refreshToken: 1 });
