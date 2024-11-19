@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument, Types, now } from 'mongoose';
+import { Contract, ContractSchema } from './contract.schema';
 
 export type CompanySchema = HydratedDocument<Company>;
 
@@ -10,10 +11,23 @@ export class Company {
   })
   name: string;
 
-  @Prop({
-    required: true,
-  })
-  unlimited_hours: boolean;
+  @Prop()
+  email: string;
+
+  @Prop({ type: [ContractSchema], default: [] })
+  contracts: Contract[];
+
+  @Prop({ default: now() })
+  createdAt: Date;
+
+  @Prop({ default: now() })
+  updatedAt: Date;
 }
 
 export const CompanySchema = SchemaFactory.createForClass(Company);
+
+// Update updatedAt
+CompanySchema.pre('save', function (next) {
+  this.updatedAt = now();
+  next();
+});
