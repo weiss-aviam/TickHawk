@@ -31,10 +31,6 @@
 - **Technicians**: Resolve tickets with precision and transparency.
 - **Admins**: Oversee all activities and manage roles seamlessly.
 
-### 💬 **Collaboration Tools**
-- **Comments**: Engage in threaded discussions for every ticket.
-- **Attachments**: Upload and share files for better context and clarity.
-
 ### 🧾 **Invoice Management**
 - Generate and store **PDF invoices** linked to purchased hours.
 - Centralized and easy-to-access billing records.
@@ -42,7 +38,6 @@
 ---
 
 ## 🛠️ **Tech Stack**
-
 - **Backend**: NestJS, MongoDB, TypeScript
 - **Frontend**: React, TypeScript
 - **Tooling**: Turborepo, Docker, ESLint, Prettier
