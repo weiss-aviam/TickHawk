@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom'
 import ThemeSelector from '../../components/ThemeSelector'
 
 function Header () {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
 
   return (
     <nav className='fixed z-50 w-full bg-white border-b border-gray-200 sm:py-2 dark:bg-gray-800 dark:border-gray-700'>
       <div className='container py-2 mx-auto'>
-        <div className='flex items-center justify-between'>
+        <div className='flex items-center justify-between  mx-2 md:mx-0'>
           <div className='flex items-center justify-start'>
             <Link to={'/'} className='flex mr-4'>
               <img src='/tickhawk.svg' alt='Flowbite' className='w-11 h-11' />
@@ -83,104 +84,81 @@ function Header () {
                 </div>
               </div>
               <button
-              data-collapse-toggle='mobile-menu'
-              type='button'
-              className='inline-flex items-center justify-center p-2 ml-3 text-gray-400 rounded-lg sm:hidden hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-300 dark:hover:bg-gray-700 dark:hover:text-white'
-              aria-controls='mobile-menu-2'
-              aria-expanded='false'
-            >
-              <span className='sr-only'>Open main menu</span>
-
-              <svg
-                className='w-6 h-6'
-                fill='currentColor'
-                viewBox='0 0 20 20'
-                xmlns='http://www.w3.org/2000/svg'
+                type='button'
+                className='inline-flex items-center justify-center p-2 ml-3 text-gray-400 rounded-lg sm:hidden hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-300 dark:hover:bg-gray-700 dark:hover:text-white'
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                <path
-                  fill-rule='evenodd'
-                  d='M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z'
-                  clip-rule='evenodd'
-                ></path>
-              </svg>
+                <span className='sr-only'>Open main menu</span>
 
-              <svg
-                className='hidden w-6 h-6'
-                fill='currentColor'
-                viewBox='0 0 20 20'
-                xmlns='http://www.w3.org/2000/svg'
-              >
-                <path
-                  fill-rule='evenodd'
-                  d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
-                  clip-rule='evenodd'
-                ></path>
-              </svg>
-            </button>
+                <svg
+                  className='w-6 h-6'
+                  fill='currentColor'
+                  viewBox='0 0 20 20'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <path
+                    fill-rule='evenodd'
+                    d='M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z'
+                    clip-rule='evenodd'
+                  ></path>
+                </svg>
+
+                <svg
+                  className='hidden w-6 h-6'
+                  fill='currentColor'
+                  viewBox='0 0 20 20'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <path
+                    fill-rule='evenodd'
+                    d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
+                    clip-rule='evenodd'
+                  ></path>
+                </svg>
+              </button>
             </div>
-           
           </div>
         </div>
       </div>
-
-      <div className='hidden sm:hidden' id='mobile-menu'>
-        <ul className='pt-2'>
-          <li>
-            <a
-              href='#'
-              className='block py-2 pl-3 pr-4 text-base font-normal text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white'
-            >
-              Dashboard
-            </a>
-          </li>
-          <li>
-            <a
-              href='#'
-              className='block px-3 py-2 text-base font-normal text-gray-600 border-b border-gray-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-white'
-            >
-              Team
-            </a>
-          </li>
-          <li>
-            <a
-              href='#'
-              className='block px-3 py-2 text-base font-normal text-gray-600 border-b border-gray-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-white'
-            >
-              Projects
-            </a>
-          </li>
-          <li>
-            <a
-              href='#'
-              className='block px-3 py-2 text-base font-normal text-gray-600 border-b border-gray-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-white'
-            >
-              Calendar
-            </a>
-          </li>
-          <li className='block'>
-            <a
-              href='#'
-              className='inline-flex items-center w-full px-3 py-2 text-base font-normal text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-white'
-            >
-              <svg
-                className='w-5 h-5 mr-2'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-                xmlns='http://www.w3.org/2000/svg'
+      {/* Mobile menu */}
+      {isMenuOpen && (
+        <div>
+          <ul className='pt-2'>
+            <li>
+              <a
+                href='#'
+                className='block py-2 pl-3 pr-4 text-base font-normal text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white'
               >
-                <path
-                  stroke-linecap='round'
-                  stroke-linejoin='round'
-                  stroke-width='2'
-                  d='M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1'
-                ></path>
-              </svg>
-              Login/Register
-            </a>
-          </li>
-        </ul>
-      </div>
+                Dashboard
+              </a>
+            </li>
+            <li>
+              <a
+                href='#'
+                className='block px-3 py-2 text-base font-normal text-gray-600 border-b border-gray-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-white'
+              >
+                Team
+              </a>
+            </li>
+            <li>
+              <a
+                href='#'
+                className='block px-3 py-2 text-base font-normal text-gray-600 border-b border-gray-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-white'
+              >
+                Projects
+              </a>
+            </li>
+            <li>
+              <a
+                href='#'
+                className='block px-3 py-2 text-base font-normal text-gray-600 border-b border-gray-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-white'
+              >
+                Calendar
+              </a>
+            </li>
+          </ul>
+        </div>
+      )}
     </nav>
   )
 }
