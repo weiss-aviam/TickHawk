@@ -1,17 +1,21 @@
 import React from 'react'
+import ThemeSelector from '../../components/ThemeSelector'
 
 function Auth () {
   return (
-    <main className='bg-gray-50 dark:bg-gray-900  min-h-screen'>
+    <div className='bg-gray-50 dark:bg-gray-900  min-h-screen'>
       <div className='flex flex-col items-center justify-center px-6 pt-8 mx-auto md:h-screen pt:mt-0 dark:bg-gray-900'>
-        <div
-          className='flex items-center justify-center mt-10 mb-8 text-2xl font-semibold md:mt-0 lg:mb-10 dark:text-white'
-        >
-          <span className='text-8xl'>🦅</span>
+        <div className='flex items-center justify-center mt-10 mb-8 text-2xl font-semibold md:mt-0 lg:mb-10 dark:text-white'>
+          <span className='text-8xl'>
+            <img src='/tickhawk.svg' alt='TickHawk' width={100} height={100} />
+          </span>
           <span className='text-4xl'>TickHawk</span>
         </div>
-        <div className='w-full max-w-xl p-6 space-y-8 sm:p-8 bg-white rounded-lg shadow dark:bg-gray-800'>
-          <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
+        <div className='w-full max-w-xl p-6 space-y-8 sm:p-8 bg-white rounded-lg shadow dark:bg-gray-800 relative'>
+          <div className='absolute right-2 top-2'>
+            <ThemeSelector />
+          </div>
+          <h2 className='text-2xl font-bold text-gray-900 dark:text-white !mt-0'>
             Sign in to platform
           </h2>
           <form className='mt-8 space-y-6' action='#'>
@@ -65,7 +69,7 @@ function Auth () {
           </form>
         </div>
       </div>
-    </main>
+    </div>
   )
 }
 
