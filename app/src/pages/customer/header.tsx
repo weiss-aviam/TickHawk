@@ -32,7 +32,7 @@ function Header () {
                     className='text-sm font-medium text-gray-700 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-500'
                     aria-current='page'
                   >
-                    Team
+                    Tickets
                   </a>
                 </li>
                 <li>
@@ -41,16 +41,7 @@ function Header () {
                     className='text-sm font-medium text-gray-700 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-500'
                     aria-current='page'
                   >
-                    Pricing
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href='#'
-                    className='text-sm font-medium text-gray-700 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-500'
-                    aria-current='page'
-                  >
-                    Contact
+                    Informes
                   </a>
                 </li>
               </ul>
@@ -129,7 +120,7 @@ function Header () {
                 href='#'
                 className='block py-2 pl-3 pr-4 text-base font-normal text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white'
               >
-                Dashboard
+                Home
               </a>
             </li>
             <li>
@@ -137,7 +128,7 @@ function Header () {
                 href='#'
                 className='block px-3 py-2 text-base font-normal text-gray-600 border-b border-gray-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-white'
               >
-                Team
+                Tickets
               </a>
             </li>
             <li>
@@ -145,15 +136,7 @@ function Header () {
                 href='#'
                 className='block px-3 py-2 text-base font-normal text-gray-600 border-b border-gray-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-white'
               >
-                Projects
-              </a>
-            </li>
-            <li>
-              <a
-                href='#'
-                className='block px-3 py-2 text-base font-normal text-gray-600 border-b border-gray-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-white'
-              >
-                Calendar
+                Informes
               </a>
             </li>
           </ul>
