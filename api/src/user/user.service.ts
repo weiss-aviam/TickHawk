@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 
 @Injectable()
-export class UsersService {
+export class UserService {
 
     constructor(
         @InjectModel(User.name) private readonly userModel: Model<User>

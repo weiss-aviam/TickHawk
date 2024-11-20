@@ -8,7 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
   providers: [TicketService],
   controllers: [TicketController],
   imports: [
-    MongooseModule.forFeature([{ name: Ticket.name, schema: TicketSchema }], 'users'),
+    MongooseModule.forFeature([{ name: Ticket.name, schema: TicketSchema }]),
   ],
 })
 export class TicketModule {}

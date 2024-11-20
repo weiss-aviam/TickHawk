@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/user/users.service';
+import { UserService } from 'src/user/user.service';
 import { Token } from './schemas/token.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -9,7 +9,7 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
+    private userService: UserService,
     private jwtService: JwtService,
     @InjectModel(Token.name) private tokenModel: Model<Token>,
   ) {}
@@ -25,7 +25,7 @@ export class AuthService {
     email: string,
     pass: string,
   ): Promise<{ access_token: string; refresh_token: string }> {
-    const user = await this.usersService.findOne(email);
+    const user = await this.userService.findOne(email);
 
     if (!user) {
       throw new UnauthorizedException();

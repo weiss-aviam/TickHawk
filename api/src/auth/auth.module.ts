@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Token, TokenSchema } from './schemas/token.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   providers: [AuthService],
@@ -19,7 +20,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         signOptions: { expiresIn: '30m' },
       }),
     }),
-    MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }], 'tokens'),
+    MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }]),
+    UserModule,
   ],
 })
 export class AuthModule {
