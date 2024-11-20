@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { Permission, PermissionSchema } from './permission.shema';
 
 export type UserSchema = HydratedDocument<User>;
 
@@ -22,22 +21,11 @@ export class User {
   password: string;
 
   @Prop({
-    required: true,
-    type: Types.ObjectId,
-    ref: 'companies',
-  })
-  companyId: Types.ObjectId;
-
-  @Prop({
     type: String,
     required: true,
-    enum: ['admin', 'tech', 'customer'],
+    enum: ['admin', 'tech'],
   })
-  kind: string;
-
-  @Prop({ type: [PermissionSchema], default: [] })
-  permissions: Permission[];
-
+  role: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
