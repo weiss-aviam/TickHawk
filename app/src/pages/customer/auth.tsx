@@ -4,13 +4,12 @@ function Auth () {
   return (
     <main className='bg-gray-50 dark:bg-gray-900  min-h-screen'>
       <div className='flex flex-col items-center justify-center px-6 pt-8 mx-auto md:h-screen pt:mt-0 dark:bg-gray-900'>
-        <a
-          href='https://flowbite-admin-dashboard.vercel.app/'
+        <div
           className='flex items-center justify-center mt-10 mb-8 text-2xl font-semibold md:mt-0 lg:mb-10 dark:text-white'
         >
           <span className='text-8xl'>🦅</span>
           <span className='text-4xl'>TickHawk</span>
-        </a>
+        </div>
         <div className='w-full max-w-xl p-6 space-y-8 sm:p-8 bg-white rounded-lg shadow dark:bg-gray-800'>
           <h2 className='text-2xl font-bold text-gray-900 dark:text-white'>
             Sign in to platform
