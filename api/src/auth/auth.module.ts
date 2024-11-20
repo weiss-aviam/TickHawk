@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Token, TokenSchema } from './schemas/token.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from 'src/user/user.module';
+import { CustomerModule } from 'src/customer/customer.module';
 
 @Module({
   providers: [AuthService],
@@ -22,6 +23,7 @@ import { UserModule } from 'src/user/user.module';
     }),
     MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }]),
     UserModule,
+    CustomerModule,
   ],
 })
 export class AuthModule {

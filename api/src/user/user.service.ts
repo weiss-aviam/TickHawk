@@ -14,11 +14,11 @@ export class UserService {
 
     /**
      * Find a user by username
-     * @param username 
+     * @param email 
      * @returns 
      */
-    async findOne(username: string) {
-        const user = await this.userModel.findOne({ email: username });
+    async findOne(email: string) {
+        const user = await this.userModel.findOne({ email: email });
         return user;
     }
 }
