@@ -24,6 +24,7 @@ export class User {
     type: String,
     required: true,
     enum: ['admin', 'agent'],
+    default: 'agent',
   })
   role: string;
 }
