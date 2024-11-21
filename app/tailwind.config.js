@@ -23,7 +23,17 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        '.display-revert': {
+          display: 'revert',
+        },
+      }, {
+        variants: ['responsive'], // Permite breakpoints como `xl`
+      });
+    },
+  ],
   safelist: [
     'w-64',
     'w-1/2',

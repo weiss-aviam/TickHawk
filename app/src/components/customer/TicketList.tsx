@@ -4,9 +4,9 @@ function StatusBadge ({ status }: { status: string }) {
   let color = ''
   let text = ''
   switch (status) {
-    case 'completed':
+    case 'open':
       color = 'green'
-      text = 'Completed'
+      text = 'Open'
       break
     case 'in-progress':
       color = 'purple'
@@ -16,9 +16,9 @@ function StatusBadge ({ status }: { status: string }) {
       color = 'orange'
       text = 'In review'
       break
-    case 'cancelled':
+    case 'closed':
       color = 'red'
-      text = 'Cancelled'
+      text = 'Closed'
       break
     default:
       color = 'gray'
@@ -39,17 +39,6 @@ function TicketList () {
     <table className='min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600'>
       <thead className='bg-gray-100 dark:bg-gray-700'>
         <tr>
-          <th scope='col' className='p-4'>
-            <div className='flex items-center'>
-              <input
-                id='checkbox-all'
-                aria-describedby='checkbox-1'
-                type='checkbox'
-                className='w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600'
-              />
-              <label className='sr-only'>checkbox</label>
-            </div>
-          </th>
           <th
             scope='col'
             className='p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400'
@@ -58,21 +47,21 @@ function TicketList () {
           </th>
           <th
             scope='col'
-            className='p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400'
+            className='p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400 hidden xl:display-revert'
           >
             Excerpt
           </th>
           <th
             scope='col'
-            className='p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400'
+            className='p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400 hidden lg:display-revert'
           >
-            Company
+            Department
           </th>
           <th
             scope='col'
-            className='p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400'
+            className='p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400 hidden lg:display-revert'
           >
-            Country
+            Created date
           </th>
           <th
             scope='col'
@@ -88,17 +77,6 @@ function TicketList () {
       </thead>
       <tbody className='bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700'>
         <tr className='hover:bg-gray-100 dark:hover:bg-gray-700'>
-          <td className='w-4 p-4'>
-            <div className='flex items-center'>
-              <input
-                id='checkbox-1'
-                aria-describedby='checkbox-1'
-                type='checkbox'
-                className='w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600'
-              />
-              <label className='sr-only'>checkbox</label>
-            </div>
-          </td>
           <td className='flex items-center p-4 mr-12 space-x-6 whitespace-nowrap'>
             <div className='text-sm font-normal text-gray-500 dark:text-gray-400'>
               <div className='text-base font-semibold text-gray-900 dark:text-white'>
@@ -106,20 +84,20 @@ function TicketList () {
               </div>
             </div>
           </td>
-          <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400'>
-            I love working with React and Flowbites to create efficient and
+          <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400 hidden xl:display-revert'>
+            i love working with react and tickhawk  to create efficient and
             user-friendly interfaces. In my spare time, I enjoys baking, hiking,
             and spending time with my family.
           </td>
-          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white'>
-            Company A
+          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white hidden lg:display-revert'>
+            Department A
           </td>
-          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white'>
-            United States
+          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white hidden lg:display-revert'>
+            2021-09-15
           </td>
           <td className='p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white'>
             <div className='flex items-center'>
-              <StatusBadge status='cancelled' />
+              <StatusBadge status='closed' />
             </div>
           </td>
           <td className='p-4 whitespace-nowrap'>
@@ -143,17 +121,6 @@ function TicketList () {
         </tr>
 
         <tr className='hover:bg-gray-100 dark:hover:bg-gray-700'>
-          <td className='w-4 p-4'>
-            <div className='flex items-center'>
-              <input
-                id='checkbox-2'
-                aria-describedby='checkbox-1'
-                type='checkbox'
-                className='w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600'
-              />
-              <label className='sr-only'>checkbox</label>
-            </div>
-          </td>
           <td className='flex items-center p-4 mr-12 space-x-6 whitespace-nowrap'>
             <div className='text-sm font-normal text-gray-500 dark:text-gray-400'>
               <div className='text-base font-semibold text-gray-900 dark:text-white'>
@@ -161,16 +128,16 @@ function TicketList () {
               </div>
             </div>
           </td>
-          <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400'>
-            I love working with React and Flowbites to create efficient and
+          <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400 hidden xl:display-revert'>
+            i love working with react and tickhawk  to create efficient and
             user-friendly interfaces. In my spare time, I enjoys baking, hiking,
             and spending time with my family.
           </td>
-          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white'>
-            Designer
+          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white hidden lg:display-revert'>
+            Department B
           </td>
-          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white'>
-            Spain
+          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white hidden lg:display-revert'>
+            2021-09-15
           </td>
           <td className='p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white'>
             <div className='flex items-center'>
@@ -198,17 +165,6 @@ function TicketList () {
         </tr>
 
         <tr className='hover:bg-gray-100 dark:hover:bg-gray-700'>
-          <td className='w-4 p-4'>
-            <div className='flex items-center'>
-              <input
-                id='checkbox-3'
-                aria-describedby='checkbox-1'
-                type='checkbox'
-                className='w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600'
-              />
-              <label className='sr-only'>checkbox</label>
-            </div>
-          </td>
           <td className='flex items-center p-4 mr-12 space-x-6 whitespace-nowrap'>
             <div className='text-sm font-normal text-gray-500 dark:text-gray-400'>
               <div className='text-base font-semibold text-gray-900 dark:text-white'>
@@ -216,20 +172,20 @@ function TicketList () {
               </div>
             </div>
           </td>
-          <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400'>
-            I love working with React and Flowbites to create efficient and
+          <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400 hidden xl:display-revert'>
+            i love working with react and tickhawk  to create efficient and
             user-friendly interfaces. In my spare time, I enjoys baking, hiking,
             and spending time with my family.
           </td>
-          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white'>
-            React developer
+          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white hidden lg:display-revert'>
+            Department C
           </td>
-          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white'>
-            United Kingdom
+          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white hidden lg:display-revert'>
+            2021-09-15
           </td>
           <td className='p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white'>
             <div className='flex items-center'>
-              <StatusBadge status='completed' />
+              <StatusBadge status='open' />
             </div>
           </td>
           <td className='p-4 space-x-2 whitespace-nowrap'>
@@ -253,17 +209,6 @@ function TicketList () {
         </tr>
 
         <tr className='hover:bg-gray-100 dark:hover:bg-gray-700'>
-          <td className='w-4 p-4'>
-            <div className='flex items-center'>
-              <input
-                id='checkbox-3'
-                aria-describedby='checkbox-1'
-                type='checkbox'
-                className='w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600'
-              />
-              <label className='sr-only'>checkbox</label>
-            </div>
-          </td>
           <td className='flex items-center p-4 mr-12 space-x-6 whitespace-nowrap'>
             <div className='text-sm font-normal text-gray-500 dark:text-gray-400'>
               <div className='text-base font-semibold text-gray-900 dark:text-white'>
@@ -271,16 +216,16 @@ function TicketList () {
               </div>
             </div>
           </td>
-          <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400'>
-            I love working with React and Flowbites to create efficient and
+          <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400 hidden xl:display-revert'>
+            i love working with react and tickhawk  to create efficient and
             user-friendly interfaces. In my spare time, I enjoys baking, hiking,
             and spending time with my family.
           </td>
-          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white'>
-            React developer
+          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white hidden lg:display-revert'>
+            Department D
           </td>
-          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white'>
-            United Kingdom
+          <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white hidden lg:display-revert'>
+            2021-09-15
           </td>
           <td className='p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white'>
             <div className='flex items-center'>
