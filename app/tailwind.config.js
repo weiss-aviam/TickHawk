@@ -38,7 +38,17 @@ module.exports = {
     'leading-9',
     'shadow-lg',
     'bg-opacity-50',
-    'dark:bg-opacity-80'
+    'dark:bg-opacity-80',
+    'bg-green-100', 'text-green-800', 'border-green-100',
+    'bg-purple-100', 'text-purple-800', 'border-purple-100',
+    'bg-orange-100', 'text-orange-800', 'border-orange-100',
+    'bg-red-100', 'text-red-800', 'border-red-100',
+    'bg-gray-100', 'text-gray-800', 'border-gray-100',
+    'dark:bg-gray-700', 'dark:border-green-500', 'dark:text-green-400',
+    'dark:border-purple-500', 'dark:text-purple-400',
+    'dark:border-orange-500', 'dark:text-orange-400',
+    'dark:border-red-500', 'dark:text-red-400',
+    'dark:border-gray-500', 'dark:text-gray-400',
   ],
   darkMode: 'class',
 }
