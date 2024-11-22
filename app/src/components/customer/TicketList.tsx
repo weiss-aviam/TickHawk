@@ -77,15 +77,11 @@ function TicketList () {
       </thead>
       <tbody className='bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700'>
         <tr className='hover:bg-gray-100 dark:hover:bg-gray-700'>
-          <td className='flex items-center p-4 mr-12 space-x-6 whitespace-nowrap'>
-            <div className='text-sm font-normal text-gray-500 dark:text-gray-400'>
-              <div className='text-base font-semibold text-gray-900 dark:text-white'>
-                Error when trying to load the website
-              </div>
-            </div>
+          <td className='p-4 mr-2 space-x-6 whitespace-nowrap text-base font-semibold text-gray-900 dark:text-white'>
+              Error when trying to load the website
           </td>
           <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400 hidden xl:display-revert'>
-            i love working with react and tickhawk  to create efficient and
+            i love working with react and tickhawk to create efficient and
             user-friendly interfaces. In my spare time, I enjoys baking, hiking,
             and spending time with my family.
           </td>
@@ -121,15 +117,11 @@ function TicketList () {
         </tr>
 
         <tr className='hover:bg-gray-100 dark:hover:bg-gray-700'>
-          <td className='flex items-center p-4 mr-12 space-x-6 whitespace-nowrap'>
-            <div className='text-sm font-normal text-gray-500 dark:text-gray-400'>
-              <div className='text-base font-semibold text-gray-900 dark:text-white'>
-                Roberta Casas
-              </div>
-            </div>
+        <td className='p-4 mr-2 space-x-6 whitespace-nowrap text-base font-semibold text-gray-900 dark:text-white'>
+              Error when trying to load the website
           </td>
           <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400 hidden xl:display-revert'>
-            i love working with react and tickhawk  to create efficient and
+            i love working with react and tickhawk to create efficient and
             user-friendly interfaces. In my spare time, I enjoys baking, hiking,
             and spending time with my family.
           </td>
@@ -165,15 +157,11 @@ function TicketList () {
         </tr>
 
         <tr className='hover:bg-gray-100 dark:hover:bg-gray-700'>
-          <td className='flex items-center p-4 mr-12 space-x-6 whitespace-nowrap'>
-            <div className='text-sm font-normal text-gray-500 dark:text-gray-400'>
-              <div className='text-base font-semibold text-gray-900 dark:text-white'>
-                Michael Gough
-              </div>
-            </div>
+        <td className='p-4 mr-2 space-x-6 whitespace-nowrap text-base font-semibold text-gray-900 dark:text-white'>
+              Error when trying to load the website
           </td>
           <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400 hidden xl:display-revert'>
-            i love working with react and tickhawk  to create efficient and
+            i love working with react and tickhawk to create efficient and
             user-friendly interfaces. In my spare time, I enjoys baking, hiking,
             and spending time with my family.
           </td>
@@ -209,15 +197,11 @@ function TicketList () {
         </tr>
 
         <tr className='hover:bg-gray-100 dark:hover:bg-gray-700'>
-          <td className='flex items-center p-4 mr-12 space-x-6 whitespace-nowrap'>
-            <div className='text-sm font-normal text-gray-500 dark:text-gray-400'>
-              <div className='text-base font-semibold text-gray-900 dark:text-white'>
-                Michael Gough
-              </div>
-            </div>
+        <td className='p-4 mr-2 space-x-6 whitespace-nowrap text-base font-semibold text-gray-900 dark:text-white'>
+              Error when trying to load the website
           </td>
           <td className='max-w-sm p-4 overflow-hidden text-base font-normal text-gray-500 truncate xl:max-w-xs dark:text-gray-400 hidden xl:display-revert'>
-            i love working with react and tickhawk  to create efficient and
+            i love working with react and tickhawk to create efficient and
             user-friendly interfaces. In my spare time, I enjoys baking, hiking,
             and spending time with my family.
           </td>
