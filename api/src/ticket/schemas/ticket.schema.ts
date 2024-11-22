@@ -26,13 +26,13 @@ export class Ticket extends Document {
     type: Types.ObjectId,
     ref: User.name,
   })
-  clientId: Types.ObjectId;
+  customerId: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
     ref: User.name,
   })
-  technicianId: Types.ObjectId;
+  agentId: Types.ObjectId;
 
   @Prop({
     required: true,
