@@ -13,7 +13,7 @@ export class Event {
 
   @Prop({
     required: true,
-    enum: ['close', 'open', 're-open'],
+    enum: ['close', 'open', 're-open', 'transfer'],
   })
   type: string;
 
