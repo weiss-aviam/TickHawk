@@ -8,6 +8,7 @@ import config from './config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TicketModule } from './ticket/ticket.module';
 import { CustomerModule } from './customer/customer.module';
+import { DepartmentModule } from './department/department.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { CustomerModule } from './customer/customer.module';
     CompanyModule,
     UserModule,
     TicketModule,
-    CustomerModule
+    CustomerModule,
+    DepartmentModule
   ],
   controllers: [AppController],
   providers: [],

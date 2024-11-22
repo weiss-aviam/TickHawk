@@ -52,6 +52,13 @@ export class Ticket {
   @Prop({ type: [EventSchema], default: [] })
   events: Event[];
 
+  @Prop({ 
+    type: Types.ObjectId,
+    ref: 'Department',
+    required: true,
+  })
+  departmentId: Types.ObjectId;
+
   @Prop({ default: now() })
   createdAt: Date;
 

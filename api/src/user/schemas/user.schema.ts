@@ -27,6 +27,13 @@ export class User {
     default: 'agent',
   })
   role: string;
+
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'Department',
+    required: true,
+  })
+  departments: Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
