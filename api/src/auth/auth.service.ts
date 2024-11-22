@@ -75,7 +75,7 @@ export class AuthService {
 
   /**
    *  Sign out a user
-   * @param acessToken
+   * @param acessToken - JWT token to be invalidated
    */
   async signOut(acessToken: string): Promise<void> {
     await this.tokenModel.deleteMany({ accessToken: acessToken });
