@@ -97,6 +97,7 @@ export class AuthService {
     const payload = {
       sub: user._id,
       email: user.email,
+      companyId: user.companyId,
       refreshToken: refreshToken,
     };
     const accessToken = await this.jwtService.signAsync(payload);

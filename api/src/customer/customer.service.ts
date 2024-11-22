@@ -16,7 +16,7 @@ export class CustomerService {
      * @param email 
      * @returns 
      */
-    async findOne(email: string) {
+    async findOne(email: string): Promise<Customer> {
         const user = await this.customerModel.findOne({ email: email });
         return user;
     }

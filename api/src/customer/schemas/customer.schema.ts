@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-import { Company, CompanySchema } from 'src/company/schemas/company.schema';
+import { HydratedDocument, Types, Document } from 'mongoose';
+import { Company } from 'src/company/schemas/company.schema';
 
 export type CustomerSchema = HydratedDocument<Customer>;
 
 @Schema()
-export class Customer {
+export class Customer extends Document {
   @Prop({
     required: true,
   })
@@ -23,13 +23,19 @@ export class Customer {
 
   @Prop({
     required: true,
-    type: CompanySchema,
-    ref: 'Companies',
+    type: Types.ObjectId,
+    ref: Company.name,
   })
-  company: Company;
+  companyId: Types.ObjectId;
 }
 
-export const CustomerSchema = SchemaFactory.createForClass(Customer);
+export const CustomerSchema = SchemaFactory.createForClass(Customer) ;
 
 // Index by email
 CustomerSchema.index({ email: 1 }, { unique: true });
+
+
+CustomerSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+});

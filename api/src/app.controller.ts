@@ -5,7 +5,7 @@ export class AppController {
   constructor() {}
 
   @Get()
-  getHome(): string {
-    return 'Welcome to the API';
+  getHome(): { message: string } {
+    return {message: 'Welcome to the API'};
   }
 }
