@@ -1,13 +1,12 @@
 import { Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
-import { AgentModule } from './agent/agent.module';
 import { CompanyModule } from './company/company.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TicketModule } from './ticket/ticket.module';
-import { CustomerModule } from './customer/customer.module';
+import { CustomerModule } from './user/user.module';
 import { DepartmentModule } from './department/department.module';
 import { JwtMiddleware } from './middleware/jwt.middleware';
 
@@ -26,7 +25,6 @@ import { JwtMiddleware } from './middleware/jwt.middleware';
     }),
     AuthModule,
     CompanyModule,
-    AgentModule,
     TicketModule,
     CustomerModule,
     DepartmentModule

@@ -4,7 +4,7 @@ import { HydratedDocument, Types } from 'mongoose';
 export type TokenDocument = HydratedDocument<Token>;
 
 @Schema()
-export class Token {
+export class Token extends Document {
   @Prop({
     required: true,
   })
@@ -46,3 +46,8 @@ TokenSchema.index({ refreshToken: 1 });
 
 // Find by accessToken and refreshToken
 TokenSchema.index({ accessToken: 1, refreshToken: 1 });
+
+TokenSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+});

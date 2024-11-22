@@ -5,13 +5,9 @@ import { AuthService } from './auth.service';
 export class AuthController {
     constructor(private authService: AuthService) {}
 
-    @Get('customer/sign-in')
+    @Get('/sign-in')
     async signInCustomer(email: string, password: string) {
-        return this.authService.signInCustomer(email, password);
+        return this.authService.signIn(email, password);
     }
 
-    @Get('agent/sign-in')
-    async signInAgent(email: string, password: string) {
-        return this.authService.signInAgent(email, password);
-    }
 }

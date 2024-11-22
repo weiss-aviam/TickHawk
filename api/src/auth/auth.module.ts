@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Token, TokenSchema } from './schemas/token.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AgentModule } from 'src/agent/agent.module';
-import { CustomerModule } from 'src/customer/customer.module';
+import { CustomerModule } from 'src/user/user.module';
 
 @Module({
   providers: [AuthService],
