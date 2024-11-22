@@ -1,6 +1,6 @@
 import { IsDefined, IsEmail, IsNotEmpty } from "class-validator";
 
-export class CustomerAuthDto {
+export class SignInDto {
   @IsEmail()
   @IsNotEmpty()
   @IsDefined()

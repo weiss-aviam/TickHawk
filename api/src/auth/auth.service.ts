@@ -1,11 +1,15 @@
-import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Token } from './schemas/token.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/user.service';
-import { CustomerAuthDto } from './dtos/customer-auth.dto';
+import { SignInDto } from './dtos/sign-in.dto';
 
 @Injectable()
 export class AuthService {
@@ -23,39 +27,39 @@ export class AuthService {
    * @throws UnauthorizedException
    */
   async signIn(
-    customerAuth: CustomerAuthDto,
+    customerAuth: SignInDto,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const pass = customerAuth.password;
     const email = customerAuth.email;
 
-    const agent = await this.userService.findOne(email);
+    const user = await this.userService.findOne(email);
 
-    if (!agent) {
+    if (!user) {
       throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);
     }
 
-    const isMatch = await bcrypt.compare(pass, agent.password);
+    const isMatch = await bcrypt.compare(pass, user.password);
     if (!isMatch) {
       throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);
     }
 
     // Create a JWT refresh token
     const refreshToken = await this.jwtService.signAsync(
-      { sub: agent._id },
+      { sub: user._id },
       { expiresIn: '1d' },
     );
     const payload = {
-      sub: agent._id,
-      email: agent.email,
-      refreshToken: refreshToken,
-      role: agent.role,
-      departmentIds: agent.departmentIds,
-      companyId: agent.companyId,
+      sub: user._id,
+      email: user.email,
+      role: user.role,
+      departmentIds: user.departmentIds,
+      companyId: user.companyId,
     };
     const accessToken = await this.jwtService.signAsync(payload);
 
     // Save the refresh token to the database
     const createdCat = new this.tokenModel({
+      userId: user._id,
       accessToken: accessToken,
       refreshToken: refreshToken,
       blocked: false,
@@ -67,6 +71,14 @@ export class AuthService {
       accessToken: accessToken,
       refreshToken: refreshToken,
     };
+  }
+
+  /**
+   *  Sign out a user
+   * @param acessToken
+   */
+  async signOut(acessToken: string): Promise<void> {
+    await this.tokenModel.deleteMany({ accessToken: acessToken });
   }
 
   /**
