@@ -12,6 +12,7 @@ export type TicketSchema = HydratedDocument<Ticket>;
 export class Ticket extends Document {
   @Prop({
     required: true,
+    enum: ['open', 'closed', 'in-progress', 'in-review'],
   })
   status: string;
 
