@@ -4,7 +4,7 @@ import { HydratedDocument, Types, now} from 'mongoose';
 export type EventSchema = HydratedDocument<Event>;
 
 @Schema()
-export class Event {
+export class Event extends Document {
   @Prop({
     type: Types.ObjectId,
     ref: 'user',
@@ -25,3 +25,8 @@ export class Event {
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);
+
+EventSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+});

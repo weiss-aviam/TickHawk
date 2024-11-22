@@ -4,7 +4,7 @@ import { HydratedDocument, Types } from 'mongoose';
 export type DepartmentSchema = HydratedDocument<Department>;
 
 @Schema()
-export class Department {
+export class Department extends Document {
   @Prop({
     required: true,
   })
@@ -12,3 +12,8 @@ export class Department {
 }
 
 export const DepartmentSchema = SchemaFactory.createForClass(Department);
+
+DepartmentSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+});

@@ -5,7 +5,7 @@ import { Contract, ContractSchema } from './contract.schema';
 export type CompanySchema = HydratedDocument<Company>;
 
 @Schema()
-export class Company {
+export class Company extends Document {
   @Prop({
     required: true,
   })
@@ -30,4 +30,9 @@ export const CompanySchema = SchemaFactory.createForClass(Company);
 CompanySchema.pre('save', function (next) {
   this.updatedAt = now();
   next();
+});
+
+CompanySchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
 });

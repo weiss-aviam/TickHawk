@@ -4,7 +4,7 @@ import { HydratedDocument, Types, now} from 'mongoose';
 export type CommentSchema = HydratedDocument<Comment>;
 
 @Schema()
-export class Comment {
+export class Comment extends Document {
   @Prop({
     type: Types.ObjectId,
     ref: 'user',
@@ -27,3 +27,8 @@ export class Comment {
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
+
+CommentSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+});

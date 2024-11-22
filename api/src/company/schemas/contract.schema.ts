@@ -4,7 +4,7 @@ import { HydratedDocument, Types } from 'mongoose';
 export type ContractSchema = HydratedDocument<Contract>;
 
 @Schema()
-export class Contract {
+export class Contract extends Document {
   @Prop({
     required: true,
   })
@@ -37,3 +37,8 @@ export class Contract {
 }
 
 export const ContractSchema = SchemaFactory.createForClass(Contract);
+
+ContractSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+});

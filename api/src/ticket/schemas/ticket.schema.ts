@@ -6,7 +6,7 @@ import { Event, EventSchema } from './event.schema';
 export type TicketSchema = HydratedDocument<Ticket>;
 
 @Schema()
-export class Ticket {
+export class Ticket extends Document {
   @Prop({
     required: true,
   })
@@ -86,4 +86,9 @@ TicketSchema.pre('save', function (next) {
 TicketSchema.pre('save', function (next) {
   this.updatedAt = now();
   next();
+});
+
+TicketSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
 });
