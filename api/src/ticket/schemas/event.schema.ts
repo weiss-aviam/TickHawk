@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types, now} from 'mongoose';
+import { HydratedDocument, Types, now, Document} from 'mongoose';
 
 export type EventSchema = HydratedDocument<Event>;
 

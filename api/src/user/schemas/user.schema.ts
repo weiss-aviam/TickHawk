@@ -15,7 +15,7 @@ export class User extends Document {
   @Prop({
     required: true,
   })
-  email: number;
+  email: string;
 
   @Prop({
     required: true,

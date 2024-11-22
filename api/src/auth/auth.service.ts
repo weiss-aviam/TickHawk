@@ -1,10 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Token } from './schemas/token.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/user.service';
+import { CustomerAuthDto } from './dtos/customer-auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,19 +22,21 @@ export class AuthService {
    * @returns
    * @throws UnauthorizedException
    */
-  async signInAgent(
-    email: string,
-    pass: string,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  async signIn(
+    customerAuth: CustomerAuthDto,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const pass = customerAuth.password;
+    const email = customerAuth.email;
+
     const agent = await this.userService.findOne(email);
 
     if (!agent) {
-      throw new UnauthorizedException();
+      throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);
     }
 
     const isMatch = await bcrypt.compare(pass, agent.password);
     if (!isMatch) {
-      throw new UnauthorizedException();
+      throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);
     }
 
     // Create a JWT refresh token
@@ -54,18 +57,17 @@ export class AuthService {
     // Save the refresh token to the database
     const createdCat = new this.tokenModel({
       accessToken: accessToken,
-      refresh_token: refreshToken,
+      refreshToken: refreshToken,
       blocked: false,
       expiration: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
     });
     await createdCat.save();
 
     return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
     };
   }
-
 
   /**
    * Refresh a JWT token

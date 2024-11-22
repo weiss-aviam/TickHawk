@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
+import { HydratedDocument, Document } from 'mongoose';
 
 export type TokenDocument = HydratedDocument<Token>;
 
@@ -8,7 +8,7 @@ export class Token extends Document {
   @Prop({
     required: true,
   })
-  accessToken: number;
+  accessToken: string;
 
   @Prop({
     required: true,
@@ -27,6 +27,7 @@ export class Token extends Document {
 
   @Prop({
     required: true,
+    default: Date.now,
   })
   createdAt: Date;
 

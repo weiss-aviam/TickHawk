@@ -1,4 +1,4 @@
-import { Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { CompanyModule } from './company/company.module';
@@ -6,9 +6,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TicketModule } from './ticket/ticket.module';
-import { CustomerModule } from './user/user.module';
 import { DepartmentModule } from './department/department.module';
-import { JwtMiddleware } from './middleware/jwt.middleware';
+import { JwtMiddleware } from './config/jwt.middleware';
+import { UserModule } from './user/user.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -26,14 +27,18 @@ import { JwtMiddleware } from './middleware/jwt.middleware';
     AuthModule,
     CompanyModule,
     TicketModule,
-    CustomerModule,
+    UserModule,
     DepartmentModule
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [JwtService],
+  
 })
 export class AppModule implements NestModule {
-  configure(consumer: import('@nestjs/common').MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).exclude('/auth/*').forRoutes('*')
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(JwtMiddleware).exclude(
+      { path: 'auth/(.*)', method: RequestMethod.ALL },
+    )
+    .forRoutes('*');
   }
 }
