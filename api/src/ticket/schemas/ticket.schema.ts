@@ -15,19 +15,19 @@ export class Ticket {
   @Prop({
     required: true,
     type: Types.ObjectId,
-    ref: 'companies',
+    ref: 'company',
   })
   companyId: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
-    ref: 'user',
+    ref: 'agent',
   })
   clientId: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
-    ref: 'user',
+    ref: 'agent',
   })
   technicianId: Types.ObjectId;
 

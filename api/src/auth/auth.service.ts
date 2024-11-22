@@ -27,27 +27,28 @@ export class AuthService {
     email: string,
     pass: string,
   ): Promise<{ access_token: string; refresh_token: string }> {
-    const user = await this.agentService.findOne(email);
+    const agent = await this.agentService.findOne(email);
 
-    if (!user) {
+    if (!agent) {
       throw new UnauthorizedException();
     }
 
-    const isMatch = await bcrypt.compare(pass, user.password);
+    const isMatch = await bcrypt.compare(pass, agent.password);
     if (!isMatch) {
       throw new UnauthorizedException();
     }
 
     // Create a JWT refresh token
     const refreshToken = await this.jwtService.signAsync(
-      { sub: user._id },
+      { sub: agent._id },
       { expiresIn: '1d' },
     );
     const payload = {
-      sub: user._id,
-      email: user.email,
+      sub: agent._id,
+      email: agent.email,
       refreshToken: refreshToken,
-      role: user.role,
+      role: agent.role,
+      departments: agent.departments,
     };
     const accessToken = await this.jwtService.signAsync(payload);
 
