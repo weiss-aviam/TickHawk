@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
+import { AgentService } from 'src/agent/agent.service';
 import { Token } from './schemas/token.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,24 +10,24 @@ import { CustomerService } from 'src/customer/customer.service';
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
+    private agentService: AgentService,
     private customerService: CustomerService,
     private jwtService: JwtService,
     @InjectModel(Token.name) private tokenModel: Model<Token>,
   ) {}
 
   /**
-   * Sign in a user
+   * Sign in a agent
    * @param email
    * @param pass
    * @returns
    * @throws UnauthorizedException
    */
-  async signInUser(
+  async signInAgent(
     email: string,
     pass: string,
   ): Promise<{ access_token: string; refresh_token: string }> {
-    const user = await this.userService.findOne(email);
+    const user = await this.agentService.findOne(email);
 
     if (!user) {
       throw new UnauthorizedException();

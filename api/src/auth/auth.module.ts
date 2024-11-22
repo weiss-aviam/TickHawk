@@ -5,7 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Token, TokenSchema } from './schemas/token.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserModule } from 'src/user/user.module';
+import { AgentModule } from 'src/agent/agent.module';
 import { CustomerModule } from 'src/customer/customer.module';
 
 @Module({
@@ -22,7 +22,7 @@ import { CustomerModule } from 'src/customer/customer.module';
       }),
     }),
     MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }]),
-    UserModule,
+    AgentModule,
     CustomerModule,
   ],
 })

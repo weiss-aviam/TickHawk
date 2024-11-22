@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
+import { AgentModule } from './agent/agent.module';
 import { CompanyModule } from './company/company.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config';
@@ -25,7 +25,7 @@ import { DepartmentModule } from './department/department.module';
     }),
     AuthModule,
     CompanyModule,
-    UserModule,
+    AgentModule,
     TicketModule,
     CustomerModule,
     DepartmentModule

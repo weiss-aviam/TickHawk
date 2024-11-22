@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 
-export type UserSchema = HydratedDocument<User>;
+export type AgentSchema = HydratedDocument<Agent>;
 
 @Schema()
-export class User {
+export class Agent {
   @Prop({
     required: true,
   })
@@ -36,7 +36,7 @@ export class User {
   departments: Types.ObjectId[];
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const AgentSchema = SchemaFactory.createForClass(Agent);
 
 // Index by email
-UserSchema.index({ email: 1 }, { unique: true });
+AgentSchema.index({ email: 1 }, { unique: true });
