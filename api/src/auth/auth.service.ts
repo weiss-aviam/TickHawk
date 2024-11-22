@@ -98,14 +98,14 @@ export class AuthService {
     });
 
     if (!token || token.blocked || token.expiration < new Date()) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("INVALID_TOKEN");
     }
 
     //Extract the user ID from the token
     const refreshPayload = await this.jwtService.verifyAsync(refreshToken);
 
     if (!refreshPayload) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("INVALID_TOKEN");
     }
 
     const payload = { sub: refreshPayload.sub, refreshToken: refreshToken };

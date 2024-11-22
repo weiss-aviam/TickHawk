@@ -1,12 +1,14 @@
-import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { Request, Response, NextFunction } from 'express';
+import { Request } from 'express';
 
 @Injectable()
-export class JwtMiddleware implements NestMiddleware {
-  constructor(private readonly jwtService: JwtService) {}
+export class JWTGuard implements CanActivate {
+  constructor(private reflector: Reflector, private jwtService: JwtService) {}
 
-  use(req: Request, res: Response, next: NextFunction): void {
+  canActivate(context: ExecutionContext): boolean {
+    const req = context.switchToHttp().getRequest<Request>();
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -17,9 +19,11 @@ export class JwtMiddleware implements NestMiddleware {
     try {
       const payload = this.jwtService.verify(token);
       req.user = payload;
-      next();
     } catch (error) {
       throw new UnauthorizedException('TOKEN_EXPIRED');
     }
+
+    return true;
   }
+ 
 }
