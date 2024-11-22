@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import ThemeSelector from '../../components/ThemeSelector'
+import ThemeSelector from '../ThemeSelector'
 
 function Header () {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
@@ -32,15 +32,6 @@ function Header () {
                     className='text-sm font-medium text-gray-700 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-500'
                     aria-current='page'
                   >
-                    Tickets
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href='#'
-                    className='text-sm font-medium text-gray-700 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-500'
-                    aria-current='page'
-                  >
                     Informes
                   </a>
                 </li>
@@ -53,9 +44,7 @@ function Header () {
               <div className='hidden mr-3 -mb-1 sm:block'>
                 <span></span>
               </div>
-
               <ThemeSelector />
-
               <div className='flex items-center ml-3'>
                 <div>
                   <button
@@ -121,14 +110,6 @@ function Header () {
                 className='block py-2 pl-3 pr-4 text-base font-normal text-gray-900 bg-gray-100 dark:bg-gray-700 dark:text-white'
               >
                 Home
-              </a>
-            </li>
-            <li>
-              <a
-                href='#'
-                className='block px-3 py-2 text-base font-normal text-gray-600 border-b border-gray-100 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-400 dark:hover:text-white'
-              >
-                Tickets
               </a>
             </li>
             <li>

@@ -11,6 +11,7 @@ export const useTicketsStore = create<TicketState>()((set) => ({
             subject: "Ticket 1 this is a long subject and it should be truncated",
             content: "Description of ticket with id 1 and status open and a long subject",
             status: "open",
+            priority: "low",
             createdAt: new Date(),
         },
         {
@@ -18,6 +19,7 @@ export const useTicketsStore = create<TicketState>()((set) => ({
             subject: "Ticket 2",
             content: "Description 2",
             status: "closed",
+            priority: "high",
             createdAt: new Date(),
         },
         {
@@ -25,6 +27,7 @@ export const useTicketsStore = create<TicketState>()((set) => ({
             subject: "Ticket 3",
             content: "Description 3",
             status: "in-review",
+            priority: "medium",
             createdAt: new Date(),
         },
         {
@@ -32,6 +35,7 @@ export const useTicketsStore = create<TicketState>()((set) => ({
             subject: "Ticket 4 this is a long subject and it should be truncated",
             content: "Content of ticket with id 4 and status in-progress and a long subject",
             status: "in-progress",
+            priority: "low",
             createdAt: new Date(),
         },
     ],

@@ -1,6 +1,7 @@
 import React from 'react'
-import Header from './header'
 import TicketList from 'components/customer/TicketList'
+import TicketFilter from 'components/customer/TicketFilter'
+import Header from 'components/customer/Header'
 
 function Home () {
   return (
@@ -12,6 +13,9 @@ function Home () {
             <h3 className='mb-4 text-xl font-semibold dark:text-white'>
               Tickets
             </h3>
+            <div className='mb-4'>
+              <TicketFilter />
+            </div>
             <div className='flex flex-col'>
               <div className='overflow-x-auto'>
                 <div className='inline-block min-w-full align-middle'>

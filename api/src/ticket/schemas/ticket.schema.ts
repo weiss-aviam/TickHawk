@@ -18,6 +18,12 @@ export class Ticket extends Document {
 
   @Prop({
     required: true,
+    enum: ['low', 'medium', 'high'],
+  })
+  priority: string;
+
+  @Prop({
+    required: true,
     type: Types.ObjectId,
     ref: Company.name,
   })
