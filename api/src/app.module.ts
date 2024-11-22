@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { AgentModule } from './agent/agent.module';
@@ -9,6 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TicketModule } from './ticket/ticket.module';
 import { CustomerModule } from './customer/customer.module';
 import { DepartmentModule } from './department/department.module';
+import { JwtMiddleware } from './middleware/jwt.middleware';
 
 @Module({
   imports: [
@@ -33,4 +34,8 @@ import { DepartmentModule } from './department/department.module';
   controllers: [AppController],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: import('@nestjs/common').MiddlewareConsumer) {
+    consumer.apply(JwtMiddleware).exclude('/auth/*').forRoutes('*')
+  }
+}
