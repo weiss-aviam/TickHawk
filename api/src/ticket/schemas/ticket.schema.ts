@@ -2,6 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types, now } from 'mongoose';
 import { Comment, CommentSchema } from './comment.schema';
 import { Event, EventSchema } from './event.schema';
+import { Department } from 'src/department/schemas/department.schema';
+import { User } from 'src/user/schemas/user.schema';
+import { Company } from 'src/company/schemas/company.schema';
 
 export type TicketSchema = HydratedDocument<Ticket>;
 
@@ -15,19 +18,19 @@ export class Ticket extends Document {
   @Prop({
     required: true,
     type: Types.ObjectId,
-    ref: 'company',
+    ref: Company.name,
   })
   companyId: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
-    ref: 'agent',
+    ref: User.name,
   })
   clientId: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
-    ref: 'agent',
+    ref: User.name,
   })
   technicianId: Types.ObjectId;
 
@@ -54,7 +57,7 @@ export class Ticket extends Document {
 
   @Prop({ 
     type: Types.ObjectId,
-    ref: 'Department',
+    ref: Department.name,
     required: true,
   })
   departmentId: Types.ObjectId;

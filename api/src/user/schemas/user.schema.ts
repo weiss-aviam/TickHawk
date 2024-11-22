@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types, Document } from 'mongoose';
 import { Company } from 'src/company/schemas/company.schema';
+import { Department } from 'src/department/schemas/department.schema';
 
 export type UserSchema = HydratedDocument<User>;
 
@@ -31,7 +32,7 @@ export class User extends Document {
 
   // Customer
   @Prop({
-    required: true,
+    required: false,
     type: Types.ObjectId,
     ref: Company.name,
   })
@@ -40,8 +41,8 @@ export class User extends Document {
   // Agent
   @Prop({
     type: Types.ObjectId,
-    ref: 'Department',
-    required: true,
+    ref: Department.name,
+    required: false,
   })
   departmentIds: Types.ObjectId[];
 }
