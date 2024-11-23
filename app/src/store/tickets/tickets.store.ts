@@ -3,6 +3,11 @@ import { create } from "zustand";
 
 export type TicketState = {
     tickets: Ticket[];
+    pagination: {
+        page: number;
+        limit: number;
+        total: number;
+    };
 };
 export const useTicketsStore = create<TicketState>()((set) => ({
     tickets: [
@@ -11,32 +16,35 @@ export const useTicketsStore = create<TicketState>()((set) => ({
             subject: "Ticket 1 this is a long subject and it should be truncated",
             content: "Description of ticket with id 1 and status open and a long subject",
             status: "open",
+            department: {
+                _id: "1",
+                name: "Department 1",
+            },
             priority: "low",
             createdAt: new Date(),
-        },
-        {
-            _id: "2",
-            subject: "Ticket 2",
-            content: "Description 2",
-            status: "closed",
-            priority: "high",
-            createdAt: new Date(),
-        },
-        {
-            _id: "3",
-            subject: "Ticket 3",
-            content: "Description 3",
-            status: "in-review",
-            priority: "medium",
-            createdAt: new Date(),
-        },
-        {
-            _id: "4",
-            subject: "Ticket 4 this is a long subject and it should be truncated",
-            content: "Content of ticket with id 4 and status in-progress and a long subject",
-            status: "in-progress",
-            priority: "low",
-            createdAt: new Date(),
+            updatedAt: new Date(),
+            company: {
+                _id: "1",
+                name: "Company 1",
+                email: " [email protected]",
+            },
+            customer: {
+                _id: "1",
+                name: "Customer 1",
+                email: " [email protected]",
+                role: "customer",
+            },
+            agent: {
+                _id: "1",
+                name: "Agent 1",
+                email: " [email protected]",
+                role: "agent",
+            },
         },
     ],
+    pagination: {
+        page: 1,
+        total: 200,
+        limit: 10,
+    },
 }));

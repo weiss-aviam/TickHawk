@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types, now, Document } from 'mongoose';
+import { HydratedDocument, now, Document } from 'mongoose';
 import { Comment, CommentSchema } from './comment.schema';
 import { Event, EventSchema } from './event.schema';
 import { Department } from 'src/department/schemas/department.schema';
-import { User } from 'src/user/schemas/user.schema';
-import { Company } from 'src/company/schemas/company.schema';
+import { UserTicket, UserTicketSchema } from './user-ticket.schema';
+import { CompanyTicket, CompanyTicketSchema } from './company-ticket.schema';
 
 export type TicketSchema = HydratedDocument<Ticket>;
 
@@ -24,27 +24,26 @@ export class Ticket extends Document {
 
   @Prop({
     required: true,
-    type: Types.ObjectId,
-    ref: Company.name,
+    type: CompanyTicketSchema,
   })
-  companyId: Types.ObjectId;
+  company: CompanyTicket;
 
   @Prop({
-    type: Types.ObjectId,
-    ref: User.name,
+    type: UserTicketSchema,
+    required: true,
   })
-  customerId: Types.ObjectId;
+  customer: UserTicket;
 
   @Prop({
-    type: Types.ObjectId,
-    ref: User.name,
+    type: UserTicketSchema,
+    required: false,
   })
-  agentId: Types.ObjectId;
+  agent: UserTicket;
 
   @Prop({
     required: true,
   })
-  subjet: number;
+  subjet: string;
 
   @Prop({
     required: true,
@@ -54,7 +53,7 @@ export class Ticket extends Document {
   @Prop({
     required: true,
   })
-  hours: [number];
+  minutes: [number];
 
   @Prop({ type: [CommentSchema], default: [] })
   comments: Comment[];
@@ -63,11 +62,10 @@ export class Ticket extends Document {
   events: Event[];
 
   @Prop({ 
-    type: Types.ObjectId,
-    ref: Department.name,
+    type: Department,
     required: true,
   })
-  departmentId: Types.ObjectId;
+  department: Department;
 
   @Prop({ default: now() })
   createdAt: Date;
@@ -81,14 +79,14 @@ export const TicketSchema = SchemaFactory.createForClass(Ticket);
 // Index by companyId and status
 TicketSchema.index({ companyId: 1, status: 1 });
 
-// Update hours
+// Update minutes
 TicketSchema.pre('save', function (next) {
   if (!this.isModified('comments')) {
     return next();
   }
 
-  this.hours = this.comments
-    .map((comment) => comment.hours) as [number];
+  this.minutes = this.comments
+    .map((comment) => comment.minutes) as [number];
   next();
 });
 

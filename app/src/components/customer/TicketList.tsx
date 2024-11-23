@@ -1,63 +1,18 @@
+import ProrityBadge from 'components/PriorityBadge'
+import StatusBadge from 'components/StatusBadge'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { TicketState, useTicketsStore } from 'store/tickets/tickets.store'
 
-function ProrityBadge ({ priority }: { priority: string }) {
-  let color = ''
-  let text = ''
-  switch (priority) {
-    case 'medium':
-      text = '!'
-      break
-    case 'high':
-      text = '!!'
-      break
-    default:
-      text = ''
-  }
-
-  return text ? (
-    <span className='text-red-500 text-base font-bold pr-1'>{text}</span>
-  ) : (
-    <></>
-  )
-}
-
-function StatusBadge ({ status }: { status: string }) {
-  let color = ''
-  let text = ''
-  switch (status) {
-    case 'open':
-      color = 'green'
-      text = 'Open'
-      break
-    case 'in-progress':
-      color = 'purple'
-      text = 'In progress'
-      break
-    case 'in-review':
-      color = 'orange'
-      text = 'In review'
-      break
-    case 'closed':
-      color = 'red'
-      text = 'Closed'
-      break
-    default:
-      color = 'gray'
-      text = 'Unknown'
-  }
-
-  return (
-    <span
-      className={`bg-${color}-100 text-${color}-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded-md border border-${color}-100 dark:bg-gray-700 dark:border-${color}-500 dark:text-${color}-400`}
-    >
-      {text}
-    </span>
-  )
-}
 
 function TicketList () {
   const tickets = useTicketsStore((state: TicketState) => state.tickets)
+  const pagination = useTicketsStore((state: TicketState) => state.pagination)
+  const navigate = useNavigate()
+
+  const goToTicketHandler = (_id: string) => {
+    navigate(`/ticket/${_id}`)
+  }
 
   return (
     <div>
@@ -103,6 +58,7 @@ function TicketList () {
         <tbody className='bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700'>
           {tickets.map(ticket => (
             <tr
+              onClick={() => goToTicketHandler(ticket._id)}
               key={ticket._id}
               className='hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer'
             >
@@ -114,7 +70,7 @@ function TicketList () {
                 {ticket.content.slice(0, 70)}
               </td>
               <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white hidden lg:display-revert'>
-                Departamento X
+                {ticket.department.name}
               </td>
               <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white hidden lg:display-revert'>
                 {ticket.createdAt.toLocaleDateString()}
@@ -148,10 +104,7 @@ function TicketList () {
       </table>
       <div className='sticky bottom-0 right-0 items-center w-full pt-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700'>
         <div className='flex items-center mb-0 sm:mb-0'>
-          <a
-            href='#'
-            className='inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white'
-          >
+          <span className='inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white'>
             <svg
               className='w-7 h-7'
               fill='currentColor'
@@ -164,11 +117,8 @@ function TicketList () {
                 clip-rule='evenodd'
               ></path>
             </svg>
-          </a>
-          <a
-            href='#'
-            className='inline-flex justify-center p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white'
-          >
+          </span>
+          <span className='inline-flex justify-center p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white'>
             <svg
               className='w-7 h-7'
               fill='currentColor'
@@ -181,15 +131,18 @@ function TicketList () {
                 clip-rule='evenodd'
               ></path>
             </svg>
-          </a>
+          </span>
           <span className='text-sm font-normal text-gray-500 dark:text-gray-400'>
             Showing{' '}
             <span className='font-semibold text-gray-900 dark:text-white'>
-              1-4
+              {pagination.page * pagination.limit - pagination.limit + 1}-
+              {pagination.page * pagination.limit > pagination.total
+                ? pagination.total
+                : pagination.page * pagination.limit}
             </span>{' '}
             of{' '}
             <span className='font-semibold text-gray-900 dark:text-white'>
-              4
+              {pagination.total}
             </span>
           </span>
         </div>

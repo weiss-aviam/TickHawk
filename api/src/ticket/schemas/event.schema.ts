@@ -1,15 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types, now, Document} from 'mongoose';
+import { UserTicket, UserTicketSchema } from './user-ticket.schema';
 
 export type EventSchema = HydratedDocument<Event>;
 
 @Schema()
 export class Event extends Document {
   @Prop({
-    type: Types.ObjectId,
-    ref: 'user',
+    type: UserTicketSchema,
+    required: true,
   })
-  userId: Types.ObjectId;
+  userId: UserTicket;
 
   @Prop({
     required: true,

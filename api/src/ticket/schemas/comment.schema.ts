@@ -1,15 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types, now, Document} from 'mongoose';
+import { UserTicket, UserTicketSchema } from './user-ticket.schema';
 
 export type CommentSchema = HydratedDocument<Comment>;
 
 @Schema()
 export class Comment extends Document {
   @Prop({
-    type: Types.ObjectId,
-    ref: 'user',
+    type: UserTicketSchema,
+    required: true,
   })
-  userId: Types.ObjectId;
+  user: UserTicket;
 
   @Prop({
     required: true,
@@ -17,7 +18,7 @@ export class Comment extends Document {
   content: string;
   
   @Prop()
-  hours: number;
+  minutes: number;
 
   @Prop({default: now()})
   createdAt: Date;
