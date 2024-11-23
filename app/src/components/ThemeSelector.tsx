@@ -14,21 +14,18 @@ function ThemeSelector () {
         setTheme('light')
         document.getElementsByTagName('html')[0].classList.remove('dark')
       }
-    } else if (theme == 'dark') {
+    } else if (theme === 'dark') {
       document.getElementsByTagName('html')[0].classList.add('dark')
     } else {
       document.getElementsByTagName('html')[0].classList.remove('dark')
     }
-  }, [])
+  }, [theme])
 
   const toggleTheme = () => {
-    const html = document.getElementsByTagName('html')[0]
-    if (theme == 'dark') {
-      html.classList.remove('dark')
+    if (theme === 'dark') {
       setTheme('light')
       localStorage.setItem('theme', 'light')
     } else {
-      html.classList.add('dark')
       setTheme('dark')
       localStorage.setItem('theme', 'dark')
     }

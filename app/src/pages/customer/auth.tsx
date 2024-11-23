@@ -1,5 +1,6 @@
 import React from 'react'
 import ThemeSelector from '../../components/ThemeSelector'
+import { Link } from 'react-router-dom'
 
 function Auth () {
   return (
@@ -53,12 +54,12 @@ function Auth () {
                   className='w-4 h-4 border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:focus:ring-primary-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600'
                 />
               </div>
-              <a
-                href='#'
+              <Link
+                to={'/forgot-password'}
                 className='ml-auto text-sm text-primary-700 hover:underline dark:text-primary-500'
               >
                 Lost Password?
-              </a>
+              </Link>
             </div>
             <button
               type='submit'

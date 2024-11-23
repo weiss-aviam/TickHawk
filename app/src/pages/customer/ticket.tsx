@@ -7,7 +7,7 @@ function Ticket () {
       <div className='bg-gray-50 dark:bg-gray-900 min-h-screen'>
         <div className='container px-4 pt-20 mx-auto sm:pt-24 md:pt-24 lg:px-0 dark:bg-gray-900'>
           <div className='grid gap-4 xl:grid-cols-3 2xl:grid-cols-4'>
-            <div className='p-4 bg-white border border-gray-200 rounded-lg shadow-sm xl:col-span-2 2xl:col-span-3 dark:border-gray-700 sm:p-6 dark:bg-gray-800'>
+            <div className='p-4 mb-5 bg-white border border-gray-200 rounded-lg shadow-sm xl:col-span-2 2xl:col-span-3 dark:border-gray-700 sm:p-6 dark:bg-gray-800'>
               <h3 className='mb-4 text-xl font-semibold dark:text-white'>
                 Ticket Thread
               </h3>
@@ -47,9 +47,7 @@ function Ticket () {
                   </footer>
                   <p className='mb-2 text-gray-900 dark:text-white'>
                     Hello{' '}
-                    <span
-                      className='font-medium hover:underline text-primary-600 dark:text-primary-500'
-                    >
+                    <span className='font-medium hover:underline text-primary-600 dark:text-primary-500'>
                       @designteam
                     </span>{' '}
                     Let's schedule a kick-off meeting and workshop this week. It
@@ -59,24 +57,6 @@ function Ticket () {
                   <p className='mb-3 text-gray-900 dark:text-white'>
                     Looking forward to it! Thanks.
                   </p>
-                  <span
-                    className='inline-flex items-center text-xs font-medium text-primary-700 sm:text-sm dark:text-primary-500'
-                  >
-                    4 replies
-                    <svg
-                      className='w-5 h-5 ml-1'
-                      fill='currentColor'
-                      viewBox='0 0 20 20'
-                      xmlns='http://www.w3.org/2000/svg'
-                      aria-hidden='true'
-                    >
-                      <path
-                        clip-rule='evenodd'
-                        fill-rule='evenodd'
-                        d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'
-                      ></path>
-                    </svg>
-                  </span>
                 </article>
                 <hr className='my-5 border-gray-300 dark:border-gray-600' />
                 <article className='mb-5'>
@@ -125,7 +105,7 @@ function Ticket () {
                   <p className='mb-3 text-gray-900 dark:text-white'>Cheers!</p>
                 </article>
                 <hr className='my-5 border-gray-300 dark:border-gray-600' />
-                <article className='mb-5'>
+                <article className='mb-2'>
                   <footer className='flex items-center justify-between mb-2'>
                     <div className='flex items-center'>
                       <p className='inline-flex items-center mr-3 text-sm font-semibold text-gray-900 dark:text-white'>
@@ -143,9 +123,7 @@ function Ticket () {
                   </footer>
                   <p className='mb-2 text-gray-900 dark:text-white'>
                     Ok{' '}
-                    <span
-                      className='font-medium hover:underline text-primary-600 dark:text-primary-500'
-                    >
+                    <span className='font-medium hover:underline text-primary-600 dark:text-primary-500'>
                       @team
                     </span>{' '}
                     I'am attaching our offer and pitch deck. Take your time to
@@ -279,6 +257,48 @@ function Ticket () {
                   </div>
                 </article>
               </div>
+
+              <hr className='mb-5 border-gray-300 dark:border-gray-600' />
+              <div className='w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600'>
+                <div className='px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800'>
+                  <label className='sr-only'>Write your message</label>
+                  <textarea
+                    id='comment'
+                    rows={8}
+                    className='w-full px-0 text-sm outline-none text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400'
+                    placeholder='Write your message'
+                  ></textarea>
+                </div>
+                <div className='flex items-center justify-between px-3 py-2 border-t dark:border-gray-600'>
+                  <button
+                    type='submit'
+                    className='inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800'
+                  >
+                    Send message
+                  </button>
+                  <div className='flex pl-0 space-x-1 sm:pl-2'>
+                    <button
+                      type='button'
+                      className='inline-flex justify-center p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600'
+                    >
+                      <svg
+                        aria-hidden='true'
+                        className='w-5 h-5'
+                        fill='currentColor'
+                        viewBox='0 0 20 20'
+                        xmlns='http://www.w3.org/2000/svg'
+                      >
+                        <path
+                          fill-rule='evenodd'
+                          d='M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z'
+                          clip-rule='evenodd'
+                        ></path>
+                      </svg>
+                      <span className='sr-only'>Attach file</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div>
@@ -307,6 +327,23 @@ function Ticket () {
                         </div>
                         <div className='inline-flex items-center dark:text-white'>
                           Low
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li className='py-4'>
+                    <div className='flex items-center space-x-4'>
+                      <div className='flex-1 min-w-0'>
+                        <span className='block text-base font-semibold text-gray-900 truncate dark:text-white'>
+                          Time
+                        </span>
+                      </div>
+                      <div className='inline-flex items-center'>
+                        <div className='flex-1 min-w-0'>
+                          <span className='block text-base text-gray-900 truncate dark:text-white'>
+                            1h 35m
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -393,20 +430,24 @@ function Ticket () {
                         <span className='block text-base font-semibold text-gray-900 truncate dark:text-white'>
                           Twitter account
                         </span>
-                        <span
-                          className='block text-sm font-normal truncate text-primary-700 hover:underline dark:text-primary-500'
-                        >
+                        <span className='block text-sm font-normal truncate text-primary-700 hover:underline dark:text-primary-500'>
                           www.twitter.com/themesberg
                         </span>
                       </div>
                       <div className='inline-flex items-center'>
-                        <span
-                          className='px-3 py-2 mb-3 mr-3 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-primary-300 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700'
-                        >
+                        <span className='px-3 py-2 mb-3 mr-3 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-primary-300 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700'>
                           Disconnect
                         </span>
                       </div>
                     </div>
+                  </li>
+                  <li className='pt-4 flex justify-end'>
+                    <button
+                      type='button'
+                      className='inline-flex items-end p-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg focus:ring-4 focus:ring-red-200 dark:focus:ring-red-900 hover:bg-red-700'
+                    >
+                      Close ticket
+                    </button>
                   </li>
                 </ul>
               </div>

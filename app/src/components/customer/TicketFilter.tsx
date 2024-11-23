@@ -1,8 +1,6 @@
 import React from 'react'
-import { TicketState, useTicketsStore } from 'store/tickets/tickets.store'
 
 function TicketFilter () {
-  const tickets = useTicketsStore((state: TicketState) => state.tickets)
 
   return (
     <div className='items-center justify-between block sm:flex md:divide-x md:divide-gray-100 dark:divide-gray-700'>

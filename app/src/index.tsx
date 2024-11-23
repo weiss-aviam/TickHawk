@@ -4,7 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 
 import "./index.css";
 import App from "./App";
-import TwSizeIndicator from "components/TwSizeIndicator";
 
 ReactDOM.createRoot(document.getElementById("root") as any).render(
   <React.StrictMode>

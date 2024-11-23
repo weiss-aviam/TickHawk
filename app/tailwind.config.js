@@ -35,6 +35,7 @@ module.exports = {
     },
   ],
   safelist: [
+    'hidden',
     'w-64',
     'w-1/2',
     'rounded-l-lg',
