@@ -46,20 +46,16 @@ function Header () {
               <ThemeSelector />
               <div className='flex items-center ml-3'>
                 <div>
-                  <button
-                    type='button'
+                  <Link
+                    to='/settings'
                     className='flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600'
-                    id='user-menu-button-2'
-                    aria-expanded='false'
-                    data-dropdown-toggle='dropdown-2'
                   >
-                    <span className='sr-only'>Open user menu</span>
                     <img
                       className='w-8 h-8 rounded-full'
                       src='https://flowbite.com/docs/images/people/profile-picture-5.jpg'
                       alt='user'
                     />
-                  </button>
+                  </Link>
                 </div>
               </div>
               <button

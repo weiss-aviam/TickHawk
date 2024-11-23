@@ -8,6 +8,7 @@ import HomeCustomer from './pages/customer/home'
 import CustomerLayout from 'components/customer/Layout'
 import CustomerTicket from 'pages/customer/ticket'
 import CustomerReports from 'pages/customer/reports'
+import CustomerSettings from 'pages/customer/settings'
 // Agent
 import Layout from 'pages/layout'
 
@@ -18,6 +19,7 @@ function App () {
         <Route path='' element={<HomeCustomer />} />
         <Route path='ticket/:id' element={<CustomerTicket />} />
         <Route path='reports' element={<CustomerReports />} />
+        <Route path='settings' element={<CustomerSettings />} />
         <Route path='*' element={<NoMatch />} />
       </Route>
       <Route path='/agent' element={<Layout />}>
