@@ -2,24 +2,39 @@ import { Injectable } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
+import { ProfileDto } from './dtos/profile.dto';
+import { plainToInstance } from 'class-transformer';
+import { AssignDepartmentDto } from './dtos/assign-department.dto';
 
 @Injectable()
 export class UserService {
-    constructor(
-        @InjectModel(User.name) private readonly userModel: Model<User>
-    ) {}
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<User>,
+  ) {}
 
+  /**
+   * Find a user by username
+   * @param email
+   * @returns
+   */
+  async findOne(email: string): Promise<User> {
+    return await this.userModel.findOne({ email: email });
+  }
 
-    /**
-     * Find a user by username
-     * @param email 
-     * @returns 
-     */
-    async findOne(email: string): Promise<User> {
-        return await this.userModel.findOne({ email: email });
-    }
+  async findById(id: Types.ObjectId): Promise<ProfileDto> {
+    const user = await this.userModel.findById(id);
+    return plainToInstance(ProfileDto, user, {
+      excludeExtraneousValues: true,
+    });
+  }
 
-    async findById(id: Types.ObjectId): Promise<User> {
-        return await this.userModel.findById(id);
-    }
+  async assignDepartment(
+    assignDepartmentDto: AssignDepartmentDto,
+  ): Promise<boolean> {
+    const update = await this.userModel.updateOne(
+      { _id: assignDepartmentDto.userId },
+      { $push: { departments: assignDepartmentDto.departmentId } },
+    );
+    return update.modifiedCount > 0;
+  }
 }
