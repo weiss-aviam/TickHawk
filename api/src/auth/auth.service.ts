@@ -11,6 +11,8 @@ import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 import { SignInDto } from './dtos/sign-in.dto';
 import { SignInTokenDto } from './dtos/sign-in-token.dto';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +20,8 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     @InjectModel(Token.name) private tokenModel: Model<Token>,
+    private readonly mailerService: MailerService,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -27,9 +31,7 @@ export class AuthService {
    * @returns
    * @throws UnauthorizedException
    */
-  async signIn(
-    customerAuth: SignInDto,
-  ): Promise<SignInTokenDto> {
+  async signIn(customerAuth: SignInDto): Promise<SignInTokenDto> {
     const pass = customerAuth.password;
     const email = customerAuth.email;
 
@@ -100,14 +102,14 @@ export class AuthService {
     });
 
     if (!token || token.blocked || token.expiration < new Date()) {
-      throw new UnauthorizedException("INVALID_TOKEN");
+      throw new UnauthorizedException('INVALID_TOKEN');
     }
 
     //Extract the user ID from the token
     const refreshPayload = await this.jwtService.verifyAsync(refreshToken);
 
     if (!refreshPayload) {
-      throw new UnauthorizedException("INVALID_TOKEN");
+      throw new UnauthorizedException('INVALID_TOKEN');
     }
 
     const payload = { sub: refreshPayload.sub, refreshToken: refreshToken };
@@ -121,7 +123,7 @@ export class AuthService {
 
   /**
    * Send an email to the user with a link to reset the password
-   * @param email 
+   * @param email
    */
   async forgotPassword(email: string): Promise<void> {
     const user = await this.userService.findOne(email);
@@ -130,6 +132,23 @@ export class AuthService {
       throw new UnauthorizedException('USER_NOT_FOUND');
     }
 
+    // Generate a JWT token
+    const token = await this.jwtService.signAsync(
+      { sub: user._id, id: user._id },
+      { expiresIn: '15m' },
+    );
+
+    try {
+      await this.mailerService.sendMail({
+        to: user.email,
+        from: this.configService.get<string>('email.auth.user'),
+        subject: 'Testing Nest MailerModule ✔', // Subject line
+        text: 'welcome', // plaintext body
+        html: '<b>welcome</b>', // HTML body content
+      });
+    } catch (e) {
+      throw new UnauthorizedException('USER_NOT_FOUND');
+    }
     // Send an email to the user with a link to reset the password
   }
 }
