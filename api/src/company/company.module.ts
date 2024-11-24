@@ -4,6 +4,7 @@ import { CompanyService } from './company.service';
 import { Company, CompanySchema } from './schemas/company.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { APP_PIPE } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   controllers: [CompanyController],
@@ -13,6 +14,7 @@ import { APP_PIPE } from '@nestjs/core';
       provide: APP_PIPE,
       useClass: ValidationPipe,
     },
+    JwtService
   ],
   imports: [
     MongooseModule.forFeature([{ name: Company.name, schema: CompanySchema }]),

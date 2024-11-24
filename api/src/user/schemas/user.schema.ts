@@ -23,6 +23,12 @@ export class User extends Document {
   password: string;
 
   @Prop({
+    required: true,
+    default: 'en',
+  })
+  lang: string;
+
+  @Prop({
     type: String,
     required: true,
     enum: ['admin', 'agent', 'customer'],

@@ -45,11 +45,12 @@ export class AuthService {
 
     // Create a JWT refresh token
     const refreshToken = await this.jwtService.signAsync(
-      { sub: user._id },
+      { sub: user._id, id: user._id },
       { expiresIn: '1d' },
     );
     const payload = {
       sub: user._id,
+      id: user._id,
       email: user.email,
       role: user.role,
       departmentIds: user.departmentIds,
