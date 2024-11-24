@@ -10,6 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 import { SignInDto } from './dtos/sign-in.dto';
+import { SignInTokenDto } from './dtos/sign-in-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -28,7 +29,7 @@ export class AuthService {
    */
   async signIn(
     customerAuth: SignInDto,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  ): Promise<SignInTokenDto> {
     const pass = customerAuth.password;
     const email = customerAuth.email;
 
@@ -92,7 +93,7 @@ export class AuthService {
   async refresh(
     accessToken: string,
     refreshToken: string,
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  ): Promise<SignInTokenDto> {
     const token = await this.tokenModel.findOne({
       access_token: accessToken,
       refresh_token: refreshToken,
@@ -113,8 +114,22 @@ export class AuthService {
     const sign = await this.jwtService.signAsync(payload);
 
     return {
-      access_token: sign,
-      refresh_token: refreshToken,
+      accessToken: sign,
+      refreshToken: refreshToken,
     };
+  }
+
+  /**
+   * Send an email to the user with a link to reset the password
+   * @param email 
+   */
+  async forgotPassword(email: string): Promise<void> {
+    const user = await this.userService.findOne(email);
+
+    if (!user) {
+      throw new UnauthorizedException('USER_NOT_FOUND');
+    }
+
+    // Send an email to the user with a link to reset the password
   }
 }
