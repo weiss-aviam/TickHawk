@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { JWTGuard } from 'src/config/guard/jwt/jwt.guard';
 import { Roles } from 'src/config/guard/roles/roles.decorator';
 import { RolesGuard } from 'src/config/guard/roles/roles.guard';
@@ -20,11 +28,10 @@ export class UserController {
     return await this.userService.findById(id);
   }
 
-  
   @Post('/assign-department')
   @Roles(['admin'])
   async assign(@Body() assignDepartmentDto: AssignDepartmentDto) {
-      await this.userService.assignDepartment(assignDepartmentDto);
-      return HttpStatus.CREATED;
+    await this.userService.assignDepartment(assignDepartmentDto);
+    return HttpStatus.CREATED;
   }
 }

@@ -4,6 +4,8 @@ import { DepartmentController } from './department.controller';
 import { APP_PIPE } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Department, DepartmentSchema } from './schemas/department.schema';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   providers: [
@@ -15,6 +17,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   ],
   controllers: [DepartmentController],
   imports: [
+    MongooseModule.forFeature([{ name: Department.name, schema: DepartmentSchema }]),
     ConfigModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
