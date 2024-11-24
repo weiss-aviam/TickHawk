@@ -10,7 +10,6 @@ import { Roles } from 'src/config/guard/roles/roles.decorator';
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
-
   @Post()
   @Roles(['admin'])
   async createCompany(@Body() createCompanyDto: CreateCompanyDto) {
