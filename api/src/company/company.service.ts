@@ -11,4 +11,8 @@ export class CompanyService {
         const company = new this.companyModel(createCompanyDto);
         return company.save();
     }
+
+    async getCompanies() {
+        return this.companyModel.find();
+    }
 }
