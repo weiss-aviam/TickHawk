@@ -10,7 +10,9 @@ import { File } from './schemas/file.schema';
 export class FileService {
   private readonly uploadPath = join(__dirname, '..', '..', '..', 'uploads');
 
-  constructor(@InjectModel(File.name) private readonly fileModel: Model<File>) {}
+  constructor(
+    @InjectModel(File.name) private readonly fileModel: Model<File>,
+  ) {}
 
   /**
    * Save a file to the file system and database
@@ -39,5 +41,13 @@ export class FileService {
     });
 
     return objectId.toString();
+  }
+
+  async getFile(id: string): Promise<Buffer> {
+    const file = await this.fileModel.findById(id);
+    if (!file) {
+        throw new Error('File not found');
+    }
+    return await fs.readFile(join(file.path, file._id.toString()));
   }
 }
