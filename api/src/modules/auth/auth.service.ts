@@ -8,11 +8,11 @@ import { Token } from './schemas/token.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
-import { UserService } from 'src/user/user.service';
 import { SignInDto } from './dtos/sign-in.dto';
 import { SignInTokenDto } from './dtos/sign-in-token.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {

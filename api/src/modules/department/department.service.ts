@@ -4,10 +4,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateDepartmentDto } from './dtos/create-department.dto';
 import { DepartmentDto } from './dtos/department.dto';
 import { plainToInstance } from 'class-transformer';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class DepartmentService {
-  constructor(@InjectModel(Department.name) private readonly departmentModel) {}
+  constructor(@InjectModel(Department.name) private readonly departmentModel: Model<Department>) {}
 
   async create(
     createDepartmentDto: CreateDepartmentDto,

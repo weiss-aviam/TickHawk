@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { join } from 'path';
 import { promises as fs } from 'fs';
 import { File as FileMulter } from 'multer';
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { File } from './schemas/file.schema';
 
@@ -10,7 +10,7 @@ import { File } from './schemas/file.schema';
 export class FileService {
   private readonly uploadPath = join(__dirname, '..', '..', '..', 'uploads');
 
-  constructor(@InjectModel(File.name) private readonly fileModel) {}
+  constructor(@InjectModel(File.name) private readonly fileModel: Model<File>) {}
 
   /**
    * Save a file to the file system and database
