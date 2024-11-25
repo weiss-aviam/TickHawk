@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, now, Document } from 'mongoose';
 import { Comment, CommentSchema } from './comment.schema';
 import { Event, EventSchema } from './event.schema';
-import { Department } from 'src/department/schemas/department.schema';
+import { Department } from 'src/modules/department/schemas/department.schema';
 import { UserTicket, UserTicketSchema } from './user-ticket.schema';
 import { CompanyTicket, CompanyTicketSchema } from './company-ticket.schema';
 

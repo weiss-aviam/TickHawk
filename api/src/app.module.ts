@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AuthModule } from './auth/auth.module';
-import { CompanyModule } from './company/company.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { CompanyModule } from './modules/company/company.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TicketModule } from './ticket/ticket.module';
-import { DepartmentModule } from './department/department.module';
+import { TicketModule } from './modules/ticket/ticket.module';
+import { DepartmentModule } from './modules/department/department.module';
 import { UserModule } from './user/user.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { FileModule } from './modules/file/file.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     TicketModule,
     UserModule,
     DepartmentModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [JwtService],
