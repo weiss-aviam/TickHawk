@@ -43,9 +43,27 @@ export class FileService {
     return objectId.toString();
   }
 
+  /**
+   * Get a file from the file system
+   * @param id The id of the file
+   * @returns 
+   */
   async getFile(id: string): Promise<Buffer> {
     const file = await this.fileModel.findById(id);
     if (!file) {
+        throw new Error('File not found');
+    }
+    return await fs.readFile(join(file.path, file._id.toString()));
+  }
+
+  /**
+   * Get a public file from the file system
+   * @param id The id of the file
+   * @returns 
+   */
+  async getPublicFile(id: string): Promise<Buffer> {
+    const file = await this.fileModel.findById(id);
+    if (!file || !file.path.startsWith(join(this.uploadPath, 'public'))) {
         throw new Error('File not found');
     }
     return await fs.readFile(join(file.path, file._id.toString()));
