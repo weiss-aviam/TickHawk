@@ -1,12 +1,21 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { MailerModule } from '@nestjs-modules/mailer';
 import config from './config';
+import { APP_GUARD } from '@nestjs/core';
+import { JWTGuard } from './guard/jwt/jwt.guard';
 
 @Global()
 @Module({
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JWTGuard,
+    },
+    
+  ],
   imports: [
     ConfigModule.forRoot({
       load: [config],
@@ -42,7 +51,6 @@ import config from './config';
       }),
     }),
   ],
-  providers: [JwtService],
   exports: [JwtModule, MongooseModule, MailerModule],
 })
 export class ShareModule {}

@@ -14,10 +14,12 @@ import { JwtService } from '@nestjs/jwt';
       provide: APP_PIPE,
       useClass: ValidationPipe,
     },
-    JwtService
+    JwtService,
   ],
   imports: [
-    MongooseModule.forFeature([{ name: Company.name, schema: CompanySchema }]),
+    MongooseModule.forFeature([
+      { name: Company.name, schema: CompanySchema },
+    ]),
   ],
 })
 export class CompanyModule {}

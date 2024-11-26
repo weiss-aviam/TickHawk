@@ -2,17 +2,22 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateCompanyDto } from './dtos/create-company.dto';
 import { Company } from './schemas/company.schema';
-import { Model, Types } from 'mongoose';
-import { plainToInstance } from 'class-transformer';
+import mongoose, { Model, Types } from 'mongoose';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import { CompanyDto } from './dtos/company.dto';
 import { AddContractDto } from './dtos/add-contract.dto';
-import { Contract } from './schemas/contract.schema';
+import { Contract, ContractSchema } from './schemas/contract.schema';
+import { CompaniesDto } from './dtos/companies.dto';
 
 @Injectable()
 export class CompanyService {
+  private readonly contractModel: Model<any>;
+
   constructor(
     @InjectModel(Company.name) private readonly companyModel: Model<Company>,
-  ) {}
+  ) {
+    this.contractModel = mongoose.model(Contract.name, ContractSchema);
+  }
 
   /**
    * Create a company
@@ -22,7 +27,7 @@ export class CompanyService {
   async createCompany(createCompanyDto: CreateCompanyDto): Promise<CompanyDto> {
     const company = new this.companyModel(createCompanyDto);
     const savedCompany = await company.save();
-    return plainToInstance(CompanyDto, savedCompany, {
+    return plainToInstance(CompanyDto, savedCompany.toJSON(), {
       excludeExtraneousValues: true,
     });
   }
@@ -31,11 +36,15 @@ export class CompanyService {
    * Get all companies
    * @returns
    */
-  async getCompanies(): Promise<CompanyDto[]> {
+  async getCompanies(): Promise<CompaniesDto[]> {
     const companies = await this.companyModel.find();
-    return plainToInstance(CompanyDto, companies, {
-      excludeExtraneousValues: true,
-    });
+    return plainToInstance(
+      CompaniesDto,
+      companies.map((c) => c.toJSON()),
+      {
+        excludeExtraneousValues: true,
+      },
+    );
   }
 
   /**
@@ -58,18 +67,24 @@ export class CompanyService {
    * @returns
    * @throws HttpException if the company is not found
    */
-  async addContract(addContractDto: AddContractDto): Promise<CompanyDto> {
-    const company = await this.companyModel.findById(addContractDto.companyId);
+  async addContract(
+    id: string,
+    addContractDto: AddContractDto,
+  ): Promise<CompanyDto> {
+    const company = await this.companyModel.findById(id);
     if (!company) {
       throw new HttpException('COMPANY_NOT_FOUND', HttpStatus.NOT_FOUND);
     }
+    const plain = instanceToPlain(addContractDto);
+    const contract = plainToInstance(this.contractModel, plain);
 
-    const contract = plainToInstance(Contract, addContractDto);
     contract._id = new Types.ObjectId();
     company.contracts.push(contract);
+    console.log(company);
 
     const savedCompany = await company.save();
-    return plainToInstance(CompanyDto, savedCompany, {
+    console.log(savedCompany);
+    return plainToInstance(CompanyDto, savedCompany.toJSON(), {
       excludeExtraneousValues: true,
     });
   }
@@ -91,7 +106,7 @@ export class CompanyService {
     );
 
     const savedCompany = await company.save();
-    return plainToInstance(CompanyDto, savedCompany, {
+    return plainToInstance(CompanyDto, savedCompany.toJSON(), {
       excludeExtraneousValues: true,
     });
   }

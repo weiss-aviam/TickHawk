@@ -13,7 +13,7 @@ import { SignInTokenDto } from './dtos/sign-in-token.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from '../user/user.service';
-import ms from 'ms';
+import { toMs } from 'ms-typescript';
 
 
 @Injectable()
@@ -77,7 +77,7 @@ export class AuthService {
         accessToken: accessToken,
         refreshToken: refreshToken,
         blocked: false,
-        expiration: new Date(Date.now() + ms(refreshTokenExpiration)),
+        expiration: new Date(Date.now() + toMs(refreshTokenExpiration)),
       });
       await createdToken.save();
       return {
@@ -85,6 +85,7 @@ export class AuthService {
         refreshToken: refreshToken,
       };
     } catch (e) {
+      console.log(e)
       await session.abortTransaction();
       session.endSession();
       throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);

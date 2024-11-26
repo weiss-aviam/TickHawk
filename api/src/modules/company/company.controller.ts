@@ -29,10 +29,10 @@ export class CompanyController {
     return await this.companyService.deleteCompany(id);
   }
 
-  @Post('contract')
+  @Post('contract/:id')
   @Roles(['admin'])
-  async addContract(@Body() addContractDto: AddContractDto) {
-    return await this.companyService.addContract(addContractDto);
+  async addContract(@Param('id') id: string, @Body() addContractDto: AddContractDto) {
+    return await this.companyService.addContract(id, addContractDto);
   }
 
   @Delete('contract/:id')

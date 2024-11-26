@@ -1,10 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class AddContractDto {
-  @IsNotEmpty()
-  @IsString()
-  companyId: string;
-  
+export class AddContractDto {  
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -14,7 +10,6 @@ export class AddContractDto {
   @IsNotEmpty()
   type: string;
 
-  @IsNotEmpty()
   startDate: Date;
 
   endDate: Date;

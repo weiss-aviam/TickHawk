@@ -28,7 +28,7 @@ export class UserService {
    */
   async findById(id: Types.ObjectId): Promise<ProfileDto> {
     const user = await this.userModel.findById(id);
-    return plainToInstance(ProfileDto, user, {
+    return plainToInstance(ProfileDto, user.toJSON(), {
       excludeExtraneousValues: true,
     });
   }
