@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dtos/create-company.dto';
 import { JWTGuard } from 'src/config/guard/jwt/jwt.guard';
 import { RolesGuard } from 'src/config/guard/roles/roles.guard';
 import { Roles } from 'src/config/guard/roles/roles.decorator';
+import { AddContractDto } from './dtos/add-contract.dto';
 
 @Controller('company')
 @UseGuards(JWTGuard, RolesGuard)
@@ -13,12 +14,30 @@ export class CompanyController {
   @Post()
   @Roles(['admin'])
   async createCompany(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companyService.createCompany(createCompanyDto);
+    return await this.companyService.createCompany(createCompanyDto);
   }
 
   @Get()
-  @Roles(['admin', 'agent'])
+  @Roles(['admin'])
   async getCompanies() {
-    return this.companyService.getCompanies();
+    return await this.companyService.getCompanies();
+  }
+
+  @Delete(':id')
+  @Roles(['admin'])
+  async deleteCompany(@Param('id') id: string) {
+    return await this.companyService.deleteCompany(id);
+  }
+
+  @Post('contract')
+  @Roles(['admin'])
+  async addContract(@Body() addContractDto: AddContractDto) {
+    return await this.companyService.addContract(addContractDto);
+  }
+
+  @Delete('contract/:id')
+  @Roles(['admin'])
+  async removeContract(@Param('id') id: string) {
+    return await this.companyService.removeContract(id);
   }
 }
