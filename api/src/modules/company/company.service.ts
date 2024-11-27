@@ -11,7 +11,7 @@ import { CompaniesDto } from './dtos/companies.dto';
 
 @Injectable()
 export class CompanyService {
-  private readonly contractModel: Model<any>;
+  private readonly contractModel: Model<Contract>;
 
   constructor(
     @InjectModel(Company.name) private readonly companyModel: Model<Company>,
@@ -107,6 +107,21 @@ export class CompanyService {
 
     const savedCompany = await company.save();
     return plainToInstance(CompanyDto, savedCompany.toJSON(), {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  /**
+   * Get a company by id
+   * @param id The company id
+   * @returns The company
+   */
+  async getById(id: string): Promise<CompanyDto> {
+    const company = await this.companyModel.findById(id);
+    if (!company) {
+      throw new HttpException('COMPANY_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+    return plainToInstance(CompanyDto, company.toJSON(), {
       excludeExtraneousValues: true,
     });
   }

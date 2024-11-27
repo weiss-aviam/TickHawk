@@ -8,13 +8,23 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class DepartmentService {
-  constructor(@InjectModel(Department.name) private readonly departmentModel: Model<Department>) {}
+  constructor(
+    @InjectModel(Department.name)
+    private readonly departmentModel: Model<Department>,
+  ) {}
 
   async create(
     createDepartmentDto: CreateDepartmentDto,
   ): Promise<DepartmentDto> {
     const createdDepartment = new this.departmentModel(createDepartmentDto);
     const dept = createdDepartment.save();
+    return plainToInstance(DepartmentDto, dept, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async getById(id: string): Promise<DepartmentDto> {
+    const dept = await this.departmentModel.findById(id);
     return plainToInstance(DepartmentDto, dept, {
       excludeExtraneousValues: true,
     });

@@ -28,6 +28,9 @@ export class UserService {
    */
   async findById(id: Types.ObjectId): Promise<ProfileDto> {
     const user = await this.userModel.findById(id);
+    if (!user) {
+      throw new Error('USER_NOT_FOUND');
+    }
     return plainToInstance(ProfileDto, user.toJSON(), {
       excludeExtraneousValues: true,
     });

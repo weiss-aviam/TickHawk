@@ -1,4 +1,4 @@
-import { Module, ValidationPipe } from '@nestjs/common';
+import { Global, Module, ValidationPipe } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { DepartmentController } from './department.controller';
 import { APP_PIPE } from '@nestjs/core';
@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Department, DepartmentSchema } from './schemas/department.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
+@Global()
 @Module({
   providers: [
     DepartmentService,
@@ -28,5 +29,6 @@ import { MongooseModule } from '@nestjs/mongoose';
       }),
     }),
   ],
+  exports: [DepartmentService],
 })
 export class DepartmentModule {}
