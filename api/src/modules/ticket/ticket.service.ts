@@ -96,7 +96,7 @@ export class TicketService {
 
     const newTicket = await ticket.save();
 
-    return this.getAgentTicketById(auth, newTicket._id.toString());
+    return this.getTicketById(auth, newTicket._id.toString());
   }
 
   /**
@@ -105,7 +105,7 @@ export class TicketService {
    * @param id The ticket id
    * @returns TicketDto
    */
-  async getAgentTicketById(auth: AuthDto, id: string): Promise<TicketDto> {
+  async getTicketById(auth: AuthDto, id: string): Promise<TicketDto> {
     const ticket = await this.ticketModel.findOne({
       _id: new Types.ObjectId(id),
       'agent._id': new Types.ObjectId(auth.id),
@@ -118,6 +118,31 @@ export class TicketService {
     return plainToInstance(TicketDto, ticket.toJSON(), {
       excludeExtraneousValues: true,
     });
+  }
+
+  /**
+   * Get all tickets for an agent order by date created descending
+   * @param auth
+   * @param page
+   */
+  async getTickets(auth: AuthDto, page: number): Promise<TicketDto[]> {
+    const limit = 15;
+    const tickets = await this.ticketModel
+      .find({
+        'agent._id': new Types.ObjectId(auth.id),
+      })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .exec();
+
+    return plainToInstance(
+      TicketDto,
+      tickets.map((ticket) => ticket.toJSON()),
+      {
+        excludeExtraneousValues: true,
+      },
+    );
   }
 
   /**
@@ -147,7 +172,7 @@ export class TicketService {
    * @param id
    * @param page
    */
-  async getCustomerTickets(auth: AuthDto, page: string): Promise<TicketDto[]> {
+  async getCustomerTickets(auth: AuthDto, page: number): Promise<TicketDto[]> {
     const limit = 15;
     const tickets = await this.ticketModel
       .find({
@@ -155,7 +180,7 @@ export class TicketService {
       })
       .sort({ createdAt: -1 })
       .limit(limit)
-      .skip((parseInt(page) - 1) * limit)
+      .skip((page - 1) * limit)
       .exec();
 
     return plainToInstance(
