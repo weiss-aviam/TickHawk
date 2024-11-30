@@ -2,7 +2,7 @@ import React from 'react'
 import './App.css'
 import { Route, Routes } from 'react-router-dom'
 import NoMatch from './pages/no-match'
-import AuthCustomer from './pages/customer/auth'
+import Auth from './pages/auth'
 // Customer
 import HomeCustomer from './pages/customer/home'
 import CustomerLayout from 'components/customer/Layout'
@@ -28,7 +28,7 @@ function App () {
           <Route path='*' element={<NoMatch />} />
         </Route>
       </Route>
-      <Route path='/auth' element={<AuthCustomer />} />
+      <Route path='/auth' element={<Auth />} />
       <Route path='*' element={<NoMatch />} />
     </Routes>
   )
