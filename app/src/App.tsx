@@ -13,26 +13,29 @@ import CustomerSettings from 'pages/customer/settings'
 // Agent
 import Layout from 'pages/layout'
 import ProtectedRoute from 'components/ProtectedRoute'
+import AuthProvider from 'components/AuthProvider'
 
 function App () {
   return (
-    <Routes>
-      <Route path='' element={<ProtectedRoute />}>
-        <Route path='/' element={<CustomerLayout />}>
-          <Route path='' element={<HomeCustomer />} />
-          <Route path='ticket/:id' element={<CustomerTicket />} />
-          <Route path='reports' element={<CustomerReports />} />
-          <Route path='settings' element={<CustomerSettings />} />
-          <Route path='*' element={<NoMatch />} />
+    <AuthProvider>
+      <Routes>
+        <Route path='' element={<ProtectedRoute />}>
+          <Route path='/' element={<CustomerLayout />}>
+            <Route path='' element={<HomeCustomer />} />
+            <Route path='ticket/:id' element={<CustomerTicket />} />
+            <Route path='reports' element={<CustomerReports />} />
+            <Route path='settings' element={<CustomerSettings />} />
+            <Route path='*' element={<NoMatch />} />
+          </Route>
+          <Route path='/backoffice' element={<Layout />}>
+            <Route path='*' element={<NoMatch />} />
+          </Route>
         </Route>
-        <Route path='/agent' element={<Layout />}>
-          <Route path='*' element={<NoMatch />} />
-        </Route>
-      </Route>
-      <Route path='/auth' element={<Auth />} />
-      <Route path='/auth/forgot-password' element={<AuthForgotPassword />} />
-      <Route path='*' element={<NoMatch />} />
-    </Routes>
+        <Route path='/auth' element={<Auth />} />
+        <Route path='/auth/forgot-password' element={<AuthForgotPassword />} />
+        <Route path='*' element={<NoMatch />} />
+      </Routes>
+    </AuthProvider>
   )
 }
 

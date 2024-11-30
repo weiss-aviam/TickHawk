@@ -67,4 +67,9 @@ export class AuthController {
     await this.authService.forgotPassword(email);
     return HttpStatus.OK;
   }
+
+  @Post('/refresh-token')
+  async refreshToken(@Body() refreshToken: string) {
+    return "123123123"
+  }
 }

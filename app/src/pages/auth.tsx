@@ -1,14 +1,19 @@
 import React from 'react'
 import ThemeSelector from '../components/ThemeSelector'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from 'components/AuthProvider'
+import { jwtDecode } from 'jwt-decode'
 
 function Auth () {
+  const auth = useAuth()
+  const navigate = useNavigate()
+  
   const [errors, setErrors] = React.useState({
     email: '',
     password: ''
   })
 
-  const loginHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const loginHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const email = e.currentTarget.email.value
     const password = e.currentTarget.password.value
@@ -27,6 +32,24 @@ function Auth () {
     } else {
       setErrors(prev => ({ ...prev, password: '' }))
     }
+    
+    auth.axiosClient.post('/auth/sign-in', { email, password }).then((response: any) => {
+      if (response.status === 201) {
+        localStorage.setItem('refreshToken', response.data.refreshToken)
+        auth.setToken(response.data.accessToken)
+        const decode = jwtDecode(response.data.accessToken) as any;
+        if (decode.role === 'admin' || decode.role === 'agent') {
+          navigate('/backoffice')
+        } else if(decode.role === 'customer'){
+          navigate('/')
+        }
+      }else{
+        console.log(response)
+      }
+    })
+    .catch((error: any) => {
+      console.log(error)
+    })
   }
 
   return (
@@ -99,7 +122,7 @@ function Auth () {
                 type='submit'
                 className='w-full px-5 py-3 text-base font-medium text-center text-white bg-primary-700 rounded-lg hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 sm:w-auto dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'
               >
-                Login
+                Log in
               </button>
             </div>
           </form>
