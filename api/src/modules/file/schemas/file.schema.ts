@@ -18,7 +18,7 @@ export class File extends Document {
   @Prop({
     required: true,
   })
-  type: string;
+  path: string;
 
   @Prop({
     required: true,

@@ -11,8 +11,10 @@ import { AuthService } from './auth.service';
 import { SignInDto } from './dtos/sign-in.dto';
 import { Request } from 'express';
 import { SignInTokenDto } from './dtos/sign-in-token.dto';
+import { Public } from 'src/config/public.decorator';
 
 @Controller('auth')
+@Public()
 export class AuthController {
   constructor(private authService: AuthService) {}
 

@@ -10,7 +10,7 @@
 
 ### 🏢 **Multi-Tenant Architecture**
 - Manage multiple companies with ease.
-- Assign **clients**, **admins**, and **technicians** with clear roles and permissions.
+- Assign **clients**, **admins**, and **agents** with clear roles and permissions.
 
 ### ⏳ **Flexible Hour Tracking**
 - **Monthly Plans**: Automatically renew allocated hours.
@@ -19,7 +19,6 @@
 
 ### 🗂️ **Comprehensive Ticket Management**
 - **Statuses**: Pending, Open, In Progress, Closed.
-- **Subtasks**: Built-in TODO lists for detailed task tracking.
 - **Work Logs**: Step-by-step tracking of hours spent solving the ticket.
 - **History**: Maintain a log of assignments, state changes, pauses, and more.
 - **Email Integration**: 
@@ -28,12 +27,11 @@
 
 ### 👥 **Role-Based Access**
 - **Client Users**: Create and monitor their tickets.
-- **Technicians**: Resolve tickets with precision and transparency.
+- **agents**: Resolve tickets with precision and transparency.
 - **Admins**: Oversee all activities and manage roles seamlessly.
 
 ### 🧾 **Invoice Management**
 - Generate and store **PDF invoices** linked to purchased hours.
-- Centralized and easy-to-access billing records.
 
 ---
 

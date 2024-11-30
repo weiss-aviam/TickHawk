@@ -61,4 +61,7 @@ UserSchema.index({ email: 1 }, { unique: true });
 UserSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  }
 });

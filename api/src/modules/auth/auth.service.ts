@@ -8,11 +8,13 @@ import { Token } from './schemas/token.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
-import { UserService } from 'src/user/user.service';
 import { SignInDto } from './dtos/sign-in.dto';
 import { SignInTokenDto } from './dtos/sign-in-token.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { UserService } from '../user/user.service';
+import { toMs } from 'ms-typescript';
+
 
 @Injectable()
 export class AuthService {
@@ -34,47 +36,62 @@ export class AuthService {
   async signIn(customerAuth: SignInDto): Promise<SignInTokenDto> {
     const pass = customerAuth.password;
     const email = customerAuth.email;
+    const session = await this.tokenModel.db.startSession();
+    session.startTransaction();
 
-    const user = await this.userService.findOne(email);
+    try {
+      const user = await this.userService.findOne(email);
 
-    if (!user) {
+      if (!user) {
+        throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);
+      }
+
+      const isMatch = await bcrypt.compare(pass, user.password);
+      if (!isMatch) {
+        throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);
+      }
+
+      // Create a JWT refresh token
+      const refreshToken = await this.jwtService.signAsync(
+        { sub: user._id, id: user._id },
+        { expiresIn: '1d' },
+      );
+
+      const payload = {
+        sub: user._id,
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        departmentIds: user.departmentIds,
+        companyId: user.companyId,
+      };
+      const accessToken = await this.jwtService.signAsync(payload);
+
+      const refreshTokenExpiration = this.configService.get<string>(
+        'jwt.refreshTokenExpiration',
+      );
+
+      // Save the refresh token to the database
+      const createdToken = new this.tokenModel({
+        userId: user._id,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        blocked: false,
+        expiration: new Date(Date.now() + toMs(refreshTokenExpiration)),
+      });
+      await createdToken.save();
+      return {
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      };
+    } catch (e) {
+      console.log(e)
+      await session.abortTransaction();
+      session.endSession();
       throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);
+    } finally {
+      session.endSession();
     }
-
-    const isMatch = await bcrypt.compare(pass, user.password);
-    if (!isMatch) {
-      throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);
-    }
-
-    // Create a JWT refresh token
-    const refreshToken = await this.jwtService.signAsync(
-      { sub: user._id, id: user._id },
-      { expiresIn: '1d' },
-    );
-    const payload = {
-      sub: user._id,
-      id: user._id,
-      email: user.email,
-      role: user.role,
-      departmentIds: user.departmentIds,
-      companyId: user.companyId,
-    };
-    const accessToken = await this.jwtService.signAsync(payload);
-
-    // Save the refresh token to the database
-    const createdCat = new this.tokenModel({
-      userId: user._id,
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      blocked: false,
-      expiration: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
-    });
-    await createdCat.save();
-
-    return {
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-    };
   }
 
   /**
@@ -138,17 +155,20 @@ export class AuthService {
       { expiresIn: '15m' },
     );
 
+    const url = `${this.configService.get<string>(
+      'baseUrl',
+    )}/auth/reset-password?token=${token}`;
+
     try {
       await this.mailerService.sendMail({
         to: user.email,
         from: this.configService.get<string>('email.auth.user'),
-        subject: 'Testing Nest MailerModule ✔', // Subject line
-        text: 'welcome', // plaintext body
-        html: '<b>welcome</b>', // HTML body content
+        subject: 'Reset Password',
+        text: `Click on the link to reset your password: ${url}`,
+        html: `<a href="${url}">Click here to reset your password</a>`,
       });
     } catch (e) {
       throw new UnauthorizedException('USER_NOT_FOUND');
     }
-    // Send an email to the user with a link to reset the password
   }
 }

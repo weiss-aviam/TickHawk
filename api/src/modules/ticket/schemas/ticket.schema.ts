@@ -2,9 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, now, Document } from 'mongoose';
 import { Comment, CommentSchema } from './comment.schema';
 import { Event, EventSchema } from './event.schema';
-import { Department } from 'src/modules/department/schemas/department.schema';
 import { UserTicket, UserTicketSchema } from './user-ticket.schema';
 import { CompanyTicket, CompanyTicketSchema } from './company-ticket.schema';
+import { DepartmentTicket } from './department-ticket.schema';
 
 export type TicketSchema = HydratedDocument<Ticket>;
 
@@ -43,7 +43,7 @@ export class Ticket extends Document {
   @Prop({
     required: true,
   })
-  subjet: string;
+  subject: string;
 
   @Prop({
     required: true,
@@ -51,7 +51,7 @@ export class Ticket extends Document {
   content: string;
 
   @Prop({
-    required: true,
+    required: false,
   })
   minutes: [number];
 
@@ -62,10 +62,10 @@ export class Ticket extends Document {
   events: Event[];
 
   @Prop({ 
-    type: Department,
+    type: DepartmentTicket,
     required: true,
   })
-  department: Department;
+  department: DepartmentTicket;
 
   @Prop({ default: now() })
   createdAt: Date;

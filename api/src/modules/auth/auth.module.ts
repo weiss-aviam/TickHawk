@@ -3,11 +3,10 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Token, TokenSchema } from './schemas/token.schema';
-import { UserModule } from 'src/user/user.module';
 import { ValidationPipe } from 'src/config/validation.pipe';
 import { APP_PIPE } from '@nestjs/core';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { UserModule } from '../user/user.module';
 
 @Module({
   providers: [
@@ -22,14 +21,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ConfigModule,
     MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }]),
     UserModule,
-    JwtModule.registerAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        global: true,
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '30m' },
-      }),
-    }),
   ],
 })
 export class AuthModule {}

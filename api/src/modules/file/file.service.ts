@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { join } from 'path';
 import { promises as fs } from 'fs';
 import { File as FileMulter } from 'multer';
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { File } from './schemas/file.schema';
 
@@ -10,7 +10,9 @@ import { File } from './schemas/file.schema';
 export class FileService {
   private readonly uploadPath = join(__dirname, '..', '..', '..', 'uploads');
 
-  constructor(@InjectModel(File.name) private readonly fileModel) {}
+  constructor(
+    @InjectModel(File.name) private readonly fileModel: Model<File>,
+  ) {}
 
   /**
    * Save a file to the file system and database
@@ -39,5 +41,31 @@ export class FileService {
     });
 
     return objectId.toString();
+  }
+
+  /**
+   * Get a file from the file system
+   * @param id The id of the file
+   * @returns 
+   */
+  async getFile(id: string): Promise<Buffer> {
+    const file = await this.fileModel.findById(id);
+    if (!file) {
+        throw new Error('File not found');
+    }
+    return await fs.readFile(join(file.path, file._id.toString()));
+  }
+
+  /**
+   * Get a public file from the file system
+   * @param id The id of the file
+   * @returns 
+   */
+  async getPublicFile(id: string): Promise<Buffer> {
+    const file = await this.fileModel.findById(id);
+    if (!file || !file.path.startsWith(join(this.uploadPath, 'public'))) {
+        throw new Error('File not found');
+    }
+    return await fs.readFile(join(file.path, file._id.toString()));
   }
 }
