@@ -3,6 +3,7 @@ import './App.css'
 import { Route, Routes } from 'react-router-dom'
 import NoMatch from './pages/no-match'
 import Auth from './pages/auth'
+import AuthForgotPassword from 'pages/auth-forgot-password'
 // Customer
 import HomeCustomer from './pages/customer/home'
 import CustomerLayout from 'components/customer/Layout'
@@ -29,6 +30,7 @@ function App () {
         </Route>
       </Route>
       <Route path='/auth' element={<Auth />} />
+      <Route path='/auth/forgot-password' element={<AuthForgotPassword />} />
       <Route path='*' element={<NoMatch />} />
     </Routes>
   )
