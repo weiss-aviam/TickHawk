@@ -23,7 +23,7 @@ function AuthForgotPassword () {
       <div className='flex flex-col items-center justify-center px-6 pt-8 mx-auto md:h-screen pt:mt-0 dark:bg-gray-900'>
         <div className='flex items-center justify-center mt-10 mb-8 text-2xl font-semibold md:mt-0 lg:mb-10 dark:text-white'>
           <span className='text-8xl'>
-            <img src='/tickhawk.svg' alt='TickHawk' width={100} height={100} />
+            <img src='/assets/images/tickhawk.svg' alt='TickHawk' width={100} height={100} />
           </span>
           <span className='text-4xl'>TickHawk</span>
         </div>
