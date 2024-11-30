@@ -7,10 +7,11 @@ import { jwtDecode } from 'jwt-decode'
 function Auth () {
   const auth = useAuth()
   const navigate = useNavigate()
-  
+
   const [errors, setErrors] = React.useState({
     email: '',
-    password: ''
+    password: '',
+    global: ''
   })
 
   const loginHandler = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -20,6 +21,7 @@ function Auth () {
 
     if (!email.includes('@')) {
       setErrors(prev => ({ ...prev, email: 'Invalid email address' }))
+      return
     } else {
       setErrors(prev => ({ ...prev, email: '' }))
     }
@@ -29,27 +31,36 @@ function Auth () {
         ...prev,
         password: 'Password must be at least 8 characters'
       }))
+      return
     } else {
       setErrors(prev => ({ ...prev, password: '' }))
     }
-    
-    auth.axiosClient.post('/auth/sign-in', { email, password }).then((response: any) => {
-      if (response.status === 201) {
+
+    auth.axiosClient
+      .post('/auth/sign-in', { email, password })
+      .then((response: any) => {
+        if (response.status === 201) {
+          setErrors(prev => ({
+            ...prev,
+            global: "Email or password incorrect"
+          }))
+          return
+        }
         localStorage.setItem('refreshToken', response.data.refreshToken)
         auth.setToken(response.data.accessToken)
-        const decode = jwtDecode(response.data.accessToken) as any;
+        const decode = jwtDecode(response.data.accessToken) as any
         if (decode.role === 'admin' || decode.role === 'agent') {
           navigate('/backoffice')
-        } else if(decode.role === 'customer'){
+        } else if (decode.role === 'customer') {
           navigate('/')
         }
-      }else{
-        console.log(response)
-      }
-    })
-    .catch((error: any) => {
-      console.log(error)
-    })
+      })
+      .catch((error: any) => {
+        setErrors(prev => ({
+          ...prev,
+          global: "Email or password incorrect"
+        }))
+      })
   }
 
   return (
@@ -57,7 +68,12 @@ function Auth () {
       <div className='flex flex-col items-center justify-center px-6 pt-8 mx-auto md:h-screen pt:mt-0 dark:bg-gray-900'>
         <div className='flex items-center justify-center mt-10 mb-8 text-2xl font-semibold md:mt-0 lg:mb-10 dark:text-white'>
           <span className='text-8xl'>
-            <img src='/assets/images/tickhawk.svg' alt='TickHawk' width={100} height={100} />
+            <img
+              src='/assets/images/tickhawk.svg'
+              alt='TickHawk'
+              width={100}
+              height={100}
+            />
           </span>
           <span className='text-4xl'>TickHawk</span>
         </div>
@@ -68,6 +84,17 @@ function Auth () {
           <h2 className='text-2xl font-bold text-gray-900 dark:text-white !mt-0'>
             Sign in to platform
           </h2>
+          <div
+            className={`transition-all duration-500 ease-in-out ${
+              errors.global
+                ? 'opacity-100 max-h-10  !mt-2'
+                : 'opacity-0 max-h-0'
+            }`}
+          >
+            <span className='text-sm text-red-600 dark:text-red-500'>
+              {errors.global}
+            </span>
+          </div>
           <form className='mt-8 space-y-6' onSubmit={loginHandler}>
             <div>
               <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>

@@ -94,7 +94,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       axiosClient,
       user
     }),
-    [token, axiosClient]
+    [token, axiosClient, user]
   )
 
   // Provide the authentication context to the children components
