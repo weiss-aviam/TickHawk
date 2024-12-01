@@ -21,6 +21,19 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       'Content-Type': 'application/json',
     },
   })
+
+  axiosClient.interceptors.request.use(
+    (config) => {
+      const accessToken = localStorage.getItem('token');
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
   
   // Function to set the authentication token
   const setToken = (newToken: string) => {
@@ -41,7 +54,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (token) {
-      axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
       axiosClient.interceptors.request.use(
         (config) => {
           const accessToken = localStorage.getItem('token'); // get stored access token
@@ -60,6 +72,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         },
         async (error) => {
           const originalRequest = error.config;
+          console.log(error.response.status)
           if (error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             const refreshToken = localStorage.getItem('refreshToken');

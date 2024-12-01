@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dtos/create-department.dto';
 import { RolesGuard } from 'src/config/guard/roles/roles.guard';
@@ -15,5 +15,11 @@ export class DepartmentController {
     async create(@Body() createDepartmentDto: CreateDepartmentDto) {
         await this.departmentService.create(createDepartmentDto);
         return HttpStatus.CREATED;
+    }
+
+    @Get()
+    @Roles(['admin', 'agent', 'customer'])
+    async findAll() {
+        return this.departmentService.findAll();
     }
 }

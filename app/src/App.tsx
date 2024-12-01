@@ -10,6 +10,7 @@ import CustomerLayout from 'components/customer/Layout'
 import CustomerTicket from 'pages/customer/ticket'
 import CustomerReports from 'pages/customer/reports'
 import CustomerSettings from 'pages/customer/settings'
+import CustomerNewTicket from 'pages/customer/new-ticket'
 // Agent
 import Layout from 'pages/layout'
 import ProtectedRoute from 'components/ProtectedRoute'
@@ -23,6 +24,7 @@ function App () {
           <Route path='/' element={<CustomerLayout />}>
             <Route path='' element={<HomeCustomer />} />
             <Route path='ticket/:id' element={<CustomerTicket />} />
+            <Route path='new-ticket' element={<CustomerNewTicket />} />
             <Route path='reports' element={<CustomerReports />} />
             <Route path='settings' element={<CustomerSettings />} />
             <Route path='*' element={<NoMatch />} />

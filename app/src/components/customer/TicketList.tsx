@@ -1,19 +1,41 @@
+import { useAuth } from 'components/AuthProvider'
 import ProrityBadge from 'components/PriorityBadge'
 import StatusBadge from 'components/StatusBadge'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { TicketState, useTicketsStore } from 'store/tickets/tickets.store'
-
+import { Ticket } from 'models/ticket.model'
+import Loading from 'components/Loading'
 
 function TicketList () {
-  const tickets = useTicketsStore((state: TicketState) => state.tickets)
-  const pagination = useTicketsStore((state: TicketState) => state.pagination)
+  const [tickets, setTickets] = useState([] as Ticket[])
+  const [errors, setErrors] = useState(false)
+  const [loading, setLoading] = useState(true)
+
   const navigate = useNavigate()
+  const auth = useAuth()
 
   const goToTicketHandler = (_id: string) => {
     navigate(`/ticket/${_id}`)
   }
 
+  const loadTickets = () => {
+    setLoading(true)
+    auth.axiosClient
+      .get('/ticket/customer')
+      .then((response: { data: Ticket[] }) => {
+        setTickets(response.data)
+        setErrors(false)
+      })
+      .catch((error: any) => {
+        setErrors(true)
+      }).finally(() => {
+        setLoading(false)
+      })
+  };
+
+  useEffect(() => {
+    loadTickets()
+  }, [])
   return (
     <div>
       <table className='min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600'>
@@ -73,7 +95,7 @@ function TicketList () {
                 {ticket.department.name}
               </td>
               <td className='p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white hidden lg:display-revert'>
-                {ticket.createdAt.toLocaleDateString()}
+                {new Date(ticket.createdAt).toLocaleDateString()}
               </td>
               <td className='p-4 text-base font-normal text-gray-900 whitespace-nowrap dark:text-white'>
                 <div className='flex items-center'>
@@ -102,6 +124,24 @@ function TicketList () {
           ))}
         </tbody>
       </table>
+      <div
+        className={`w-full text-center transition-all duration-500 ease-in-out ${
+          errors ? 'opacity-100 max-h-10  !mt-4 !mb-4' : 'opacity-0 max-h-0'
+        }`}
+      >
+        <span className='text-base text-black-600 dark:text-white'>
+          Error fetching tickets
+        </span>
+        <span
+          onClick={loadTickets}
+          className='ml-2 text-base text-black-600 dark:text-white border-b border-black dark:border-white cursor-pointer'
+        >
+          Refresh
+        </span>
+      </div>
+      <div className={`${loading ? 'block' : 'hidden'}`}>
+        <Loading className='w-14 h-14 mx-auto mt-2 mb-2'/>
+      </div>
       <div className='sticky bottom-0 right-0 items-center w-full pt-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700'>
         <div className='flex items-center mb-0 sm:mb-0'>
           <span className='inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white'>
@@ -131,19 +171,6 @@ function TicketList () {
                 clipRule='evenodd'
               ></path>
             </svg>
-          </span>
-          <span className='text-sm font-normal text-gray-500 dark:text-gray-400'>
-            Showing{' '}
-            <span className='font-semibold text-gray-900 dark:text-white'>
-              {pagination.page * pagination.limit - pagination.limit + 1}-
-              {pagination.page * pagination.limit > pagination.total
-                ? pagination.total
-                : pagination.page * pagination.limit}
-            </span>{' '}
-            of{' '}
-            <span className='font-semibold text-gray-900 dark:text-white'>
-              {pagination.total}
-            </span>
           </span>
         </div>
       </div>

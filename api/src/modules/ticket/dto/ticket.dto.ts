@@ -2,6 +2,9 @@ import { Expose } from 'class-transformer';
 
 export class TicketDto {
   @Expose()
+  _id: string;
+  
+  @Expose()
   status: string;
 
   @Expose()

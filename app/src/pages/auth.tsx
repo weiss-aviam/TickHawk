@@ -39,7 +39,7 @@ function Auth () {
     auth.axiosClient
       .post('/auth/sign-in', { email, password })
       .then((response: any) => {
-        if (response.status === 201) {
+        if (response.status !== 201) {
           setErrors(prev => ({
             ...prev,
             global: "Email or password incorrect"

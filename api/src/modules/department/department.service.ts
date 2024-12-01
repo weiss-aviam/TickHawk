@@ -29,4 +29,13 @@ export class DepartmentService {
       excludeExtraneousValues: true,
     });
   }
+
+  async findAll(): Promise<DepartmentDto[]> {
+    const depts = await this.departmentModel.find();
+    return depts.map((dept) =>
+      plainToInstance(DepartmentDto, dept.toJSON(), {
+        excludeExtraneousValues: true,
+      }),
+    );
+  }
 }
