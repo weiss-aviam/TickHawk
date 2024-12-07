@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CompanyService } from './company.service';
-import { CreateCompanyDto } from './dtos/create-company.dto';
+import { CreateCompanyDto } from './dtos/in/create-company.dto';
 import { JWTGuard } from 'src/config/guard/jwt/jwt.guard';
 import { RolesGuard } from 'src/config/guard/roles/roles.guard';
 import { Roles } from 'src/config/guard/roles/roles.decorator';
-import { AddContractDto } from './dtos/add-contract.dto';
+import { AddContractDto } from './dtos/in/add-contract.dto';
 
 @Controller('company')
 @UseGuards(JWTGuard, RolesGuard)

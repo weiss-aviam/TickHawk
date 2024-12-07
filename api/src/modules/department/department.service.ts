@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Department } from './schemas/department.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateDepartmentDto } from './dtos/create-department.dto';
-import { DepartmentDto } from './dtos/department.dto';
+import { CreateDepartmentDto } from './dtos/in/create-department.dto';
+import { DepartmentDto } from './dtos/out/department.dto';
 import { plainToInstance } from 'class-transformer';
 import { Model } from 'mongoose';
 
