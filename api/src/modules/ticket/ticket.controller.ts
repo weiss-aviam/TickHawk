@@ -2,9 +2,9 @@ import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/comm
 import { TicketService } from './ticket.service';
 import { JWTGuard } from 'src/config/guard/jwt/jwt.guard';
 import { RolesGuard } from 'src/config/guard/roles/roles.guard';
-import { CreateCustomerTicketDto } from './dto/create-customer-ticket.dto';
+import { CreateCustomerTicketDto } from './dto/in/create-customer-ticket.dto';
 import { Request } from 'express';
-import { CreateTicketDto } from './dto/create-ticket.dto';
+import { CreateTicketDto } from './dto/in/create-ticket.dto';
 import { Roles } from 'src/config/guard/roles/roles.decorator';
 import { ApiOperation } from '@nestjs/swagger';
 

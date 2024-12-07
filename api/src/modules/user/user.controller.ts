@@ -13,7 +13,7 @@ import { RolesGuard } from 'src/config/guard/roles/roles.guard';
 import { Request } from 'express';
 import { UserService } from './user.service';
 import { Types } from 'mongoose';
-import { AssignDepartmentDto } from './dtos/assign-department.dto';
+import { AssignDepartmentDto } from './dtos/in/assign-department.dto';
 
 @Controller('user')
 @UseGuards(JWTGuard, RolesGuard)
