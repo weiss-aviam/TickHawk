@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dtos/in/create-company.dto';
 import { JWTGuard } from 'src/config/guard/jwt/jwt.guard';
