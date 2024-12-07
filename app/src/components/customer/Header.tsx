@@ -11,7 +11,7 @@ function Header () {
         <div className='flex items-center justify-between  mx-2 md:mx-0'>
           <div className='flex items-center justify-start'>
             <Link to={'/'} className='flex mr-4'>
-              <img src='/tickhawk.svg' alt='Flowbite' className='w-11 h-11' />
+              <img src='/assets/images/tickhawk.svg' alt='Flowbite' className='w-11 h-11' />
               <span className='self-center text-2xl font-semibold whitespace-nowrap dark:text-white'>
                 TickHawk
               </span>

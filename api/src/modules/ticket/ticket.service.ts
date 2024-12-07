@@ -1,5 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { CreateCustomerTicketDto } from './dto/create-customer-ticket.dto';
+import { CreateCustomerTicketDto } from './dto/in/create-customer-ticket.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Ticket } from './schemas/ticket.schema';
 import mongoose, { Model, Types } from 'mongoose';
@@ -16,8 +16,8 @@ import {
   DepartmentTicketSchema,
 } from './schemas/department-ticket.schema';
 import { UserService } from '../user/user.service';
-import { CreateTicketDto } from './dto/create-ticket.dto';
-import { TicketDto } from './dto/ticket.dto';
+import { CreateTicketDto } from './dto/in/create-ticket.dto';
+import { TicketDto } from './dto/out/ticket.dto';
 
 @Injectable()
 export class TicketService {

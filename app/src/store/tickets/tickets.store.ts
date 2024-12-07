@@ -3,11 +3,6 @@ import { create } from "zustand";
 
 export type TicketState = {
     tickets: Ticket[];
-    pagination: {
-        page: number;
-        limit: number;
-        total: number;
-    };
 };
 export const useTicketsStore = create<TicketState>()((set) => ({
     tickets: [
@@ -42,9 +37,4 @@ export const useTicketsStore = create<TicketState>()((set) => ({
             },
         },
     ],
-    pagination: {
-        page: 1,
-        total: 200,
-        limit: 10,
-    },
 }));

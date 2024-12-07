@@ -3,17 +3,17 @@
   "name": "CEffortless Ticket & Issue Management",
   "icons": [
     {
-      "src": "tickhawk.png",
+      "src": "/assets/images/tickhawk.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "tickhawk.png",
+      "src": "/assets/images/tickhawk.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "tickhawk.png",
+      "src": "/assets/images/tickhawk.png",
       "type": "image/png",
       "sizes": "512x512"
     }

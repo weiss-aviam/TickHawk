@@ -6,7 +6,7 @@ function NoMatch () {
     <div className='bg-gray-50 dark:bg-gray-900  min-h-screen'>
       <div className='flex flex-col justify-center items-center px-6 mx-auto h-screen xl:px-0 dark:bg-gray-900'>
         <div className='block md:max-w-lg'>
-          <img src='/tickhawk.svg' width={300} alt='logo' />
+          <img src='/assets/images/tickhawk.svg' width={300} alt='logo' />
         </div>
         <div className='text-center xl:max-w-4xl'>
           <h1 className='mb-3 text-2xl font-bold leading-tight text-gray-900 sm:text-4xl lg:text-5xl dark:text-white'>

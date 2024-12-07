@@ -1,13 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateCompanyDto } from './dtos/create-company.dto';
+import { CreateCompanyDto } from './dtos/in/create-company.dto';
 import { Company } from './schemas/company.schema';
 import mongoose, { Model, Types } from 'mongoose';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import { CompanyDto } from './dtos/company.dto';
-import { AddContractDto } from './dtos/add-contract.dto';
+import { CompanyDto } from './dtos/out/company.dto';
+import { AddContractDto } from './dtos/in/add-contract.dto';
 import { Contract, ContractSchema } from './schemas/contract.schema';
-import { CompaniesDto } from './dtos/companies.dto';
+import { CompaniesDto } from './dtos/out/companies.dto';
 
 @Injectable()
 export class CompanyService {

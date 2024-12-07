@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
-import { ProfileDto } from './dtos/profile.dto';
+import { ProfileDto } from './dtos/out/profile.dto';
 import { plainToInstance } from 'class-transformer';
-import { AssignDepartmentDto } from './dtos/assign-department.dto';
+import { AssignDepartmentDto } from './dtos/in/assign-department.dto';
 
 @Injectable()
 export class UserService {
