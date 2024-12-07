@@ -20,6 +20,11 @@ import { AssignDepartmentDto } from './dtos/in/assign-department.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  /**
+   * Get user data by id
+   * @param request 
+   * @returns 
+   */
   @Get('/me')
   @Roles(['customer', 'admin', 'agent'])
   async getMe(@Req() request: Request) {
@@ -28,6 +33,11 @@ export class UserController {
     return await this.userService.findById(id);
   }
 
+  /**
+   * Assign department to user by id
+   * @param assignDepartmentDto 
+   * @returns 
+   */
   @Post('/assign-department')
   @Roles(['admin'])
   async assign(@Body() assignDepartmentDto: AssignDepartmentDto) {

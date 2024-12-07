@@ -83,7 +83,6 @@ export class CompanyService {
     console.log(company);
 
     const savedCompany = await company.save();
-    console.log(savedCompany);
     return plainToInstance(CompanyDto, savedCompany.toJSON(), {
       excludeExtraneousValues: true,
     });
