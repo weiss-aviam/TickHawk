@@ -54,7 +54,7 @@ export class TicketService {
     );
     const ticket = new this.ticketModel({
       status: 'open',
-      priority: 'low',
+      priority: createTicket.priority,
       company: plainToInstance(this.companyModel, company),
       customer: plainToInstance(this.userTicketModel, user),
       subject: createTicket.subject,

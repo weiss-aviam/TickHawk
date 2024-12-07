@@ -2,6 +2,9 @@
 function ProrityBadge ({ priority }: { priority: string }) {
     let text = ''
     switch (priority) {
+      case 'critical':
+        text = '!!!'
+        break
       case 'medium':
         text = '!'
         break

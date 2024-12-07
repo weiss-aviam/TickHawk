@@ -18,7 +18,7 @@ export class Ticket extends Document {
 
   @Prop({
     required: true,
-    enum: ['low', 'medium', 'high'],
+    enum: ['low', 'medium', 'high', 'critical'],
   })
   priority: string;
 
@@ -67,10 +67,10 @@ export class Ticket extends Document {
   })
   department: DepartmentTicket;
 
-  @Prop({ default: now() })
+  @Prop()
   createdAt: Date;
 
-  @Prop({ default: now() })
+  @Prop()
   updatedAt: Date;
 }
 
@@ -93,6 +93,10 @@ TicketSchema.pre('save', function (next) {
 // Update updatedAt
 TicketSchema.pre('save', function (next) {
   this.updatedAt = now();
+  // Its new ticket
+  if (!this.createdAt) {
+    this.createdAt = this.updatedAt;
+  }
   next();
 });
 
