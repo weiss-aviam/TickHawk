@@ -7,6 +7,7 @@ import { Request } from 'express';
 import { CreateTicketDto } from './dto/in/create-ticket.dto';
 import { Roles } from 'src/config/guard/roles/roles.decorator';
 import { ApiOperation } from '@nestjs/swagger';
+import { TicketDto } from './dto/ticket.dto';
 
 @Controller('ticket')
 @UseGuards(JWTGuard, RolesGuard)
@@ -19,9 +20,9 @@ export class TicketController {
   async createCustomerTicket(
     @Body() createTicketDto: CreateCustomerTicketDto,
     @Req() req: Request,
-  ) {
+  ): Promise<TicketDto> {
     const user = req.user;
-    return this.ticketService.createCustomerTicket(user, createTicketDto);
+    return await this.ticketService.createCustomerTicket(user, createTicketDto);
   }
 
   @Get('customer')

@@ -43,7 +43,6 @@ export class JWTGuard implements CanActivate {
       req.user = payload;
       req.token = token;
     } catch (error) {
-      console.log(error);
       throw new UnauthorizedException('TOKEN_EXPIRED');
     }
 

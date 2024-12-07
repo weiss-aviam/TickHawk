@@ -1,8 +1,10 @@
 import { useAuth } from 'components/AuthProvider'
 import StatusBadge from 'components/StatusBadge'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function NewTicket () {
+  const navigate = useNavigate()
   const auth = useAuth()
   const [departments, setDepartments] = React.useState([])
   const [error, setError] = React.useState("")
@@ -46,7 +48,6 @@ function NewTicket () {
     }
 
     // Create ticket
-
     const data = {
       subject: formData.get('subject'),
       content: formData.get('content'),
@@ -54,7 +55,15 @@ function NewTicket () {
       departmentId: formData.get('department')
     }
     auth.axiosClient.post('/ticket/customer', data).then((response: any) => {
+      if (response.status != 201) {
+        setError("Failed to create ticket");
+        return;
+      }
       
+      const ticketId = response.data._id;
+      form.reset();
+      navigate(`/ticket/${ticketId}`)
+
     })
   }
   return (
@@ -77,8 +86,8 @@ function NewTicket () {
                 </label>
                 <input
                   type='text'
-                  name='first-name'
-                  id='first-name'
+                  name='subject'
+                  id='subject'
                   className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
                   placeholder='Bonnie'
                 />
@@ -149,7 +158,7 @@ function NewTicket () {
                       </div>
                       <div className='inline-flex items-center'>
                         <div className='flex-1 min-w-0'>
-                          <select className='bg-gray-50 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'>
+                          <select id="priority" name="priority" className='bg-gray-50 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'>
                             <option value='low'>Low</option>
                             <option value='medium'>Medium</option>
                             <option value='high'>High</option>
@@ -169,10 +178,10 @@ function NewTicket () {
                       </div>
                       <div className='inline-flex items-center'>
                         <div className='flex-1 min-w-0'>
-                          <select className='bg-gray-50 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'>
+                          <select id="department" name="department" className='bg-gray-50 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'>
                             <option value='select'>Select department</option>
                             {departments.map((department: any) => (
-                              <option key={department._id}>
+                              <option key={department._id} value={department._id}>
                                 {department.name}
                               </option>
                             ))}

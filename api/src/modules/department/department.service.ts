@@ -3,7 +3,7 @@ import { Department } from './schemas/department.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateDepartmentDto } from './dtos/in/create-department.dto';
 import { DepartmentDto } from './dtos/out/department.dto';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { Model } from 'mongoose';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class DepartmentService {
   async findAll(): Promise<DepartmentDto[]> {
     const depts = await this.departmentModel.find();
     return depts.map((dept) =>
-      plainToInstance(DepartmentDto, dept.toJSON(), {
+      plainToClass(DepartmentDto, dept.toJSON(), {
         excludeExtraneousValues: true,
       }),
     );

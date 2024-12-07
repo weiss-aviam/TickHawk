@@ -30,6 +30,6 @@ export class DepartmentController {
     @Get()
     @Roles(['admin', 'agent', 'customer'])
     async findAll(): Promise<DepartmentDto[]> {
-        return this.departmentService.findAll();
+        return await this.departmentService.findAll();
     }
 }

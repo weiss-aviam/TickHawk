@@ -87,7 +87,6 @@ export class AuthService {
         refreshToken: refreshToken,
       };
     } catch (e) {
-      console.log(e)
       await session.abortTransaction();
       session.endSession();
       throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);

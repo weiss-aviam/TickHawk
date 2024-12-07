@@ -52,7 +52,6 @@ export class TicketService {
     const department = await this.departmentService.getById(
       createTicket.departmentId,
     );
-
     const ticket = new this.ticketModel({
       status: 'open',
       priority: 'low',
@@ -63,7 +62,6 @@ export class TicketService {
       department: plainToInstance(this.departmentTicketModel, department),
     });
     const newTicket = await ticket.save();
-
     return this.getCustomerTicketById(auth, newTicket._id.toString());
   }
 

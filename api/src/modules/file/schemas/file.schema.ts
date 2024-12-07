@@ -30,6 +30,12 @@ export class File extends Document {
   })
   size: number;
 
+  @Prop({
+    required: true,
+    enum: ['temporal', 'permanent'],
+  })
+  status: string;
+
   @Prop({ default: now() })
   createdAt: Date;
 }

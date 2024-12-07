@@ -80,7 +80,6 @@ export class CompanyService {
 
     contract._id = new Types.ObjectId();
     company.contracts.push(contract);
-    console.log(company);
 
     const savedCompany = await company.save();
     return plainToInstance(CompanyDto, savedCompany.toJSON(), {

@@ -1,8 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Expose } from "class-transformer";
+import { ExposeId } from "src/config/expose-id.decorator";
 
 export class ProfileDto {
   @Expose()
+  @ExposeId()
   @ApiProperty()
   _id: string;
   @Expose()
