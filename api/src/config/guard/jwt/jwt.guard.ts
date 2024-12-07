@@ -23,7 +23,7 @@ export class JWTGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-
+    
     if (toPublic) {
       return true;
     }
@@ -41,6 +41,7 @@ export class JWTGuard implements CanActivate {
         secret: this.configService.get<string>('jwt.secret'),
       });
       req.user = payload;
+      req.token = token;
     } catch (error) {
       console.log(error);
       throw new UnauthorizedException('TOKEN_EXPIRED');

@@ -8,12 +8,14 @@ import { Token } from './schemas/token.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
-import { SignInDto } from './dtos/sign-in.dto';
-import { SignInTokenDto } from './dtos/sign-in-token.dto';
+import { SignInDto } from './dtos/in/sign-in.dto';
+import { SignInTokenDto } from './dtos/out/sign-in-token.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from '../user/user.service';
 import { toMs } from 'ms-typescript';
+import { ForgotPasswordDto } from './dtos/in/forgot-password.dto';
+import { RefreshTokenDto } from './dtos/in/refresh-token.dto';
 
 
 @Injectable()
@@ -110,12 +112,11 @@ export class AuthService {
    * @throws UnauthorizedException
    */
   async refresh(
-    accessToken: string,
-    refreshToken: string,
+    tokenDto : RefreshTokenDto,
   ): Promise<SignInTokenDto> {
     const token = await this.tokenModel.findOne({
-      access_token: accessToken,
-      refresh_token: refreshToken,
+      access_token: tokenDto.accessToken,
+      refresh_token: tokenDto.refreshToken,
     });
 
     if (!token || token.blocked || token.expiration < new Date()) {
@@ -123,18 +124,18 @@ export class AuthService {
     }
 
     //Extract the user ID from the token
-    const refreshPayload = await this.jwtService.verifyAsync(refreshToken);
+    const refreshPayload = await this.jwtService.verifyAsync(tokenDto.refreshToken);
 
     if (!refreshPayload) {
       throw new UnauthorizedException('INVALID_TOKEN');
     }
 
-    const payload = { sub: refreshPayload.sub, refreshToken: refreshToken };
+    const payload = { sub: refreshPayload.sub, refreshToken: tokenDto.refreshToken };
     const sign = await this.jwtService.signAsync(payload);
 
     return {
       accessToken: sign,
-      refreshToken: refreshToken,
+      refreshToken: tokenDto.refreshToken,
     };
   }
 
@@ -142,8 +143,8 @@ export class AuthService {
    * Send an email to the user with a link to reset the password
    * @param email
    */
-  async forgotPassword(email: string): Promise<void> {
-    const user = await this.userService.findOne(email);
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
+    const user = await this.userService.findOne(forgotPasswordDto.email);
 
     if (!user) {
       throw new UnauthorizedException('USER_NOT_FOUND');

@@ -1,11 +1,15 @@
 import React from 'react'
 import ThemeSelector from '../components/ThemeSelector'
 import { Link } from 'react-router-dom'
+import { useAuth } from 'components/AuthProvider'
 
 function AuthForgotPassword () {
+  const auth = useAuth()
   const [errors, setErrors] = React.useState({
     email: '',
+    global: ''
   })
+  const [success, setSuccess] = React.useState(false)
 
   const resetHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -16,6 +20,25 @@ function AuthForgotPassword () {
     } else {
       setErrors(prev => ({ ...prev, email: '' }))
     }
+
+    auth.axiosClient
+      .post('/auth/forgot-password', { email })
+      .then((response: any) => {
+        if (response.status !== 202) {
+          setErrors(prev => ({
+            ...prev,
+            global: 'An error occurred. Please try again later.'
+          }))
+          return
+        }
+        setSuccess(true)
+      })
+      .catch((error: any) => {
+        setErrors(prev => ({
+          ...prev,
+          global: 'An error occurred. Please try again later.'
+        }))
+      })
   }
 
   return (
@@ -23,7 +46,12 @@ function AuthForgotPassword () {
       <div className='flex flex-col items-center justify-center px-6 pt-8 mx-auto md:h-screen pt:mt-0 dark:bg-gray-900'>
         <div className='flex items-center justify-center mt-10 mb-8 text-2xl font-semibold md:mt-0 lg:mb-10 dark:text-white'>
           <span className='text-8xl'>
-            <img src='/assets/images/tickhawk.svg' alt='TickHawk' width={100} height={100} />
+            <img
+              src='/assets/images/tickhawk.svg'
+              alt='TickHawk'
+              width={100}
+              height={100}
+            />
           </span>
           <span className='text-4xl'>TickHawk</span>
         </div>
@@ -31,10 +59,21 @@ function AuthForgotPassword () {
           <div className='absolute right-2 top-2'>
             <ThemeSelector />
           </div>
-          <h2 className='text-2xl font-bold text-gray-900 dark:text-white !mt-0'>
+          <h2 className={`text-2xl font-bold text-gray-900 dark:text-white !mt-0 ` + (success ? 'hidden' : '')}>
             Forgot your password?
           </h2>
-          <form className='mt-8 space-y-6' onSubmit={resetHandler}>
+          <div
+            className={`transition-all duration-500 ease-in-out ${
+              errors.global
+                ? 'opacity-100 max-h-10  !mt-2'
+                : 'opacity-0 max-h-0'
+            }`}
+          >
+            <span className='text-sm text-red-600 dark:text-red-500'>
+              {errors.global}
+            </span>
+          </div>
+          <form onSubmit={resetHandler} className={`mt-8 space-y-6 ` + (success ? 'hidden' : '')}>
             <div>
               <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
                 Your email
@@ -56,7 +95,7 @@ function AuthForgotPassword () {
                 </span>
               </div>
             </div>
-        
+
             <div className='flex items-start'>
               <Link
                 to={'/auth'}
@@ -72,6 +111,18 @@ function AuthForgotPassword () {
               </button>
             </div>
           </form>
+          <div className={`mt-8 text-center ` + (success ? '' : 'hidden')}>
+            <p className='text-gray-900 dark:text-white'>
+              We have sent you an email with instructions on how to reset your
+              password.
+            </p>
+            <Link
+              to={'/auth'}
+              className='block mt-4 text-sm text-primary-700 hover:underline dark:text-primary-500'
+            >
+              Back to login
+            </Link>
+            </div>
         </div>
       </div>
     </div>
