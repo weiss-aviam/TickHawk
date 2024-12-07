@@ -6,6 +6,7 @@ export class CompanyTicketDto {
 
   @Expose()
   name: string;
+  
   @Expose()
   email: string;
 
