@@ -62,8 +62,6 @@ export class AuthController {
     return HttpStatus.OK;
   }
 
-  // Refresh token
-
   /**
    * Forgot password endpoint to send an email to the user
    * @param email - The email of the user

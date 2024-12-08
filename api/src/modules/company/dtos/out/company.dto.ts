@@ -1,7 +1,9 @@
 import { Expose } from 'class-transformer';
+import { ExposeId } from 'src/config/expose-id.decorator';
 
 class ContractDto {
   @Expose()
+  @ExposeId()
   _id: string;
 
   @Expose()

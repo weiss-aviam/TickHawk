@@ -1,4 +1,4 @@
-import { Department } from "./department";
+import { Department } from "./department.model.js";
 
 export interface UserTicket {
     _id: string,

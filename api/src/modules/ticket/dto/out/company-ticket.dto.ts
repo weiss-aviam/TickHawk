@@ -1,13 +1,14 @@
 import { Expose } from 'class-transformer';
+import { ExposeId } from 'src/config/expose-id.decorator';
 
 export class CompanyTicketDto {
   @Expose()
-  _id: string;
-  @Expose()
+  @ExposeId()
   _id: string;
 
   @Expose()
   name: string;
+  
   @Expose()
   email: string;
 

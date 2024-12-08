@@ -1,5 +1,6 @@
 import React from 'react'
 import './App.css'
+import 'react-toastify/dist/ReactToastify.css';
 import { Route, Routes } from 'react-router-dom'
 import NoMatch from './pages/no-match'
 import Auth from './pages/auth'
@@ -15,10 +16,12 @@ import CustomerNewTicket from 'pages/customer/new-ticket'
 import Layout from 'pages/layout'
 import ProtectedRoute from 'components/ProtectedRoute'
 import AuthProvider from 'components/AuthProvider'
+import { ToastContainer } from 'react-toastify'
 
 function App () {
   return (
     <AuthProvider>
+      <ToastContainer />
       <Routes>
         <Route path='' element={<ProtectedRoute />}>
           <Route path='/' element={<CustomerLayout />}>

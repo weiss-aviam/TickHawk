@@ -1,7 +1,7 @@
 import { Expose } from 'class-transformer';
 import { ExposeId } from 'src/config/expose-id.decorator';
 
-export class CompaniesDto {
+export class FileDto {
   @Expose()
   @ExposeId()
   _id: string;
@@ -10,11 +10,20 @@ export class CompaniesDto {
   name: string;
 
   @Expose()
-  email: string;
+  file: string;
 
   @Expose()
-  created_at: Date;
+  path: string;
 
   @Expose()
-  updated_at: Date;
+  mimetype: string;
+
+  @Expose()
+  size: number;
+
+  @Expose()
+  status: string;
+
+  @Expose()
+  createdAt: Date;
 }

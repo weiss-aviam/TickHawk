@@ -13,4 +13,8 @@ export class CreateCustomerTicketDto {
   @IsNotEmpty()
   @IsString()
   departmentId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  priority: string;
 }

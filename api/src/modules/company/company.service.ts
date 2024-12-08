@@ -81,10 +81,8 @@ export class CompanyService {
 
     contract._id = new Types.ObjectId();
     company.contracts.push(contract);
-    console.log(company);
 
     const savedCompany = await company.save();
-    console.log(savedCompany);
     return plainToInstance(CompanyDto, savedCompany.toJSON(), {
       excludeExtraneousValues: true,
     });

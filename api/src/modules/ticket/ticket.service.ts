@@ -18,21 +18,26 @@ import {
 import { UserService } from '../user/user.service';
 import { CreateTicketDto } from './dto/in/create-ticket.dto';
 import { TicketDto } from './dto/out/ticket.dto';
+import { FileTicket, FileTicketSchema } from './schemas/file-ticket.schema';
+import { FileService } from '../file/file.service';
 
 @Injectable()
 export class TicketService {
   private readonly companyModel: Model<CompanyTicket>;
   private readonly userTicketModel: Model<UserTicket>;
   private readonly departmentTicketModel: Model<DepartmentTicket>;
+  private readonly fileTicketModel: Model<FileTicket>;
 
   constructor(
     @InjectModel(Ticket.name) private readonly ticketModel: Model<Ticket>,
     private readonly departmentService: DepartmentService,
     private readonly companyService: CompanyService,
     private readonly userService: UserService,
+    private readonly fileService: FileService,
   ) {
     this.companyModel = mongoose.model(CompanyTicket.name, CompanyTicketSchema);
     this.userTicketModel = mongoose.model(UserTicket.name, UserTicketSchema);
+    this.fileTicketModel = mongoose.model(FileTicket.name, FileTicketSchema);
     this.departmentTicketModel = mongoose.model(
       DepartmentTicket.name,
       DepartmentTicketSchema,
@@ -47,24 +52,55 @@ export class TicketService {
     auth: AuthDto,
     createTicket: CreateCustomerTicketDto,
   ): Promise<TicketDto> {
-    const company = await this.companyService.getById(auth.companyId);
-    const user = await this.userService.findById(new Types.ObjectId(auth.id));
-    const department = await this.departmentService.getById(
-      createTicket.departmentId,
-    );
+    try {
+      // Check if the company exists
+      const company = await this.companyService.getById(auth.companyId);
+      if (!company) {
+        throw new HttpException('COMPANY_NOT_FOUND', 404);
+      }
+      // Check if the user exists
+      const user = await this.userService.findById(new Types.ObjectId(auth.id));
+      if (!user) {
+        throw new HttpException('USER_NOT_FOUND', 404);
+      }
+      // Check if the department exists
+      const department = await this.departmentService.getById(
+        createTicket.departmentId,
+      );
+      if (!department) {
+        throw new HttpException('DEPARTMENT_NOT_FOUND', 404);
+      }
 
-    const ticket = new this.ticketModel({
-      status: 'open',
-      priority: 'low',
-      company: plainToInstance(this.companyModel, company),
-      customer: plainToInstance(this.userTicketModel, user),
-      subject: createTicket.subject,
-      content: createTicket.content,
-      department: plainToInstance(this.departmentTicketModel, department),
-    });
-    const newTicket = await ticket.save();
+      // Check if the files exist
+      const files = await this.fileService.getFiles(createTicket.files);
+      if (!files) {
+        throw new HttpException('FILES_NOT_FOUND', 404);
+      }
 
-    return this.getCustomerTicketById(auth, newTicket._id.toString());
+      //TODO: Create transaction to rollback if something fails
+      // Create the ticket
+      const ticket = new this.ticketModel({
+        status: 'open',
+        priority: createTicket.priority,
+        company: plainToInstance(this.companyModel, company),
+        customer: plainToInstance(this.userTicketModel, user),
+        subject: createTicket.subject,
+        content: createTicket.content,
+        department: plainToInstance(this.departmentTicketModel, department),
+        files: files.map((file) =>
+          plainToInstance(this.fileTicketModel, file),
+        ),
+      });
+      const newTicket = await ticket.save();
+      await this.fileService.activeFiles(createTicket.files);
+
+      return this.getCustomerTicketById(auth, newTicket._id.toString());
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('TICKET_NOT_CREATED', 500);
+    }
   }
 
   /**

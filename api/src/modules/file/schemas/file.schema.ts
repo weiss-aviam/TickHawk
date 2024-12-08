@@ -30,8 +30,23 @@ export class File extends Document {
   })
   size: number;
 
-  @Prop({ default: now() })
+  @Prop({
+    required: true,
+    enum: ['temporal', 'active'],
+  })
+  status: string;
+
+  @Prop({
+    required: false
+  })
   createdAt: Date;
 }
 
 export const FileSchema = SchemaFactory.createForClass(File);
+
+FileSchema.pre('save', function (next) {
+  if (!this.createdAt) {
+    this.createdAt = now();
+  }
+  next();
+});
