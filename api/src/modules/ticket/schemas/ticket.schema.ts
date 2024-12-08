@@ -5,6 +5,7 @@ import { Event, EventSchema } from './event.schema';
 import { UserTicket, UserTicketSchema } from './user-ticket.schema';
 import { CompanyTicket, CompanyTicketSchema } from './company-ticket.schema';
 import { DepartmentTicket } from './department-ticket.schema';
+import { FileTicket, FileTicketSchema } from './file-ticket.schema';
 
 export type TicketSchema = HydratedDocument<Ticket>;
 
@@ -54,6 +55,12 @@ export class Ticket extends Document {
     required: false,
   })
   minutes: [number];
+
+  @Prop({
+    type: [FileTicketSchema],
+    default: [],
+  })
+  files: FileTicket[];
 
   @Prop({ type: [CommentSchema], default: [] })
   comments: Comment[];

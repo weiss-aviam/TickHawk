@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCustomerTicketDto {
@@ -22,4 +22,9 @@ export class CreateCustomerTicketDto {
   @IsNotEmpty()
   @IsEnum(['low', 'medium', 'high', 'critical'])
   priority: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsArray()
+  files: string[];
 }

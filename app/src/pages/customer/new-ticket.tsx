@@ -1,5 +1,7 @@
 import { useAuth } from 'components/AuthProvider'
+import FilePicker from 'components/FilePicker'
 import StatusBadge from 'components/StatusBadge'
+import { FileModel } from 'models/file.model'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -7,13 +9,18 @@ function NewTicket () {
   const navigate = useNavigate()
   const auth = useAuth()
   const [departments, setDepartments] = React.useState([])
-  const [error, setError] = React.useState("")
+  const [error, setError] = React.useState('')
+  const [files, setFiles] = React.useState<FileModel[]>([])
 
   React.useEffect(() => {
     auth.axiosClient.get('/department').then((response: any) => {
       setDepartments(response.data)
     })
   }, [auth.axiosClient])
+
+  const handleFilesUploaded = async (_files: FileModel[]) => {
+    setFiles([...files, ..._files])
+  }
 
   const handleCreateTicket = (event: any) => {
     event.preventDefault()
@@ -52,18 +59,18 @@ function NewTicket () {
       subject: formData.get('subject'),
       content: formData.get('content'),
       priority: formData.get('priority'),
-      departmentId: formData.get('department')
+      departmentId: formData.get('department'),
+      files: files.map((file: FileModel) => file._id)
     }
     auth.axiosClient.post('/ticket/customer', data).then((response: any) => {
-      if (response.status != 201) {
-        setError("Failed to create ticket");
-        return;
+      if (response.status !== 201) {
+        setError('Failed to create ticket')
+        return
       }
-      
-      const ticketId = response.data._id;
-      form.reset();
-      navigate(`/ticket/${ticketId}`)
 
+      const ticketId = response.data._id
+      form.reset()
+      navigate(`/ticket/${ticketId}`)
     })
   }
   return (
@@ -89,7 +96,7 @@ function NewTicket () {
                   name='subject'
                   id='subject'
                   className='shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
-                  placeholder='Bonnie'
+                  placeholder='Enter subject here'
                 />
               </div>
 
@@ -109,22 +116,55 @@ function NewTicket () {
                     ></textarea>
                   </div>
                   <div className='flex items-center justify-between px-3 py-2 border-t dark:border-gray-600'>
-                    <button className='ml-auto inline-flex justify-center p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600'>
-                      <svg
-                        aria-hidden='true'
-                        className='w-5 h-5'
-                        fill='currentColor'
-                        viewBox='0 0 20 20'
-                        xmlns='http://www.w3.org/2000/svg'
-                      >
-                        <path
-                          fillRule='evenodd'
-                          d='M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z'
-                          clipRule='evenodd'
-                        ></path>
-                      </svg>
-                      <span className='sr-only'>Attach file</span>
-                    </button>
+                    <div>
+                      {files.map((file: FileModel) => (
+                        <div
+                          key={file._id}
+                          className='flex items-center space-x-2'
+                        >
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            className='w-6 h-6 text-gray-400 dark:text-gray-500'
+                            x='0px'
+                            y='0px'
+                            width='100'
+                            height='100'
+                            viewBox='0 0 24 24'
+                            fill='currentColor'
+                          >
+                            <path d='M13.172,2H6C4.9,2,4,2.9,4,4v16c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V8.828c0-0.53-0.211-1.039-0.586-1.414l-4.828-4.828 C14.211,2.211,13.702,2,13.172,2z M18.5,9H13V3.5L18.5,9z'></path>
+                          </svg>
+
+                          <span className='text-sm font-medium text-gray-900 dark:text-white'>
+                            {file.name}
+                          </span>
+
+                          <button
+                            type='button'
+                            className='text-sm font-medium text-red-500 dark:text-red-500'
+                            onClick={() => {
+                              setFiles(files.filter(f => f._id !== file._id))
+                            }}
+                          >
+                            <svg
+                              xmlns='http://www.w3.org/2000/svg'
+                              className='w-4 h-4'
+                              fill='none'
+                              viewBox='0 0 24 24'
+                              stroke='currentColor'
+                            >
+                              <path
+                                strokeLinecap='round'
+                                strokeLinejoin='round'
+                                strokeWidth='2'
+                                d='M6 18L18 6M6 6l12 12'
+                              ></path>
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <FilePicker onFilesUploaded={handleFilesUploaded} />
                   </div>
                 </div>
               </div>
@@ -158,7 +198,11 @@ function NewTicket () {
                       </div>
                       <div className='inline-flex items-center'>
                         <div className='flex-1 min-w-0'>
-                          <select id="priority" name="priority" className='bg-gray-50 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'>
+                          <select
+                            id='priority'
+                            name='priority'
+                            className='bg-gray-50 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
+                          >
                             <option value='low'>Low</option>
                             <option value='medium'>Medium</option>
                             <option value='high'>High</option>
@@ -178,10 +222,17 @@ function NewTicket () {
                       </div>
                       <div className='inline-flex items-center'>
                         <div className='flex-1 min-w-0'>
-                          <select id="department" name="department" className='bg-gray-50 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'>
+                          <select
+                            id='department'
+                            name='department'
+                            className='bg-gray-50 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
+                          >
                             <option value='select'>Select department</option>
                             {departments.map((department: any) => (
-                              <option key={department._id} value={department._id}>
+                              <option
+                                key={department._id}
+                                value={department._id}
+                              >
                                 {department.name}
                               </option>
                             ))}
@@ -192,7 +243,9 @@ function NewTicket () {
                   </li>
 
                   <li className=''>
-                    <div className={`pt-2 w-full ` + (error ? 'block' : 'hidden')}>
+                    <div
+                      className={`pt-2 w-full ` + (error ? 'block' : 'hidden')}
+                    >
                       <p className='text-red-500'>{error}</p>
                     </div>
                     <div className='pt-4 flex justify-end'>

@@ -65,7 +65,8 @@ export class TicketService {
       if (!department) {
         throw new HttpException('DEPARTMENT_NOT_FOUND', 404);
       }
-
+      //TODO: Files
+      
       // Create the ticket
       const ticket = new this.ticketModel({
         status: 'open',

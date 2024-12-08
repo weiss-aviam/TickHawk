@@ -37,8 +37,6 @@ export class Token extends Document {
     default: Date.now,
   })
   createdAt: Date;
-
-  //TODO: Data about location, device, etc.
 }
 
 export const TokenSchema = SchemaFactory.createForClass(Token);

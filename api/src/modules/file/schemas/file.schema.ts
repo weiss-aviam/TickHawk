@@ -36,8 +36,17 @@ export class File extends Document {
   })
   status: string;
 
-  @Prop({ default: now() })
+  @Prop({
+    required: false
+  })
   createdAt: Date;
 }
 
 export const FileSchema = SchemaFactory.createForClass(File);
+
+FileSchema.pre('save', function (next) {
+  if (!this.createdAt) {
+    this.createdAt = now();
+  }
+  next();
+});
