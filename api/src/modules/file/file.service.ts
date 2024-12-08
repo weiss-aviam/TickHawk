@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { join } from 'path';
 import { promises as fs } from 'fs';
 import { Model, Types } from 'mongoose';
@@ -25,6 +25,11 @@ export class FileService {
    */
   async saveFile(file: Express.Multer.File, path: string = null): Promise<FileDto> {
     const objectId = new Types.ObjectId();
+
+    // Check size < 3MB
+    if (file.size > 3 * 1024 * 1024) {
+      throw new HttpException('FILE_SIZE_TOO_LARGE', 400);
+    }
 
     if (!path) {
       path = this.uploadPath;
