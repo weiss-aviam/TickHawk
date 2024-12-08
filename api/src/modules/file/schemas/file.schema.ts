@@ -32,7 +32,7 @@ export class File extends Document {
 
   @Prop({
     required: true,
-    enum: ['temporal', 'permanent'],
+    enum: ['temporal', 'active'],
   })
   status: string;
 

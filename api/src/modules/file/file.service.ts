@@ -86,4 +86,28 @@ export class FileService {
     }
     return await fs.readFile(join(file.path, file._id.toString()));
   }
+
+  /**
+   * Get all files
+   * @returns 
+   */
+  async getFiles(ids: string[]): Promise<FileDto[]> {
+    const files = await this.fileModel.find({
+      _id: { $in: ids },
+    });
+    return files.map(file => plainToInstance(FileDto, file.toJSON(), {
+      excludeExtraneousValues: true,
+    }));
+  }
+
+  /**
+   * Delete a file from the file system and database
+   * @param ids The ids of the files to delete
+   */
+  async activeFiles(ids: string[]) {
+    await this.fileModel.updateMany(
+      { _id: { $in: ids } },
+      { status: 'active' },
+    );
+  }
 }

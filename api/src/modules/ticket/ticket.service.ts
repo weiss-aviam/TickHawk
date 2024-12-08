@@ -18,21 +18,26 @@ import {
 import { UserService } from '../user/user.service';
 import { CreateTicketDto } from './dto/in/create-ticket.dto';
 import { TicketDto } from './dto/out/ticket.dto';
+import { FileTicket, FileTicketSchema } from './schemas/file-ticket.schema';
+import { FileService } from '../file/file.service';
 
 @Injectable()
 export class TicketService {
   private readonly companyModel: Model<CompanyTicket>;
   private readonly userTicketModel: Model<UserTicket>;
   private readonly departmentTicketModel: Model<DepartmentTicket>;
+  private readonly fileTicketModel: Model<FileTicket>;
 
   constructor(
     @InjectModel(Ticket.name) private readonly ticketModel: Model<Ticket>,
     private readonly departmentService: DepartmentService,
     private readonly companyService: CompanyService,
     private readonly userService: UserService,
+    private readonly fileService: FileService,
   ) {
     this.companyModel = mongoose.model(CompanyTicket.name, CompanyTicketSchema);
     this.userTicketModel = mongoose.model(UserTicket.name, UserTicketSchema);
+    this.fileTicketModel = mongoose.model(FileTicket.name, FileTicketSchema);
     this.departmentTicketModel = mongoose.model(
       DepartmentTicket.name,
       DepartmentTicketSchema,
@@ -65,8 +70,14 @@ export class TicketService {
       if (!department) {
         throw new HttpException('DEPARTMENT_NOT_FOUND', 404);
       }
-      //TODO: Files
-      
+
+      // Check if the files exist
+      const files = await this.fileService.getFiles(createTicket.files);
+      if (!files) {
+        throw new HttpException('FILES_NOT_FOUND', 404);
+      }
+
+      //TODO: Create transaction to rollback if something fails
       // Create the ticket
       const ticket = new this.ticketModel({
         status: 'open',
@@ -76,8 +87,13 @@ export class TicketService {
         subject: createTicket.subject,
         content: createTicket.content,
         department: plainToInstance(this.departmentTicketModel, department),
+        files: files.map((file) =>
+          plainToInstance(this.fileTicketModel, file),
+        ),
       });
       const newTicket = await ticket.save();
+      await this.fileService.activeFiles(createTicket.files);
+
       return this.getCustomerTicketById(auth, newTicket._id.toString());
     } catch (error) {
       if (error instanceof HttpException) {
