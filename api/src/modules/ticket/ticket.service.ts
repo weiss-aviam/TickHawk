@@ -47,22 +47,43 @@ export class TicketService {
     auth: AuthDto,
     createTicket: CreateCustomerTicketDto,
   ): Promise<TicketDto> {
-    const company = await this.companyService.getById(auth.companyId);
-    const user = await this.userService.findById(new Types.ObjectId(auth.id));
-    const department = await this.departmentService.getById(
-      createTicket.departmentId,
-    );
-    const ticket = new this.ticketModel({
-      status: 'open',
-      priority: createTicket.priority,
-      company: plainToInstance(this.companyModel, company),
-      customer: plainToInstance(this.userTicketModel, user),
-      subject: createTicket.subject,
-      content: createTicket.content,
-      department: plainToInstance(this.departmentTicketModel, department),
-    });
-    const newTicket = await ticket.save();
-    return this.getCustomerTicketById(auth, newTicket._id.toString());
+    try {
+      // Check if the company exists
+      const company = await this.companyService.getById(auth.companyId);
+      if (!company) {
+        throw new HttpException('COMPANY_NOT_FOUND', 404);
+      }
+      // Check if the user exists
+      const user = await this.userService.findById(new Types.ObjectId(auth.id));
+      if (!user) {
+        throw new HttpException('USER_NOT_FOUND', 404);
+      }
+      // Check if the department exists
+      const department = await this.departmentService.getById(
+        createTicket.departmentId,
+      );
+      if (!department) {
+        throw new HttpException('DEPARTMENT_NOT_FOUND', 404);
+      }
+
+      // Create the ticket
+      const ticket = new this.ticketModel({
+        status: 'open',
+        priority: createTicket.priority,
+        company: plainToInstance(this.companyModel, company),
+        customer: plainToInstance(this.userTicketModel, user),
+        subject: createTicket.subject,
+        content: createTicket.content,
+        department: plainToInstance(this.departmentTicketModel, department),
+      });
+      const newTicket = await ticket.save();
+      return this.getCustomerTicketById(auth, newTicket._id.toString());
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('TICKET_NOT_CREATED', 500);
+    }
   }
 
   /**
