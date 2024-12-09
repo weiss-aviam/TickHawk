@@ -1,5 +1,7 @@
 import { useAuth } from 'components/AuthProvider'
 import FilePicker from 'components/FilePicker'
+import CrossIcon from 'components/icons/CrossIcon'
+import FileIcon from 'components/icons/FileIcon'
 import StatusBadge from 'components/StatusBadge'
 import { FileModel } from 'models/file.model'
 import React from 'react'
@@ -19,6 +21,11 @@ function NewTicket () {
   }, [auth.axiosClient])
 
   const handleFilesUploaded = async (_files: FileModel[]) => {
+    // Max 3 files
+    if (files.length + _files.length > 3) {
+      setError('Max 3 files allowed')
+      return
+    }
     setFiles([...files, ..._files])
   }
 
@@ -122,23 +129,10 @@ function NewTicket () {
                           key={file._id}
                           className='flex items-center space-x-2'
                         >
-                          <svg
-                            xmlns='http://www.w3.org/2000/svg'
-                            className='w-6 h-6 text-gray-400 dark:text-gray-500'
-                            x='0px'
-                            y='0px'
-                            width='100'
-                            height='100'
-                            viewBox='0 0 24 24'
-                            fill='currentColor'
-                          >
-                            <path d='M13.172,2H6C4.9,2,4,2.9,4,4v16c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2V8.828c0-0.53-0.211-1.039-0.586-1.414l-4.828-4.828 C14.211,2.211,13.702,2,13.172,2z M18.5,9H13V3.5L18.5,9z'></path>
-                          </svg>
-
+                          <FileIcon />
                           <span className='text-sm font-medium text-gray-900 dark:text-white'>
                             {file.name}
                           </span>
-
                           <button
                             type='button'
                             className='text-sm font-medium text-red-500 dark:text-red-500'
@@ -146,20 +140,7 @@ function NewTicket () {
                               setFiles(files.filter(f => f._id !== file._id))
                             }}
                           >
-                            <svg
-                              xmlns='http://www.w3.org/2000/svg'
-                              className='w-4 h-4'
-                              fill='none'
-                              viewBox='0 0 24 24'
-                              stroke='currentColor'
-                            >
-                              <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                strokeWidth='2'
-                                d='M6 18L18 6M6 6l12 12'
-                              ></path>
-                            </svg>
+                            <CrossIcon/>
                           </button>
                         </div>
                       ))}
