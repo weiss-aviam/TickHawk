@@ -1,8 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateCustomerTicketDto } from './dto/in/create-customer-ticket.dto';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Ticket } from './schemas/ticket.schema';
-import mongoose, { Model, Types } from 'mongoose';
+import mongoose, { Connection, Model, Types } from 'mongoose';
 import { DepartmentService } from '../department/department.service';
 import { CompanyService } from '../company/company.service';
 import {
@@ -30,6 +30,7 @@ export class TicketService {
 
   constructor(
     @InjectModel(Ticket.name) private readonly ticketModel: Model<Ticket>,
+    @InjectConnection() private readonly connection: Connection,
     private readonly departmentService: DepartmentService,
     private readonly companyService: CompanyService,
     private readonly userService: UserService,
@@ -52,6 +53,10 @@ export class TicketService {
     auth: AuthDto,
     createTicket: CreateCustomerTicketDto,
   ): Promise<TicketDto> {
+    
+    const session = await this.connection.startSession();
+    session.startTransaction();
+
     try {
       // Check if the company exists
       const company = await this.companyService.getById(auth.companyId);
@@ -77,7 +82,6 @@ export class TicketService {
         throw new HttpException('FILES_NOT_FOUND', 404);
       }
 
-      //TODO: Create transaction to rollback if something fails
       // Create the ticket
       const ticket = new this.ticketModel({
         status: 'open',
@@ -91,11 +95,12 @@ export class TicketService {
           plainToInstance(this.fileTicketModel, file),
         ),
       });
-      const newTicket = await ticket.save();
-      await this.fileService.activeFiles(createTicket.files);
-
+      const newTicket = await ticket.save({ session });
+      await this.fileService.activeFiles(createTicket.files, session);
+      await session.commitTransaction();
       return this.getCustomerTicketById(auth, newTicket._id.toString());
     } catch (error) {
+      await session.abortTransaction();
       if (error instanceof HttpException) {
         throw error;
       }

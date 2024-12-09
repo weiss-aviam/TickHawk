@@ -105,10 +105,11 @@ export class FileService {
    * Delete a file from the file system and database
    * @param ids The ids of the files to delete
    */
-  async activeFiles(ids: string[]) {
+  async activeFiles(ids: string[], session?: any) {
+    const sessionOption = session ? { session } : {};
     await this.fileModel.updateMany(
       { _id: { $in: ids } },
       { status: 'active' },
-    );
+    ), sessionOption;
   }
 }

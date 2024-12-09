@@ -38,6 +38,7 @@ export class AuthService {
   async signIn(customerAuth: SignInDto): Promise<SignInTokenDto> {
     const pass = customerAuth.password;
     const email = customerAuth.email;
+    // TODO: REfactor this to use a transaction
     const session = await this.tokenModel.db.startSession();
     session.startTransaction();
 
