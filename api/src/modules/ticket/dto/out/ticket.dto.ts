@@ -1,5 +1,8 @@
 import { Expose } from 'class-transformer';
 import { ExposeId } from 'src/config/expose-id.decorator';
+import { FileTicketDto } from './file-ticket.dto';
+import { DepartmentTicketDto } from './department-ticket.dto';
+import { CompanyTicketDto } from './company-ticket.dto';
 
 export class TicketDto {
   @Expose()
@@ -13,7 +16,7 @@ export class TicketDto {
   priority: string;
 
   @Expose()
-  company: string;
+  company: CompanyTicketDto;
 
   @Expose()
   customer: Object;
@@ -28,6 +31,9 @@ export class TicketDto {
   content: string;
 
   @Expose()
+  files: FileTicketDto[];
+
+  @Expose()
   minutes: [number];
 
   @Expose()
@@ -37,7 +43,7 @@ export class TicketDto {
   events: object[];
 
   @Expose()
-  department: object;
+  department: DepartmentTicketDto;
 
   @Expose()
   createdAt: Date;

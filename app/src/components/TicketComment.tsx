@@ -1,30 +1,44 @@
-import { useCallback } from "react"
-import FileInfo from "./FileInfo"
+import { useCallback, useEffect } from 'react'
+import FileInfo from './FileInfo'
+import DateFormat from './DateFormat'
 
 export type TicketCommentType = {
-    user: {
-        name: string
-    }
-    content: string
-    minutes?: number
-    files?: {
-        name: string
-        mimetype: string
-    }[]
-    createdAt: string
-    updatedAt: string
+  user: {
+    name: string
+  }
+  content: string
+  minutes?: number
+  files?: {
+    name: string
+    mimetype: string
+  }[]
+  createdAt: Date
+  updatedAt: Date
 }
 export type TicketCommentProps = {
-    className?: string
-    comment: TicketCommentType
+  className?: string
+  comment: TicketCommentType
 }
 
-export default function TicketComment ({ className, comment }: TicketCommentProps) {
+export default function TicketComment ({
+  className,
+  comment
+}: TicketCommentProps) {
+  const toHtml = useCallback(
+    (content: string) => {
+      return content.replace(/(?:\r\n|\r|\n)/g, '<br />')
+    },
+    [comment.content]
+  )
 
-    const toHtml = useCallback((content: string) => {
-        console.log('content', content)
-        return content.replace(/(?:\r\n|\r|\n)/g, '<br />')
-    }, [comment.content])
+  useEffect(() => {
+    if (typeof comment.createdAt === 'string' && comment.createdAt) {
+      comment.createdAt = new Date(comment.createdAt)
+    }
+    if (typeof comment.updatedAt === 'string' && comment.updatedAt) {
+      comment.updatedAt = new Date(comment.updatedAt)
+    }
+  }, [comment])
   return (
     <article className={className}>
       <div className='flex items-center justify-between mb-2'>
@@ -38,15 +52,17 @@ export default function TicketComment ({ className, comment }: TicketCommentProp
             {comment.user.name}
           </p>
           <p className='text-sm text-gray-600 dark:text-gray-400'>
-            {comment.createdAt}
+            {(typeof comment.createdAt === 'string') ? null :  <DateFormat date={comment.createdAt}/>}
           </p>
         </div>
       </div>
-      <p className='mb-2 text-gray-900 dark:text-white'>
-        <div dangerouslySetInnerHTML={{__html: toHtml(comment.content)}} />
-      </p>
+      <div className='mb-2 p-2 text-gray-900 dark:text-white'>
+        <div dangerouslySetInnerHTML={{ __html: toHtml(comment.content) }} />
+      </div>
       <div className='items-center 2xl:space-x-4 2xl:flex'>
-        <FileInfo name='flowbite_offer_345' mimetype='' />
+        {comment.files?.map((file, index) => (
+          <FileInfo key={index} name={file.name} mimetype={file.mimetype} />
+        ))}
       </div>
     </article>
   )

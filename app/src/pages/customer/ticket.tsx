@@ -35,7 +35,8 @@ function Ticket () {
                         },
                         content: ticket?.content,
                         createdAt: ticket?.createdAt,
-                        updatedAt: ticket?.updatedAt
+                        updatedAt: ticket?.updatedAt,
+                        files: ticket?.files
                       }}
                     />
                     <hr className='my-5 border-gray-300 dark:border-gray-600' />
@@ -94,7 +95,7 @@ function Ticket () {
             <div>
               <div className='p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800'>
                 <h3 className='mb-4 text-xl font-semibold dark:text-white'>
-                  Ticket #1281
+                  Ticket <span className='text-base'>#{ticket?._id}</span>
                 </h3>
                 <ul className='divide-y divide-gray-200 dark:divide-gray-700'>
                   <li className='py-4'>
