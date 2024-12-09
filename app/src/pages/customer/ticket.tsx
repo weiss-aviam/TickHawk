@@ -1,11 +1,12 @@
 import { useAuth } from 'components/AuthProvider'
 import StatusBadge from 'components/StatusBadge'
 import TicketComment from 'components/TicketComment'
+import TimeFormat from 'components/TimeFormat'
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 function Ticket () {
-  // Get param from URL (:id)
+  // TODO: Replace this html to JSX Ticket component
   const { id } = useParams()
   const auth = useAuth()
   const [ticket, setTicket] = React.useState<any>(null)
@@ -133,7 +134,10 @@ function Ticket () {
                       <div className='inline-flex items-center'>
                         <div className='flex-1 min-w-0'>
                           <span className='block text-base text-gray-900 truncate dark:text-white'>
-                            1h 35m
+                            {(ticket && (
+                              <TimeFormat minutes={ticket?.minutes} />
+                            )) ||
+                              '0h 0m'}
                           </span>
                         </div>
                       </div>

@@ -29,16 +29,14 @@ export default function TicketComment ({
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />')
     },
     [comment.content]
-  )
+  );
 
   useEffect(() => {
-    if (typeof comment.createdAt === 'string' && comment.createdAt) {
-      comment.createdAt = new Date(comment.createdAt)
-    }
-    if (typeof comment.updatedAt === 'string' && comment.updatedAt) {
-      comment.updatedAt = new Date(comment.updatedAt)
-    }
-  }, [comment])
+    //TODO: Fix the date format
+    comment.createdAt = new Date(comment.createdAt)
+    comment.updatedAt = new Date(comment.updatedAt)
+  }, [])
+
   return (
     <article className={className}>
       <div className='flex items-center justify-between mb-2'>
@@ -52,7 +50,9 @@ export default function TicketComment ({
             {comment.user.name}
           </p>
           <p className='text-sm text-gray-600 dark:text-gray-400'>
-            {(typeof comment.createdAt === 'string') ? null :  <DateFormat date={comment.createdAt}/>}
+            {typeof comment.createdAt === 'string' ? null : (
+              <DateFormat date={comment.createdAt} />
+            )}
           </p>
         </div>
       </div>

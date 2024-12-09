@@ -34,7 +34,7 @@ export class TicketDto {
   files: FileTicketDto[];
 
   @Expose()
-  minutes: [number];
+  minutes: number;
 
   @Expose()
   comments: object[];

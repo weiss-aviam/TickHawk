@@ -54,7 +54,7 @@ export class Ticket extends Document {
   @Prop({
     required: false,
   })
-  minutes: [number];
+  minutes: number;
 
   @Prop({
     type: [FileTicketSchema],
@@ -89,11 +89,12 @@ TicketSchema.index({ companyId: 1, status: 1 });
 // Update minutes
 TicketSchema.pre('save', function (next) {
   if (!this.isModified('comments')) {
+    this.minutes = 0;
     return next();
   }
 
-  this.minutes = this.comments
-    .map((comment) => comment.minutes) as [number];
+  this.minutes = (this.comments
+    .map((comment) => comment.minutes) as [number]).reduce((acc, curr) => acc + curr, 0);
   next();
 });
 
