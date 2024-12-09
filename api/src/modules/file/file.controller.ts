@@ -1,7 +1,16 @@
-import { Controller, Get, Param, Post, StreamableFile, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  StreamableFile,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileService } from './file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Express } from 'express';
+import { Request, Express } from 'express';
 import { Multer } from 'multer';
 import { FileDto } from './dtos/out/file.dto';
 
@@ -25,7 +34,11 @@ export class FileController {
    */
   @Post('ticket')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<FileDto> {
-    return await this.fileService.saveFile(file, 'ticket');
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: Request,
+  ): Promise<FileDto> {
+    const userId = req.user.id;
+    return await this.fileService.saveFile(file, userId, 'ticket');
   }
 }

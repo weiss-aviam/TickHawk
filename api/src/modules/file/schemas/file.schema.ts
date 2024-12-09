@@ -18,6 +18,11 @@ export class File extends Document {
   @Prop({
     required: true,
   })
+  userId: string;
+
+  @Prop({
+    required: true,
+  })
   path: string;
 
   @Prop({

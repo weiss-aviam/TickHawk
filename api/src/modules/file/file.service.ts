@@ -23,7 +23,7 @@ export class FileService {
    * @param path  The path to save the file to
    * @returns    The id of the file
    */
-  async saveFile(file: Express.Multer.File, path: string = null): Promise<FileDto> {
+  async saveFile(file: Express.Multer.File, userId: string, path: string = null): Promise<FileDto> {
     const objectId = new Types.ObjectId();
 
     // Check size < 3MB
@@ -53,7 +53,8 @@ export class FileService {
       path: path,
       mimetype: file.mimetype,
       size: file.size,
-      status: 'temporal'
+      status: 'temporal',
+      userId: userId,
     });
 
     return plainToInstance(FileDto, fileObject.toJSON(), {
