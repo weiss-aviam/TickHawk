@@ -1,8 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateCustomerTicketDto } from './dto/in/create-customer-ticket.dto';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { Ticket } from './schemas/ticket.schema';
-import mongoose, { Connection, Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { DepartmentService } from '../department/department.service';
 import { CompanyService } from '../company/company.service';
 import {
@@ -30,7 +30,6 @@ export class TicketService {
 
   constructor(
     @InjectModel(Ticket.name) private readonly ticketModel: Model<Ticket>,
-    @InjectConnection() private readonly connection: Connection,
     private readonly departmentService: DepartmentService,
     private readonly companyService: CompanyService,
     private readonly userService: UserService,
@@ -53,11 +52,15 @@ export class TicketService {
     auth: AuthDto,
     createTicket: CreateCustomerTicketDto,
   ): Promise<TicketDto> {
-    
-    const session = await this.connection.startSession();
-    session.startTransaction();
-
     try {
+      // Limit 3 files max
+      if (createTicket.files.length > 3) {
+        throw new HttpException('MAX_FILES_EXCEEDED', 400);
+      }
+      // Limit subject to 60 characters and content to 500 characters
+      if (createTicket.subject.length > 60 || createTicket.content.length > 500) {
+        throw new HttpException('MAX_CHARACTERS_EXCEEDED', 400);
+      }
       // Check if the company exists
       const company = await this.companyService.getById(auth.companyId);
       if (!company) {
@@ -75,7 +78,6 @@ export class TicketService {
       if (!department) {
         throw new HttpException('DEPARTMENT_NOT_FOUND', 404);
       }
-
       // Check if the files exist
       const files = await this.fileService.getFiles(createTicket.files);
       if (!files) {
@@ -91,16 +93,12 @@ export class TicketService {
         subject: createTicket.subject,
         content: createTicket.content,
         department: plainToInstance(this.departmentTicketModel, department),
-        files: files.map((file) =>
-          plainToInstance(this.fileTicketModel, file),
-        ),
+        files: files.map((file) => plainToInstance(this.fileTicketModel, file)),
       });
-      const newTicket = await ticket.save({ session });
-      await this.fileService.activeFiles(createTicket.files, session);
-      await session.commitTransaction();
+      const newTicket = await ticket.save();
+      await this.fileService.activeFiles(createTicket.files);
       return this.getCustomerTicketById(auth, newTicket._id.toString());
     } catch (error) {
-      await session.abortTransaction();
       if (error instanceof HttpException) {
         throw error;
       }
@@ -231,5 +229,26 @@ export class TicketService {
         excludeExtraneousValues: true,
       },
     );
+  }
+
+  /**
+   * Get a ticket of the customer
+   * @param auth 
+   * @param id 
+   * @returns 
+   */
+  async getCustomerTicket(auth: AuthDto, id: string): Promise<TicketDto> {
+    const ticket = await this.ticketModel.findOne({
+      _id: new Types.ObjectId(id),
+      'customer._id': new Types.ObjectId(auth.id),
+    });
+
+    if (!ticket) {
+      throw new HttpException('TICKET_NOT_FOUND', 404);
+    }
+
+    return plainToInstance(TicketDto, ticket.toJSON(), {
+      excludeExtraneousValues: true,
+    });
   }
 }

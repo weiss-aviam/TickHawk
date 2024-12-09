@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { JWTGuard } from 'src/config/guard/jwt/jwt.guard';
 import { RolesGuard } from 'src/config/guard/roles/roles.guard';
@@ -34,6 +34,14 @@ export class TicketController {
       page = 1;
     }
     return this.ticketService.getCustomerTickets(user, page);
+  }
+
+  @Get('customer/:id')
+  @Roles(['customer'])
+  @ApiOperation({ summary: 'Get a ticket of the customer' })
+  async getCustomerTicket(@Req() req: Request, @Param('id') id: string) {
+    const user = req.user;
+    return this.ticketService.getCustomerTicket(user, id);
   }
 
   @Post('')
