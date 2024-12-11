@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback } from 'react'
 import FileInfo from './FileInfo'
 import DateFormat from './DateFormat'
 
@@ -28,14 +28,8 @@ export default function TicketComment ({
     (content: string) => {
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />')
     },
-    [comment.content]
-  );
-
-  useEffect(() => {
-    //TODO: Fix the date format
-    comment.createdAt = new Date(comment.createdAt)
-    comment.updatedAt = new Date(comment.updatedAt)
-  }, [])
+    []
+  )
 
   return (
     <article className={className}>
@@ -50,9 +44,7 @@ export default function TicketComment ({
             {comment.user.name}
           </p>
           <p className='text-sm text-gray-600 dark:text-gray-400'>
-            {typeof comment.createdAt === 'string' ? null : (
-              <DateFormat date={comment.createdAt} />
-            )}
+            <DateFormat date={comment.createdAt} />
           </p>
         </div>
       </div>

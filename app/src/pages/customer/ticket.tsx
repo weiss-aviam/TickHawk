@@ -6,16 +6,19 @@ import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
 function Ticket () {
-  // TODO: Replace this html to JSX Ticket component
   const { id } = useParams()
   const auth = useAuth()
   const [ticket, setTicket] = React.useState<any>(null)
 
   useEffect(() => {
     auth.axiosClient.get(`/ticket/customer/${id}`).then((response: any) => {
+      const ticket_data = response.data
+      // Change date string to date object
+      ticket_data.createdAt = new Date(ticket_data.createdAt)
+      ticket_data.updatedAt = new Date(ticket_data.updatedAt)
       setTicket(response.data)
     })
-  }, [id])
+  }, [id, auth.axiosClient])
 
   return (
     <div>
@@ -117,8 +120,8 @@ function Ticket () {
                             Priority
                           </span>
                         </div>
-                        <div className='inline-flex items-center dark:text-white'>
-                          Low
+                        <div className='inline-flex items-center dark:text-white capitalize'>
+                          {ticket?.priority}
                         </div>
                       </div>
                     </div>
@@ -170,15 +173,19 @@ function Ticket () {
                       </div>
                       <div className='inline-flex items-center'>
                         <div className='flex-shrink-0'>
-                          <img
-                            className='w-6 h-6 rounded-full mr-2'
-                            src='https://flowbite.com/docs/images/people/profile-picture-5.jpg'
-                            alt='ticket agent'
-                          />
+                          {(ticket && ticket?.agent?._id) && (
+                            <img
+                              className='w-6 h-6 rounded-full mr-2'
+                              src='https://flowbite.com/docs/images/people/profile-picture-5.jpg'
+                              alt='ticket agent'
+                            />
+                          )}
                         </div>
                         <div className='flex-1 min-w-0'>
                           <span className='block text-base text-gray-900 truncate dark:text-white'>
-                            Michael Gough
+                            {(ticket && ticket?.agent?.name) ?
+                              ticket?.agent?.name :
+                              'No agent assigned'}
                           </span>
                         </div>
                       </div>
@@ -195,7 +202,11 @@ function Ticket () {
                       <div className='inline-flex items-center'>
                         <div className='flex-1 min-w-0'>
                           <span className='block text-base text-gray-900 truncate dark:text-white'>
-                            Support
+                            {(ticket && ticket?.department?.name) ? (
+                              ticket?.department?.name
+                            ) : (
+                              'No department assigned'
+                            )}
                           </span>
                         </div>
                       </div>
