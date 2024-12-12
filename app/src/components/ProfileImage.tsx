@@ -20,12 +20,12 @@ function ProfileImage ({ id, className }: { id?: string; className?: string }) {
         }else{
             setClassString('w-6 h-6 mr-2 rounded-full')
         }
-    }, [id, auth])
+    }, [id, auth, basePath, className])
     return (
     <img
       className={classString}
       src={imagePath}
-      alt='Profile image'
+      alt='Profile'
     />
   )
 }
