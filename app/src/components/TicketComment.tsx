@@ -25,6 +25,8 @@ export default function TicketComment ({
   className,
   comment
 }: TicketCommentProps) {
+
+  // Replaces new lines with <br /> tags
   const toHtml = useCallback(
     (content: string) => {
       return content.replace(/(?:\r\n|\r|\n)/g, '<br />')
