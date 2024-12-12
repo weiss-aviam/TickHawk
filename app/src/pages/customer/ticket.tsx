@@ -29,6 +29,12 @@ function Ticket () {
         comment.createdAt = new Date(comment.createdAt)
         comment.updatedAt = new Date(comment.updatedAt)
       })
+
+      // Event dates
+      ticket_data.events.forEach((event: any) => {
+        event.createdAt = new Date(event.createdAt)
+        event.updatedAt = new Date(event.updatedAt)
+      })
       setTicket(response.data)
     })
   }
@@ -52,7 +58,7 @@ function Ticket () {
       .then((response: any) => {
         if (response.status !== 201) {
           // TODO: Error message
-          return;
+          return
         }
         loadTicket()
       })
@@ -116,55 +122,60 @@ function Ticket () {
                   </div>
                 )}
 
-                <TicketReplies comments={ticket?.comments} events={ticket?.events} />
+                <TicketReplies
+                  comments={ticket?.comments}
+                  events={ticket?.events}
+                />
               </div>
-              <form onSubmit={handleReply}>
-                <div className='w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600'>
-                  <div className='px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800'>
-                    <label className='sr-only'>Write your message</label>
-                    <textarea
-                      id='content'
-                      name='content'
-                      rows={8}
-                      className='w-full px-0 text-sm outline-none text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400'
-                      placeholder='Write your message'
-                    ></textarea>
-                  </div>
-                  <div className='flex items-center justify-between px-3 py-2 border-t dark:border-gray-600'>
-                    <div>
-                      {files.map((file: FileModel) => (
-                        <div
-                          key={file._id}
-                          className='flex items-center space-x-2'
-                        >
-                          <FileIcon />
-                          <span className='text-sm font-medium text-gray-900 dark:text-white'>
-                            {file.name}
-                          </span>
-                          <button
-                            type='button'
-                            className='text-sm font-medium text-red-500 dark:text-red-500'
-                            onClick={() => {
-                              setFiles(files.filter(f => f._id !== file._id))
-                            }}
-                          >
-                            <CrossIcon />
-                          </button>
-                        </div>
-                      ))}
+              {ticket && ticket?.status === 'open' && (
+                <form onSubmit={handleReply}>
+                  <div className='w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600'>
+                    <div className='px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800'>
+                      <label className='sr-only'>Write your message</label>
+                      <textarea
+                        id='content'
+                        name='content'
+                        rows={8}
+                        className='w-full px-0 text-sm outline-none text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400'
+                        placeholder='Write your message'
+                      ></textarea>
                     </div>
-                    <FilePicker onFilesUploaded={handleFilesUploaded} />
+                    <div className='flex items-center justify-between px-3 py-2 border-t dark:border-gray-600'>
+                      <div>
+                        {files.map((file: FileModel) => (
+                          <div
+                            key={file._id}
+                            className='flex items-center space-x-2'
+                          >
+                            <FileIcon />
+                            <span className='text-sm font-medium text-gray-900 dark:text-white'>
+                              {file.name}
+                            </span>
+                            <button
+                              type='button'
+                              className='text-sm font-medium text-red-500 dark:text-red-500'
+                              onClick={() => {
+                                setFiles(files.filter(f => f._id !== file._id))
+                              }}
+                            >
+                              <CrossIcon />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <FilePicker onFilesUploaded={handleFilesUploaded} />
+                    </div>
                   </div>
-                </div>
-                <div className='pt-4 flex justify-end'>
-                  <button
-                    type='submit'
-                    className='inline-flex items-end p-2 text-sm font-medium text-center text-white bg-primary-600 rounded-lg focus:ring-4 focus:ring-reprimaryd-200 dark:focus:ring-primary-900 hover:bg-primary-700'
-                  >
-                    Reply
-                  </button>
-                </div>
-              </form>
+                  <div className='pt-4 flex justify-end'>
+                    <button
+                      type='submit'
+                      className='inline-flex items-end p-2 text-sm font-medium text-center text-white bg-primary-600 rounded-lg focus:ring-4 focus:ring-reprimaryd-200 dark:focus:ring-primary-900 hover:bg-primary-700'
+                    >
+                      Reply
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
             <div>
               <div className='p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800'>
@@ -278,15 +289,17 @@ function Ticket () {
                       </div>
                     </div>
                   </li>
-                  <li className='pt-4 flex justify-end'>
-                    <button
-                      type='button'
-                      onClick={handleCloseTicket}
-                      className='inline-flex items-end p-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg focus:ring-4 focus:ring-red-200 dark:focus:ring-red-900 hover:bg-red-700'
-                    >
-                      Close ticket
-                    </button>
-                  </li>
+                  {ticket && ticket?.status === 'open' && (
+                    <li className='pt-4 flex justify-end'>
+                      <button
+                        type='button'
+                        onClick={handleCloseTicket}
+                        className='inline-flex items-end p-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg focus:ring-4 focus:ring-red-200 dark:focus:ring-red-900 hover:bg-red-700'
+                      >
+                        Close ticket
+                      </button>
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>

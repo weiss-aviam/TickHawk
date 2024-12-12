@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import ThemeSelector from '../ThemeSelector'
+import ProfileImage from 'components/ProfileImage'
 
 function Header () {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
@@ -50,11 +51,8 @@ function Header () {
                     to='/settings'
                     className='flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600'
                   >
-                    <img
-                      className='w-8 h-8 rounded-full'
-                      src='https://flowbite.com/docs/images/people/profile-picture-5.jpg'
-                      alt='user'
-                    />
+                    
+                    <ProfileImage className='w-8 h-8 rounded-full' />
                   </Link>
                 </div>
               </div>

@@ -8,9 +8,11 @@ export default function TicketReplies ({ comments, events }: any) {
 
   useEffect(() => {
     // Order comments and events by createdAt in same array
+    if (!comments && !events) return
+    
     const replies = [
-      ...comments.map((comment: any) => ({ ...comment, type: 'comment' })),
-      ...events.map((event: any) => ({ ...event, type: 'event' }))
+      ...comments.map((comment: any) => ({ ...comment, filter: 'comment' })),
+      ...events.map((event: any) => ({ ...event, filter: 'event' }))
     ].sort(
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -21,11 +23,11 @@ export default function TicketReplies ({ comments, events }: any) {
     <div>
       {(allReplies || []).map((reply: any, index: number) => (
         <div key={index}>
-          {reply.type === 'comment' ? (
+          {reply.filter === 'comment' ? (
             <TicketComment key={index} comment={reply} />
           ) : (
             <TicketEvent key={index} event={reply} />
-            )}
+          )}
           <hr className='my-5 border-gray-300 dark:border-gray-600' />
         </div>
       ))}
