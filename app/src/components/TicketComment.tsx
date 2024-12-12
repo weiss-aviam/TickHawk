@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import FileInfo from './FileInfo'
 import DateFormat from './DateFormat'
+import ProfileImage from './ProfileImage'
 
 export type TicketCommentType = {
   user: {
@@ -36,11 +37,7 @@ export default function TicketComment ({
       <div className='flex items-center justify-between mb-2'>
         <div className='flex items-center'>
           <p className='inline-flex items-center mr-3 text-sm font-semibold text-gray-900 dark:text-white'>
-            <img
-              className='w-6 h-6 mr-2 rounded-full'
-              src='https://flowbite.com/docs/images/people/profile-picture-5.jpg'
-              alt='Jese avatar'
-            />
+            <ProfileImage/>
             {comment.user.name}
           </p>
           <p className='text-sm text-gray-600 dark:text-gray-400'>

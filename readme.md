@@ -21,13 +21,13 @@
 - **Statuses**: Pending, Open, In Progress, Closed.
 - **Work Logs**: Step-by-step tracking of hours spent solving the ticket.
 - **History**: Maintain a log of assignments, state changes, pauses, and more.
-- **Email Integration**: 
-  - Tickets sent via email are automatically added to the system.
+- **Email Integration** (Currently not implemented): 
+  - Tickets sent via email are automatically added to the system. 
   - When replying to tickets, responses can also be sent via email, allowing clients to continue the conversation directly from their inbox.
 
 ### 👥 **Role-Based Access**
 - **Client Users**: Create and monitor their tickets.
-- **agents**: Resolve tickets with precision and transparency.
+- **Agents**: Resolve tickets with precision and transparency.
 - **Admins**: Oversee all activities and manage roles seamlessly.
 
 ### 🧾 **Invoice Management**

@@ -1,8 +1,12 @@
 import { useAuth } from 'components/AuthProvider'
 import DateFormat from 'components/DateFormat'
+import FilePicker from 'components/FilePicker'
+import CrossIcon from 'components/icons/CrossIcon'
+import FileIcon from 'components/icons/FileIcon'
 import StatusBadge from 'components/StatusBadge'
 import TicketComment from 'components/TicketComment'
 import TimeFormat from 'components/TimeFormat'
+import { FileModel } from 'models/file.model'
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -10,6 +14,7 @@ function Ticket () {
   const { id } = useParams()
   const auth = useAuth()
   const [ticket, setTicket] = React.useState<any>(null)
+  const [files, setFiles] = React.useState<FileModel[]>([])
 
   useEffect(() => {
     auth.axiosClient.get(`/ticket/customer/${id}`).then((response: any) => {
@@ -21,6 +26,13 @@ function Ticket () {
     })
   }, [id, auth.axiosClient])
 
+  const handleFilesUploaded = async (_files: FileModel[]) => {
+    // Max 3 files
+    if (files.length + _files.length > 3) {
+      return
+    }
+    setFiles([...files, ..._files])
+  }
   return (
     <div>
       <div className='bg-gray-50 dark:bg-gray-900 min-h-screen'>
@@ -59,40 +71,37 @@ function Ticket () {
                 <div className='px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800'>
                   <label className='sr-only'>Write your message</label>
                   <textarea
-                    id='comment'
+                    id='content'
+                    name='content'
                     rows={8}
                     className='w-full px-0 text-sm outline-none text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400'
                     placeholder='Write your message'
                   ></textarea>
                 </div>
                 <div className='flex items-center justify-between px-3 py-2 border-t dark:border-gray-600'>
-                  <button
-                    type='submit'
-                    className='inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800'
-                  >
-                    Send message
-                  </button>
-                  <div className='flex pl-0 space-x-1 sm:pl-2'>
-                    <button
-                      type='button'
-                      className='inline-flex justify-center p-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600'
-                    >
-                      <svg
-                        aria-hidden='true'
-                        className='w-5 h-5'
-                        fill='currentColor'
-                        viewBox='0 0 20 20'
-                        xmlns='http://www.w3.org/2000/svg'
+                  <div>
+                    {files.map((file: FileModel) => (
+                      <div
+                        key={file._id}
+                        className='flex items-center space-x-2'
                       >
-                        <path
-                          fillRule='evenodd'
-                          d='M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z'
-                          clipRule='evenodd'
-                        ></path>
-                      </svg>
-                      <span className='sr-only'>Attach file</span>
-                    </button>
+                        <FileIcon />
+                        <span className='text-sm font-medium text-gray-900 dark:text-white'>
+                          {file.name}
+                        </span>
+                        <button
+                          type='button'
+                          className='text-sm font-medium text-red-500 dark:text-red-500'
+                          onClick={() => {
+                            setFiles(files.filter(f => f._id !== file._id))
+                          }}
+                        >
+                          <CrossIcon />
+                        </button>
+                      </div>
+                    ))}
                   </div>
+                  <FilePicker onFilesUploaded={handleFilesUploaded} />
                 </div>
               </div>
             </div>
@@ -158,7 +167,7 @@ function Ticket () {
                       <div className='inline-flex items-center'>
                         <div className='flex-1 min-w-0'>
                           <span className='block text-base text-gray-900 truncate dark:text-white'>
-                            {(ticket && ticket?.updatedAt) && (
+                            {ticket && ticket?.updatedAt && (
                               <DateFormat date={ticket?.updatedAt} />
                             )}
                           </span>
@@ -176,7 +185,7 @@ function Ticket () {
                       </div>
                       <div className='inline-flex items-center'>
                         <div className='flex-shrink-0'>
-                          {(ticket && ticket?.agent?._id) && (
+                          {ticket && ticket?.agent?._id && (
                             <img
                               className='w-6 h-6 rounded-full mr-2'
                               src='https://flowbite.com/docs/images/people/profile-picture-5.jpg'
@@ -186,9 +195,9 @@ function Ticket () {
                         </div>
                         <div className='flex-1 min-w-0'>
                           <span className='block text-base text-gray-900 truncate dark:text-white'>
-                            {(ticket && ticket?.agent?.name) ?
-                              ticket?.agent?.name :
-                              'No agent assigned'}
+                            {ticket && ticket?.agent?.name
+                              ? ticket?.agent?.name
+                              : 'No agent assigned'}
                           </span>
                         </div>
                       </div>
@@ -205,11 +214,9 @@ function Ticket () {
                       <div className='inline-flex items-center'>
                         <div className='flex-1 min-w-0'>
                           <span className='block text-base text-gray-900 truncate dark:text-white'>
-                            {(ticket && ticket?.department?.name) ? (
-                              ticket?.department?.name
-                            ) : (
-                              'No department assigned'
-                            )}
+                            {ticket && ticket?.department?.name
+                              ? ticket?.department?.name
+                              : 'No department assigned'}
                           </span>
                         </div>
                       </div>

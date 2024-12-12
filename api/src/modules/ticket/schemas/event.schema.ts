@@ -10,7 +10,7 @@ export class Event extends Document {
     type: UserTicketSchema,
     required: true,
   })
-  userId: UserTicket;
+  user: UserTicket;
 
   @Prop({
     required: true,
