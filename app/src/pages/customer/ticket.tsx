@@ -5,6 +5,7 @@ import CrossIcon from 'components/icons/CrossIcon'
 import FileIcon from 'components/icons/FileIcon'
 import StatusBadge from 'components/StatusBadge'
 import TicketComment from 'components/TicketComment'
+import TicketReplies from 'components/TicketReplies'
 import TimeFormat from 'components/TimeFormat'
 import { FileModel } from 'models/file.model'
 import React, { useEffect } from 'react'
@@ -16,15 +17,25 @@ function Ticket () {
   const [ticket, setTicket] = React.useState<any>(null)
   const [files, setFiles] = React.useState<FileModel[]>([])
 
-  useEffect(() => {
+  const loadTicket = () => {
     auth.axiosClient.get(`/ticket/customer/${id}`).then((response: any) => {
       const ticket_data = response.data
       // Change date string to date object
       ticket_data.createdAt = new Date(ticket_data.createdAt)
       ticket_data.updatedAt = new Date(ticket_data.updatedAt)
+
+      // Comment dates
+      ticket_data.comments.forEach((comment: any) => {
+        comment.createdAt = new Date(comment.createdAt)
+        comment.updatedAt = new Date(comment.updatedAt)
+      })
       setTicket(response.data)
     })
-  }, [id, auth.axiosClient])
+  }
+
+  useEffect(() => {
+    loadTicket()
+  }, [])
 
   const handleFilesUploaded = async (_files: FileModel[]) => {
     // Max 3 files
@@ -33,6 +44,51 @@ function Ticket () {
     }
     setFiles([...files, ..._files])
   }
+
+  const handleCloseTicket = () => {
+    //TODO: Confirm dialog
+    auth.axiosClient
+      .post(`/ticket/customer/close/${id}`)
+      .then((response: any) => {
+        if (response.status !== 201) {
+          // TODO: Error message
+          return;
+        }
+        loadTicket()
+      })
+  }
+
+  const handleReply = (event: any) => {
+    event.preventDefault()
+    const form = event.target
+    const formData = new FormData(form)
+
+    const content = formData.get('content')?.toString()
+
+    if (content && (content.length > 600 || content.length < 2)) {
+      //TODO: Message too long or too short
+      return
+    }
+
+    const data = {
+      _id: id,
+      content: content,
+      files: files.map(file => file._id)
+    }
+
+    auth.axiosClient
+      .post('/ticket/customer/reply', data)
+      .then((response: any) => {
+        if (response.status !== 201) {
+          //TODO: Error message
+          return
+        }
+        setFiles([])
+        form.reset()
+        loadTicket()
+      })
+  }
+  //TODO: Check if closed to not show reply form and show a message
   return (
     <div>
       <div className='bg-gray-50 dark:bg-gray-900 min-h-screen'>
@@ -60,52 +116,56 @@ function Ticket () {
                   </div>
                 )}
 
-                {(ticket?.comments || []).map((comment: any, index: number) => (
-                  <div>
-                    <TicketComment key={index} comment={comment} />
-                    <hr className='my-5 border-gray-300 dark:border-gray-600' />
-                  </div>
-                ))}
+                <TicketReplies comments={ticket?.comments} events={ticket?.events} />
               </div>
-              <div className='w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600'>
-                <div className='px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800'>
-                  <label className='sr-only'>Write your message</label>
-                  <textarea
-                    id='content'
-                    name='content'
-                    rows={8}
-                    className='w-full px-0 text-sm outline-none text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400'
-                    placeholder='Write your message'
-                  ></textarea>
-                </div>
-                <div className='flex items-center justify-between px-3 py-2 border-t dark:border-gray-600'>
-                  <div>
-                    {files.map((file: FileModel) => (
-                      <div
-                        key={file._id}
-                        className='flex items-center space-x-2'
-                      >
-                        <FileIcon />
-                        <span className='text-sm font-medium text-gray-900 dark:text-white'>
-                          {file.name}
-                        </span>
-                        <button
-                          type='button'
-                          className='text-sm font-medium text-red-500 dark:text-red-500'
-                          onClick={() => {
-                            setFiles(files.filter(f => f._id !== file._id))
-                          }}
+              <form onSubmit={handleReply}>
+                <div className='w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600'>
+                  <div className='px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800'>
+                    <label className='sr-only'>Write your message</label>
+                    <textarea
+                      id='content'
+                      name='content'
+                      rows={8}
+                      className='w-full px-0 text-sm outline-none text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400'
+                      placeholder='Write your message'
+                    ></textarea>
+                  </div>
+                  <div className='flex items-center justify-between px-3 py-2 border-t dark:border-gray-600'>
+                    <div>
+                      {files.map((file: FileModel) => (
+                        <div
+                          key={file._id}
+                          className='flex items-center space-x-2'
                         >
-                          <CrossIcon />
-                        </button>
-                      </div>
-                    ))}
+                          <FileIcon />
+                          <span className='text-sm font-medium text-gray-900 dark:text-white'>
+                            {file.name}
+                          </span>
+                          <button
+                            type='button'
+                            className='text-sm font-medium text-red-500 dark:text-red-500'
+                            onClick={() => {
+                              setFiles(files.filter(f => f._id !== file._id))
+                            }}
+                          >
+                            <CrossIcon />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <FilePicker onFilesUploaded={handleFilesUploaded} />
                   </div>
-                  <FilePicker onFilesUploaded={handleFilesUploaded} />
                 </div>
-              </div>
+                <div className='pt-4 flex justify-end'>
+                  <button
+                    type='submit'
+                    className='inline-flex items-end p-2 text-sm font-medium text-center text-white bg-primary-600 rounded-lg focus:ring-4 focus:ring-reprimaryd-200 dark:focus:ring-primary-900 hover:bg-primary-700'
+                  >
+                    Reply
+                  </button>
+                </div>
+              </form>
             </div>
-
             <div>
               <div className='p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:border-gray-700 sm:p-6 dark:bg-gray-800'>
                 <h3 className='mb-4 text-xl font-semibold dark:text-white'>
@@ -136,7 +196,6 @@ function Ticket () {
                       </div>
                     </div>
                   </li>
-
                   <li className='py-4'>
                     <div className='flex items-center space-x-4'>
                       <div className='flex-1 min-w-0'>
@@ -156,7 +215,6 @@ function Ticket () {
                       </div>
                     </div>
                   </li>
-
                   <li className='py-4'>
                     <div className='flex items-center space-x-4'>
                       <div className='flex-1 min-w-0'>
@@ -175,7 +233,6 @@ function Ticket () {
                       </div>
                     </div>
                   </li>
-
                   <li className='py-4'>
                     <div className='flex items-center space-x-4'>
                       <div className='flex-1 min-w-0'>
@@ -203,7 +260,6 @@ function Ticket () {
                       </div>
                     </div>
                   </li>
-
                   <li className='py-4'>
                     <div className='flex items-center space-x-4'>
                       <div className='flex-1 min-w-0'>
@@ -225,6 +281,7 @@ function Ticket () {
                   <li className='pt-4 flex justify-end'>
                     <button
                       type='button'
+                      onClick={handleCloseTicket}
                       className='inline-flex items-end p-2 text-sm font-medium text-center text-white bg-red-600 rounded-lg focus:ring-4 focus:ring-red-200 dark:focus:ring-red-900 hover:bg-red-700'
                     >
                       Close ticket

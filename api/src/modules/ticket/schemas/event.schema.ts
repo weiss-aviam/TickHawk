@@ -18,10 +18,10 @@ export class Event extends Document {
   })
   type: string;
 
-  @Prop({default: now()})
+  @Prop({})
   createdAt: Date;
 
-  @Prop({default: now()})
+  @Prop({})
   updatedAt: Date;
 }
 
@@ -31,3 +31,13 @@ EventSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
 });
+
+EventSchema.pre('save', function (next) {
+  this.updatedAt = now();
+  // Its new ticket
+  if (!this.createdAt) {
+    this.createdAt = this.updatedAt;
+  }
+  next();
+});
+

@@ -8,6 +8,7 @@ import { CreateTicketDto } from './dto/in/create-ticket.dto';
 import { Roles } from 'src/config/guard/roles/roles.decorator';
 import { ApiOperation } from '@nestjs/swagger';
 import { TicketDto } from './dto/out/ticket.dto';
+import { ReplyCommentCustomerTicketDto } from './dto/in/reply-comment-customer-ticket.dto';
 
 @Controller('ticket')
 @UseGuards(JWTGuard, RolesGuard)
@@ -23,6 +24,28 @@ export class TicketController {
   ): Promise<TicketDto> {
     const user = req.user;
     return await this.ticketService.createCustomerTicket(user, createTicketDto);
+  }
+
+  @Post('customer/reply')
+  @Roles(['customer'])
+  @ApiOperation({ summary: 'Reply to a ticket if you are a customer' })
+  async replyToTicket(
+    @Body() replyToCustomerTicket: ReplyCommentCustomerTicketDto,
+    @Req() req: Request,
+  ): Promise<TicketDto> {
+    const user = req.user;
+    return await this.ticketService.replyToCustomerTicket(user, replyToCustomerTicket);
+  }
+
+  @Post('customer/close/:id')
+  @Roles(['customer'])
+  @ApiOperation({ summary: 'Close a ticket if you are a customer' })
+  async closeTicket(
+    @Req() req: Request,
+    @Param('id') id: string,
+  ): Promise<TicketDto> {
+    const user = req.user;
+    return await this.ticketService.closeCustomerTicket(user, id);
   }
 
   @Get('customer')

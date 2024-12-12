@@ -20,6 +20,9 @@ import { CreateTicketDto } from './dto/in/create-ticket.dto';
 import { TicketDto } from './dto/out/ticket.dto';
 import { FileTicket, FileTicketSchema } from './schemas/file-ticket.schema';
 import { FileService } from '../file/file.service';
+import { ReplyCommentCustomerTicketDto } from './dto/in/reply-comment-customer-ticket.dto';
+import { Comment, CommentSchema } from './schemas/comment.schema';
+import { Event, EventSchema } from './schemas/event.schema';
 
 @Injectable()
 export class TicketService {
@@ -27,6 +30,8 @@ export class TicketService {
   private readonly userTicketModel: Model<UserTicket>;
   private readonly departmentTicketModel: Model<DepartmentTicket>;
   private readonly fileTicketModel: Model<FileTicket>;
+  private readonly commentTicketModel: Model<Comment>;
+  private readonly eventTicketModel: Model<Event>;
 
   constructor(
     @InjectModel(Ticket.name) private readonly ticketModel: Model<Ticket>,
@@ -38,6 +43,8 @@ export class TicketService {
     this.companyModel = mongoose.model(CompanyTicket.name, CompanyTicketSchema);
     this.userTicketModel = mongoose.model(UserTicket.name, UserTicketSchema);
     this.fileTicketModel = mongoose.model(FileTicket.name, FileTicketSchema);
+    this.commentTicketModel = mongoose.model(Comment.name, CommentSchema);
+    this.eventTicketModel = mongoose.model(Event.name, EventSchema);
     this.departmentTicketModel = mongoose.model(
       DepartmentTicket.name,
       DepartmentTicketSchema,
@@ -58,7 +65,10 @@ export class TicketService {
         throw new HttpException('MAX_FILES_EXCEEDED', 400);
       }
       // Limit subject to 60 characters and content to 500 characters
-      if (createTicket.subject.length > 60 || createTicket.content.length > 500) {
+      if (
+        createTicket.subject.length > 60 ||
+        createTicket.content.length > 500
+      ) {
         throw new HttpException('MAX_CHARACTERS_EXCEEDED', 400);
       }
       // Check if the company exists
@@ -104,6 +114,99 @@ export class TicketService {
       }
       throw new HttpException('TICKET_NOT_CREATED', 500);
     }
+  }
+
+  /**
+   * Reply to a ticket if you are a customer
+   * @param auth The authenticated user
+   * @param replyCommentCustomerTicketDto The reply to the ticket
+   * @returns 
+   */
+  async replyToCustomerTicket(
+    auth: AuthDto,
+    replyCommentCustomerTicketDto: ReplyCommentCustomerTicketDto,
+  ): Promise<TicketDto> {
+    if (replyCommentCustomerTicketDto.files.length > 3) {
+      throw new HttpException('MAX_FILES_EXCEEDED', 400);
+    }
+
+    if (replyCommentCustomerTicketDto.content.length > 500) {
+      throw new HttpException('MAX_CHARACTERS_EXCEEDED', 400);
+    }
+
+    // Check if the user exists
+    const user = await this.userService.findById(new Types.ObjectId(auth.id));
+    if (!user) {
+      throw new HttpException('USER_NOT_FOUND', 404);
+    }
+
+    // Check if the files exist
+    const files = await this.fileService.getFiles(
+      replyCommentCustomerTicketDto.files,
+    );
+    if (!files) {
+      throw new HttpException('FILES_NOT_FOUND', 404);
+    }
+
+    const ticket = await this.ticketModel.findById(
+      replyCommentCustomerTicketDto._id,
+    );
+
+    // Check if open
+    if (ticket.status !== 'open') {
+      throw new HttpException('TICKET_NOT_OPEN', 400);
+    }
+
+    const comment = plainToInstance(this.commentTicketModel, {
+      user: plainToInstance(this.userTicketModel, user),
+      content: replyCommentCustomerTicketDto.content,
+      files: files.map((file) => plainToInstance(this.fileTicketModel, file)),
+    }) as any;
+
+    ticket.comments.push(comment);
+
+    const ticketSaved = await ticket.save();
+    return this.getCustomerTicketById(auth, ticketSaved._id.toString());
+  }
+
+  /**
+   * Close a ticket if you are a customer
+   * @param auth  The authenticated user
+   * @param id The ticket id
+   * @returns 
+   */
+  async closeCustomerTicket(auth: AuthDto, id: string): Promise<TicketDto> {
+    const ticket = await this.ticketModel.findOne({
+      _id: new Types.ObjectId(id),
+      'customer._id': new Types.ObjectId(auth.id),
+    });
+
+    if (!ticket) {
+      throw new HttpException('TICKET_NOT_FOUND', 404);
+    }
+
+    // Is not cloed
+    if (ticket.status === 'closed') {
+      throw new HttpException('TICKET_ALREADY_CLOSED', 400);
+    }
+
+    const user = await this.userService.findById(new Types.ObjectId(auth.id));
+    if (!user) {
+      throw new HttpException('USER_NOT_FOUND', 404);
+    }
+    // Create event
+    const event = plainToInstance(this.eventTicketModel, {
+        user: plainToInstance(this.userTicketModel, user),
+        type: 'close',
+    });
+
+    ticket.events.push(event);
+
+    ticket.status = 'closed';
+    const ticketSaved = await ticket.save();
+    return plainToInstance(TicketDto, ticketSaved.toJSON(), {
+      excludeExtraneousValues: true,
+    });
   }
 
   /**
@@ -233,9 +336,9 @@ export class TicketService {
 
   /**
    * Get a ticket of the customer
-   * @param auth 
-   * @param id 
-   * @returns 
+   * @param auth
+   * @param id
+   * @returns
    */
   async getCustomerTicket(auth: AuthDto, id: string): Promise<TicketDto> {
     const ticket = await this.ticketModel.findOne({

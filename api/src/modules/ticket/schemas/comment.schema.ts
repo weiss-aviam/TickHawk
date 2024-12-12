@@ -18,7 +18,9 @@ export class Comment extends Document {
   })
   content: string;
   
-  @Prop()
+  @Prop({
+    required: false,
+  })
   minutes: number;
 
   @Prop({
@@ -27,10 +29,10 @@ export class Comment extends Document {
   })
   files: FileTicket[];
 
-  @Prop({default: now()})
+  @Prop({})
   createdAt: Date;
 
-  @Prop({default: now()})
+  @Prop({})
   updatedAt: Date;
 }
 
@@ -40,3 +42,13 @@ CommentSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
 });
+
+CommentSchema.pre('save', function (next) {
+  this.updatedAt = now();
+  // Its new ticket
+  if (!this.createdAt) {
+    this.createdAt = this.updatedAt;
+  }
+  next();
+});
+
