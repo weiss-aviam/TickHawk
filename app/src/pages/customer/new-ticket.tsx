@@ -1,4 +1,5 @@
 import { useAuth } from 'components/AuthProvider'
+import { useDialog } from 'components/DialogProvider'
 import FilePicker from 'components/FilePicker'
 import CrossIcon from 'components/icons/CrossIcon'
 import FileIcon from 'components/icons/FileIcon'
@@ -10,6 +11,7 @@ import { useNavigate } from 'react-router-dom'
 function NewTicket () {
   const navigate = useNavigate()
   const auth = useAuth()
+  const dialog = useDialog()
   const [departments, setDepartments] = React.useState([])
   const [error, setError] = React.useState('')
   const [files, setFiles] = React.useState<FileModel[]>([])
@@ -80,6 +82,22 @@ function NewTicket () {
       navigate(`/ticket/${ticketId}`)
     })
   }
+
+  const removeFile = (file: FileModel) => {
+    const removeFileFromList = () => {
+      setFiles(files.filter(f => f._id !== file._id))
+    }
+    dialog.openDialog({
+      title: 'Remove file',
+      content: 'Are you sure you want to remove this file?',
+      primaryAction: 'Remove',
+      secondaryAction: 'Cancel',
+      onPrimaryAction: [removeFileFromList],
+      onSecondaryAction: [],
+      onClose: []
+    })
+  }
+    
   return (
     <div>
       <div className='bg-gray-50 dark:bg-gray-900 min-h-screen'>
@@ -136,9 +154,7 @@ function NewTicket () {
                           <button
                             type='button'
                             className='text-sm font-medium text-red-500 dark:text-red-500'
-                            onClick={() => {
-                              setFiles(files.filter(f => f._id !== file._id))
-                            }}
+                            onClick={() => removeFile(file)}
                           >
                             <CrossIcon/>
                           </button>

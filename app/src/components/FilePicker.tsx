@@ -11,6 +11,7 @@ function FileUploader ({ onFilesUploaded }: FileUploaderProps) {
   const inputRef = useRef(null)
   const auth = useAuth()
   const notifyFileSize = () => toast.error('File size should be less than 3mb')
+  
 
   const handleDragOver = (ev: React.DragEvent<HTMLDivElement>) => {
     ev.preventDefault()
