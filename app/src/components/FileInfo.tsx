@@ -1,10 +1,31 @@
+import { useAuth } from './AuthProvider'
+
 export type FileInfoType = {
   className?: string
-  name: string
-  mimetype: string
+  file: {
+    _id: string
+    name: string
+    mimetype: string
+  }
 }
 
-export default function FileInfo ({ className, name, mimetype }: FileInfoType) {
+export default function FileInfo ({ className, file }: FileInfoType) {
+  const auth = useAuth()
+  const downloadFile = async () => {
+    try {
+      const response = await auth.axiosClient.get(`/ticket/file/${file._id}`)
+      const blob = new Blob([response.data])
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = file.name
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error(error)
+    }
+  }
   return (
     <div className='flex items-center p-3 mb-3.5 border border-gray-200 dark:border-gray-700 rounded-lg'>
       <div className='flex items-center justify-center w-10 h-10 mr-3 rounded-lg bg-primary-100 dark:bg-primary-900'>
@@ -25,12 +46,12 @@ export default function FileInfo ({ className, name, mimetype }: FileInfoType) {
       </div>
       <div className='mr-4'>
         <p className='text-sm font-semibold text-gray-900 dark:text-white'>
-          {name}
+          {file.name}
         </p>
       </div>
       <div className='flex items-center ml-auto'>
         <button
-          type='button'
+          onClick={downloadFile}
           className='p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700'
         >
           <svg

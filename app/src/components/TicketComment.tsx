@@ -10,6 +10,7 @@ export type TicketCommentType = {
   content: string
   minutes?: number
   files?: {
+    _id: string
     name: string
     mimetype: string
   }[]
@@ -52,7 +53,7 @@ export default function TicketComment ({
       </div>
       <div className='items-center 2xl:space-x-4 2xl:flex'>
         {comment.files?.map((file, index) => (
-          <FileInfo key={index} name={file.name} mimetype={file.mimetype} />
+          <FileInfo key={index} file={file}/>
         ))}
       </div>
     </article>

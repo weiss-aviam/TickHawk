@@ -3,6 +3,7 @@ import { ExposeId } from 'src/config/expose-id.decorator';
 import { FileTicketDto } from './file-ticket.dto';
 import { DepartmentTicketDto } from './department-ticket.dto';
 import { CompanyTicketDto } from './company-ticket.dto';
+import { CommentDto } from './comment.dto';
 
 export class TicketDto {
   @Expose()
@@ -37,7 +38,7 @@ export class TicketDto {
   minutes: number;
 
   @Expose()
-  comments: object[];
+  comments: CommentDto[];
 
   @Expose()
   events: object[];

@@ -72,7 +72,7 @@ export class FileService {
     if (!file) {
         throw new Error('File not found');
     }
-    return await fs.readFile(join(file.path, file._id.toString()));
+    return await fs.readFile(join(file.path, file.file.toString()));
   }
 
   /**
@@ -85,7 +85,7 @@ export class FileService {
     if (!file || !file.path.startsWith(join(this.uploadPath, 'public'))) {
         throw new Error('File not found');
     }
-    return await fs.readFile(join(file.path, file._id.toString()));
+    return await fs.readFile(join(file.path, file.file.toString()));
   }
 
   /**
@@ -112,4 +112,5 @@ export class FileService {
       { status: 'active' },
     ), sessionOption;
   }
+  
 }

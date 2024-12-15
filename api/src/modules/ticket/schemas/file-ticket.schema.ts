@@ -21,4 +21,7 @@ export const FileTicketSchema = SchemaFactory.createForClass(FileTicket);
 FileTicketSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
+  transform: function (_, ret) {
+   ret._id = ret._id.toString();
+  }
 });

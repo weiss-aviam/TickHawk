@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, Res, StreamableFile, UseGuards } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { JWTGuard } from 'src/config/guard/jwt/jwt.guard';
 import { RolesGuard } from 'src/config/guard/roles/roles.guard';
@@ -67,6 +67,7 @@ export class TicketController {
     return this.ticketService.getCustomerTicket(user, id);
   }
 
+  /** ADMIN and AGENT **/
   @Post('')
   @Roles(['admin', 'agent'])
   async createTicket(
@@ -85,5 +86,15 @@ export class TicketController {
       page = 1;
     }
     return this.ticketService.getTickets(user, page);
+  }
+
+  /**  Customer and Agent Members **/
+  @Get('file/:file')
+  @Roles(['customer', 'agent'])
+  @ApiOperation({ summary: 'Download a file from a ticket' })
+  async downloadFile(@Req() req: Request, @Param('file') file: string): Promise<StreamableFile> {
+    const user = req.user;
+    const buffer = await this.ticketService.downloadFile(user, file);
+    return new StreamableFile(buffer);
   }
 }

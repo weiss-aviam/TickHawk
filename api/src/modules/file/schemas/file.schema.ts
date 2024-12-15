@@ -42,7 +42,7 @@ export class File extends Document {
   status: string;
 
   @Prop({
-    required: false
+    required: false,
   })
   createdAt: Date;
 }
@@ -54,4 +54,12 @@ FileSchema.pre('save', function (next) {
     this.createdAt = now();
   }
   next();
+});
+
+FileSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (_, ret) {
+    ret._id = ret._id.toString();
+   }
 });

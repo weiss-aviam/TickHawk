@@ -30,6 +30,9 @@ export const EventSchema = SchemaFactory.createForClass(Event);
 EventSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
+  transform: function (_, ret) {
+   ret._id = ret._id.toString();
+  }
 });
 
 EventSchema.pre('save', function (next) {

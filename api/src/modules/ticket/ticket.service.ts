@@ -354,4 +354,30 @@ export class TicketService {
       excludeExtraneousValues: true,
     });
   }
+
+  async downloadFile(auth: AuthDto, file: string) {
+    const userId = auth.id;
+    
+    // Customer or agent id, and file id in files
+    const ticket = await this.ticketModel.findOne({
+      $and : [
+        { $or: [{ 'customer._id': new Types.ObjectId(userId) }, { 'agent._id': new Types.ObjectId(userId) }] },
+        { $or: [{ 'files': { $elemMatch: { _id: new Types.ObjectId(file) } } }, { 'comments.files': { $elemMatch: { _id: new Types.ObjectId(file) } } }] }
+      ]
+      
+    });
+
+    if (!ticket) {
+      throw new HttpException('TICKET_NOT_FOUND', 404);
+    }
+
+    const fileTicket = await this.fileService.getFile(file);
+
+    if (!fileTicket) {
+      throw new HttpException('FILE_NOT_FOUND', 404);
+    }
+
+    return fileTicket;
+  }
+
 }
