@@ -23,7 +23,11 @@ function App () {
   return (
     <DialogProvider>
       <AuthProvider>
-        <ToastContainer />
+        <ToastContainer
+          toastClassName='!border !border-gray-200 dark:!bg-gray-800 dark:!border-gray-600 dark:!text-white'
+          position='top-right'
+          autoClose={2500}
+        />
         <Routes>
           <Route path='' element={<ProtectedRoute />}>
             <Route path='/' element={<CustomerLayout />}>

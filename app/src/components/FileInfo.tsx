@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify'
 import { useAuth } from './AuthProvider'
 
 export type FileInfoType = {
@@ -14,6 +15,9 @@ export default function FileInfo ({ className, file }: FileInfoType) {
   const downloadFile = async () => {
     try {
       const response = await auth.axiosClient.get(`/ticket/file/${file._id}`)
+      if (!response.data || response.status !== 200) {
+        toast.error('Error downloading file')
+      }
       const blob = new Blob([response.data])
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -23,7 +27,7 @@ export default function FileInfo ({ className, file }: FileInfoType) {
       a.click()
       window.URL.revokeObjectURL(url)
     } catch (error) {
-      console.error(error)
+      toast.error('Error downloading file')
     }
   }
   return (

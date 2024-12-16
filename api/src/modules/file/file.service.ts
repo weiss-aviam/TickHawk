@@ -47,8 +47,14 @@ export class FileService {
     await promises.mkdir(path, { recursive: true });
     await promises.writeFile(filePath, file.buffer);
 
+    // Check if the name is too long and shorten it if necessary
+    var fileName = file.originalname;
+    if (fileName.length > 25) {
+      fileName = fileName.substring(0, 25) + file.originalname.substring(file.originalname.lastIndexOf('.'));
+    }
+
     const fileObject = await this.fileModel.create({
-      name: file.originalname,
+      name: fileName,
       file: objectId.toString(),
       path: path,
       mimetype: file.mimetype,
@@ -74,7 +80,9 @@ export class FileService {
     }
 
     // check if the file is exist
-    if (!promises.access(join(file.path, file.file.toString()))) {
+    try{
+      await promises.access(join(file.path, file.file.toString()));
+    } catch (error) {
       throw new Error('ERROR_FILE_NOT_FOUND');
     }
     return await promises.readFile(join(file.path, file.file.toString()));
