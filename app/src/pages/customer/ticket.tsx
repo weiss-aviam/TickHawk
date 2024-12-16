@@ -1,5 +1,6 @@
 import { useAuth } from 'components/AuthProvider'
 import DateFormat from 'components/DateFormat'
+import { useDialog } from 'components/DialogProvider'
 import FilePicker from 'components/FilePicker'
 import CrossIcon from 'components/icons/CrossIcon'
 import FileIcon from 'components/icons/FileIcon'
@@ -10,10 +11,12 @@ import TimeFormat from 'components/TimeFormat'
 import { FileModel } from 'models/file.model'
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 function Ticket () {
   const { id } = useParams()
   const auth = useAuth()
+  const dialog = useDialog()
   const [ticket, setTicket] = React.useState<any>(null)
   const [files, setFiles] = React.useState<FileModel[]>([])
 
@@ -41,6 +44,7 @@ function Ticket () {
 
   useEffect(() => {
     loadTicket()
+    // eslint-disable-next-line
   }, [])
 
   const handleFilesUploaded = async (_files: FileModel[]) => {
@@ -52,16 +56,23 @@ function Ticket () {
   }
 
   const handleCloseTicket = () => {
-    //TODO: Confirm dialog
-    auth.axiosClient
-      .post(`/ticket/customer/close/${id}`)
-      .then((response: any) => {
-        if (response.status !== 201) {
-          // TODO: Error message
-          return
-        }
-        loadTicket()
-      })
+    dialog.openDialog({
+      title: 'Close ticket',
+      content: 'Are you sure you want to close this ticket?',
+      primaryAction: 'Close ticket',
+      secondaryAction: 'Cancel',
+      onPrimaryAction: [() => {
+        auth.axiosClient
+          .post(`/ticket/customer/close/${id}`)
+          .then((response: any) => {
+            if (response.status !== 201) {
+              toast.error('Error closing ticket')
+              return
+            }
+            loadTicket()
+          })
+      }]
+    })
   }
 
   const handleReply = (event: any) => {
@@ -72,7 +83,7 @@ function Ticket () {
     const content = formData.get('content')?.toString()
 
     if (content && (content.length > 600 || content.length < 2)) {
-      //TODO: Message too long or too short
+      toast.error('Message must be between 2 and 600 characters')
       return
     }
 
@@ -86,7 +97,7 @@ function Ticket () {
       .post('/ticket/customer/reply', data)
       .then((response: any) => {
         if (response.status !== 201) {
-          //TODO: Error message
+          toast.error('Error replying to ticket')
           return
         }
         setFiles([])

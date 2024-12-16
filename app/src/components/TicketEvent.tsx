@@ -1,4 +1,3 @@
-import { useCallback } from 'react'
 import DateFormat from './DateFormat'
 import ProfileImage from './ProfileImage'
 
@@ -16,11 +15,6 @@ export type TicketEventProps = {
 }
 
 export default function TicketEvent ({ className, event }: TicketEventProps) {
-  // Replaces new lines with <br /> tags
-  const toHtml = useCallback((content: string) => {
-    return content.replace(/(?:\r\n|\r|\n)/g, '<br />')
-  }, [])
-
   return (
     <article className={className}>
       <div className='mb-2'>
@@ -38,7 +32,7 @@ export default function TicketEvent ({ className, event }: TicketEventProps) {
         <div className='py-1.5 px-3 inline-flex items-center rounded-lg bg-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600 dark:bg-gray-700'>
           {event.type === 'close' && (
             <p className='text-gray-900 dark:text-white'>
-              This ticket has been closed
+              The ticket was closed
             </p>
           )}
         </div>

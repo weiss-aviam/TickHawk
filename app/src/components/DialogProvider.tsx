@@ -3,7 +3,7 @@ import React, { createContext, useContext, useMemo } from 'react'
 export type DialogType = {
   className?: string
   title: string
-  description: string
+  content: string
   primaryAction: string
   secondaryAction: string
   onClose: [() => void]
@@ -33,7 +33,7 @@ const Dialog = ({ dialog }: { dialog: DialogType }) => {
   return (
     <div className='z-[30] fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
       <div className='max-w-96  w-full bg-white dark:bg-gray-800 relative p-4'>
-        <h5 className='inline-flex items-center mb-6 text-sm font-semibold text-gray-500 uppercase dark:text-gray-400'>
+        <h5 className='inline-flex items-center mb-4 text-sm font-semibold text-gray-500 uppercase dark:text-gray-400'>
           {dialog.title}
         </h5>
         <button
@@ -54,6 +54,9 @@ const Dialog = ({ dialog }: { dialog: DialogType }) => {
           </svg>
           <span className='sr-only'>Close menu</span>
         </button>
+        <div className='mb-5'>
+          <p className='text-gray-900 dark:text-white'>{dialog.content}</p>
+        </div>
         <div className=''>
           <div className='bottom-0 left-0 flex justify-end w-full space-x-4 md:px-4'>
             <button
@@ -83,13 +86,13 @@ const DialogProvider = ({ children }: { children: React.ReactNode }) => {
   const [dialog, setDialog] = React.useState<DialogType | null>(null)
 
   const openDialog = (dialog: DialogType) => {
-    if (!dialog.onClose) dialog.onClose = [() => {}]
+    if (!dialog.onClose) dialog.onClose = [() => closeDialog()]
     else dialog.onClose.push(() => closeDialog())
 
-    if (!dialog.onPrimaryAction) dialog.onPrimaryAction = [() => {}]
+    if (!dialog.onPrimaryAction) dialog.onPrimaryAction = [() => closeDialog()]
     else dialog.onPrimaryAction.push(() => closeDialog())
 
-    if (!dialog.onSecondaryAction) dialog.onSecondaryAction = [() => {}]
+    if (!dialog.onSecondaryAction) dialog.onSecondaryAction = [() => closeDialog()]
     else dialog.onSecondaryAction.push(() => closeDialog())
 
     setDialog(dialog)
@@ -105,7 +108,8 @@ const DialogProvider = ({ children }: { children: React.ReactNode }) => {
       closeDialog,
       dialog
     }),
-    [dialog]
+    // eslint-disable-next-line
+    []
   )
   return (
     <DialogContext.Provider value={contextValue as DialogContextType}>
