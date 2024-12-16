@@ -120,7 +120,7 @@ export class TicketService {
    * Reply to a ticket if you are a customer
    * @param auth The authenticated user
    * @param replyCommentCustomerTicketDto The reply to the ticket
-   * @returns 
+   * @returns
    */
   async replyToCustomerTicket(
     auth: AuthDto,
@@ -173,7 +173,7 @@ export class TicketService {
    * Close a ticket if you are a customer
    * @param auth  The authenticated user
    * @param id The ticket id
-   * @returns 
+   * @returns
    */
   async closeCustomerTicket(auth: AuthDto, id: string): Promise<TicketDto> {
     const ticket = await this.ticketModel.findOne({
@@ -196,8 +196,8 @@ export class TicketService {
     }
     // Create event
     const event = plainToInstance(this.eventTicketModel, {
-        user: plainToInstance(this.userTicketModel, user),
-        type: 'close',
+      user: plainToInstance(this.userTicketModel, user),
+      type: 'close',
     });
 
     ticket.events.push(event);
@@ -357,14 +357,27 @@ export class TicketService {
 
   async downloadFile(auth: AuthDto, file: string) {
     const userId = auth.id;
-    
+
     // Customer or agent id, and file id in files
     const ticket = await this.ticketModel.findOne({
-      $and : [
-        { $or: [{ 'customer._id': new Types.ObjectId(userId) }, { 'agent._id': new Types.ObjectId(userId) }] },
-        { $or: [{ 'files': { $elemMatch: { _id: new Types.ObjectId(file) } } }, { 'comments.files': { $elemMatch: { _id: new Types.ObjectId(file) } } }] }
-      ]
-      
+      $and: [
+        {
+          $or: [
+            { 'customer._id': new Types.ObjectId(userId) },
+            { 'agent._id': new Types.ObjectId(userId) },
+          ],
+        },
+        {
+          $or: [
+            { files: { $elemMatch: { _id: new Types.ObjectId(file) } } },
+            {
+              'comments.files': {
+                $elemMatch: { _id: new Types.ObjectId(file) },
+              },
+            },
+          ],
+        },
+      ],
     });
 
     if (!ticket) {
@@ -376,8 +389,6 @@ export class TicketService {
     if (!fileTicket) {
       throw new HttpException('FILE_NOT_FOUND', 404);
     }
-
     return fileTicket;
   }
-
 }

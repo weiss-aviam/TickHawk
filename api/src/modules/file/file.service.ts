@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { join } from 'path';
-import { promises as fs } from 'fs';
+import { promises } from 'fs';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { File } from './schemas/file.schema';
@@ -44,8 +44,8 @@ export class FileService {
     path = join(path, year.toString(), month);
 
     const filePath = join(path, objectId.toString());
-    await fs.mkdir(path, { recursive: true });
-    await fs.writeFile(filePath, file.buffer);
+    await promises.mkdir(path, { recursive: true });
+    await promises.writeFile(filePath, file.buffer);
 
     const fileObject = await this.fileModel.create({
       name: file.originalname,
@@ -70,9 +70,14 @@ export class FileService {
   async getFile(id: string): Promise<Buffer> {
     const file = await this.fileModel.findById(id);
     if (!file) {
-        throw new Error('File not found');
+        throw new Error('ERROR_FILE_NOT_FOUND');
     }
-    return await fs.readFile(join(file.path, file.file.toString()));
+
+    // check if the file is exist
+    if (!promises.access(join(file.path, file.file.toString()))) {
+      throw new Error('ERROR_FILE_NOT_FOUND');
+    }
+    return await promises.readFile(join(file.path, file.file.toString()));
   }
 
   /**
@@ -83,9 +88,9 @@ export class FileService {
   async getPublicFile(id: string): Promise<Buffer> {
     const file = await this.fileModel.findById(id);
     if (!file || !file.path.startsWith(join(this.uploadPath, 'public'))) {
-        throw new Error('File not found');
+        throw new Error('ERROR_FILE_NOT_FOUND');
     }
-    return await fs.readFile(join(file.path, file.file.toString()));
+    return await promises.readFile(join(file.path, file.file.toString()));
   }
 
   /**
