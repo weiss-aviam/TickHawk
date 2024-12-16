@@ -95,6 +95,7 @@ export class TicketController {
   async downloadFile(@Req() req: Request, @Param('file') file: string): Promise<StreamableFile> {
     const user = req.user;
     const buffer = await this.ticketService.downloadFile(user, file);
+    
     return new StreamableFile(buffer);
   }
 }

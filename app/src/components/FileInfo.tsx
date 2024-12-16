@@ -14,7 +14,7 @@ export default function FileInfo ({ className, file }: FileInfoType) {
   const auth = useAuth()
   const downloadFile = async () => {
     try {
-      const response = await auth.axiosClient.get(`/ticket/file/${file._id}`)
+      const response = await auth.axiosClient.get(`/ticket/file/${file._id}`, {responseType: 'arraybuffer'})
       if (!response.data || response.status !== 200) {
         toast.error('Error downloading file')
       }
