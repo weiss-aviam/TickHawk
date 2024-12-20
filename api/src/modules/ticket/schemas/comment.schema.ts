@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types, now, Document} from 'mongoose';
+import { HydratedDocument, now, Document} from 'mongoose';
 import { UserTicket, UserTicketSchema } from './user-ticket.schema';
 import { FileTicket, FileTicketSchema } from './file-ticket.schema';
 

@@ -62,6 +62,12 @@ export class Ticket extends Document {
   })
   files: FileTicket[];
 
+  @Prop({
+    type: [FileTicketSchema],
+    default: [],
+  })
+  files: FileTicket[];
+
   @Prop({ type: [CommentSchema], default: [] })
   comments: Comment[];
 
