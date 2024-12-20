@@ -10,7 +10,6 @@ import HomeCustomer from './pages/customer/home'
 import CustomerLayout from 'components/customer/Layout'
 import CustomerTicket from 'pages/customer/ticket'
 import CustomerReports from 'pages/customer/reports'
-import CustomerSettings from 'pages/customer/settings'
 import CustomerNewTicket from 'pages/customer/new-ticket'
 // Agent
 import Layout from 'pages/layout'
@@ -18,6 +17,7 @@ import ProtectedRoute from 'components/ProtectedRoute'
 import AuthProvider from 'components/AuthProvider'
 import { ToastContainer } from 'react-toastify'
 import DialogProvider from 'components/DialogProvider'
+import Profile from 'pages/profile'
 
 function App () {
   return (
@@ -35,7 +35,7 @@ function App () {
               <Route path='ticket/:id' element={<CustomerTicket />} />
               <Route path='new-ticket' element={<CustomerNewTicket />} />
               <Route path='reports' element={<CustomerReports />} />
-              <Route path='settings' element={<CustomerSettings />} />
+              <Route path='profile' element={<Profile />} />
               <Route path='*' element={<NoMatch />} />
             </Route>
             <Route path='/backoffice' element={<Layout />}>
