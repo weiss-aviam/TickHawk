@@ -5,12 +5,23 @@ import { User } from './schemas/user.schema';
 import { ProfileDto } from './dtos/out/profile.dto';
 import { plainToInstance } from 'class-transformer';
 import { AssignDepartmentDto } from './dtos/in/assign-department.dto';
+import { CreateUserDto } from './dtos/in/create-user.dto';
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
+
+  /**
+   * Exist user in database
+   * For init data propuse
+   */
+  async exist(): Promise<boolean> {
+    return await this.userModel.findOne() !== null;
+  }
 
   /**
    * Find a user by username
@@ -49,5 +60,20 @@ export class UserService {
       { $push: { departments: assignDepartmentDto.departmentId } },
     );
     return update.modifiedCount > 0;
+  }
+
+  /**
+   * Cretae a new user
+   * @param user CreateUserDto
+   */
+  async create(user: CreateUserDto): Promise<User> {
+    if (!user.password) {
+      //TODO: Add block user if password is empty
+      throw new Error('PASSWORD_REQUIRED');
+    }else{
+      user.password = bcrypt.hashSync(user.password, 10);
+    }
+
+    return await this.userModel.create(new this.userModel(user));
   }
 }

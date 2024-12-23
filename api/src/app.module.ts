@@ -7,6 +7,7 @@ import { FileModule } from './modules/file/file.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { ShareModule } from './config/share.module';
+import { AppInit } from './init';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ShareModule } from './config/share.module';
     FileModule,
   ],
   controllers: [AppController],
+  providers: [AppInit],
 })
 export class AppModule {}
 
