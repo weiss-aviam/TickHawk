@@ -315,7 +315,7 @@ export class TicketService {
    * @param page
    */
   async getCustomerTickets(auth: AuthDto, page: number): Promise<TicketDto[]> {
-    const limit = 15;
+    const limit = 10;
     const tickets = await this.ticketModel
       .find({
         'customer._id': new Types.ObjectId(auth.id),

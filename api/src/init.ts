@@ -17,7 +17,9 @@ export class AppInit implements OnModuleInit {
 
     if (existingUser) {
       return;
-    }
+    } 
+
+    //TODO: Init company
 
     const defaultUser = {
       name:
