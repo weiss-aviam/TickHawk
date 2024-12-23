@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom'
 import Header from './Header'
 
 function Layout () {
+  //TODO: Check if user role is customer
   return (
     <main className='bg-gray-50 dark:bg-gray-800 min-h-screen'>
       <TwSizeIndicator />
