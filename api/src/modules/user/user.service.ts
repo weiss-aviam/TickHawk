@@ -7,7 +7,7 @@ import { plainToInstance } from 'class-transformer';
 import { AssignDepartmentDto } from './dtos/in/assign-department.dto';
 import { CreateUserDto } from './dtos/in/create-user.dto';
 import * as bcrypt from 'bcrypt';
-
+import { UpdateProfileDto } from './dtos/in/update-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -20,7 +20,7 @@ export class UserService {
    * For init data propuse
    */
   async exist(): Promise<boolean> {
-    return await this.userModel.findOne() !== null;
+    return (await this.userModel.findOne()) !== null;
   }
 
   /**
@@ -34,8 +34,8 @@ export class UserService {
 
   /**
    * Find a user by id and return a profile dto
-   * @param id 
-   * @returns 
+   * @param id
+   * @returns
    */
   async findById(id: Types.ObjectId): Promise<ProfileDto> {
     const user = await this.userModel.findById(id);
@@ -49,8 +49,8 @@ export class UserService {
 
   /**
    * Assign a department to a user by id
-   * @param assignDepartmentDto 
-   * @returns 
+   * @param assignDepartmentDto
+   * @returns
    */
   async assignDepartment(
     assignDepartmentDto: AssignDepartmentDto,
@@ -70,10 +70,36 @@ export class UserService {
     if (!user.password) {
       //TODO: Add block user if password is empty
       throw new Error('PASSWORD_REQUIRED');
-    }else{
+    } else {
       user.password = bcrypt.hashSync(user.password, 10);
     }
 
+    //TODO: PlaintoInstance
     return await this.userModel.create(new this.userModel(user));
+  }
+
+  /**
+   * Update a user by id
+   * @param profile
+   * @returns
+   */
+  async update(profile: UpdateProfileDto): Promise<ProfileDto> {
+    if (profile.password) {
+      profile.password = bcrypt.hashSync(profile.password, 10);
+    } else {
+      delete profile.password;
+    }
+
+    const user = await this.userModel.findById(profile._id);
+    if (!user) {
+      throw new Error('USER_NOT_FOUND');
+    }+
+
+    await this.userModel.updateOne({ _id: profile._id }, profile);
+
+    const newUser = await this.userModel.findById(profile._id);
+    return plainToInstance(ProfileDto, newUser.toJSON(), {
+      excludeExtraneousValues: true,
+    });
   }
 }

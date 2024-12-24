@@ -14,7 +14,6 @@ import { JWTGuard } from './guard/jwt/jwt.guard';
       provide: APP_GUARD,
       useClass: JWTGuard,
     },
-    
   ],
   imports: [
     ConfigModule.forRoot({
@@ -47,7 +46,9 @@ import { JWTGuard } from './guard/jwt/jwt.guard';
       useFactory: (configService: ConfigService) => ({
         global: true,
         secret: configService.get<string>('jwt.secret'),
-        signOptions: { expiresIn: configService.get<string>('jwt.accessTokenExpiration') },
+        signOptions: {
+          expiresIn: configService.get<string>('jwt.accessTokenExpiration'),
+        },
       }),
     }),
   ],

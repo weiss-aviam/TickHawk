@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Req,
   Res,
   UseGuards,
@@ -19,6 +20,7 @@ import { AssignDepartmentDto } from './dtos/in/assign-department.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ProfileDto } from './dtos/out/profile.dto';
 import { Public } from 'src/config/public.decorator';
+import { UpdateProfileDto } from './dtos/in/update-profile.dto';
 
 @Controller('user')
 @UseGuards(JWTGuard, RolesGuard)
@@ -42,6 +44,21 @@ export class UserController {
     const userData = request.user;
     const id = new Types.ObjectId(userData.id as string);
     return await this.userService.findById(id);
+  }
+
+  @Put('/me')
+  @Roles(['customer', 'admin', 'agent'])
+  @ApiOperation({ summary: 'Update user data by id' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User data updated successfully',
+    type: ProfileDto,
+  })
+  async updateMe(
+    @Req() request: Request,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ): Promise<ProfileDto> {
+    return await this.userService.update(updateProfileDto);
   }
 
   /**

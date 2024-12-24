@@ -19,9 +19,22 @@ function Profile() {
     const formData = new FormData(form);
     const language = formData.get("language")?.toString();
     const name = formData.get("name")?.toString();
-    const currentPassword = formData.get("current-password")?.toString();
     const password = formData.get("password")?.toString();
     const confirmPassword = formData.get("confirm-password")?.toString();
+
+    const data = {
+      _id: user._id,
+      lang: language,
+      name: name,
+    } as any;
+
+    if (password === confirmPassword) {
+      data["password"] = password;
+    }
+
+    auth.axiosClient.put("/user/me", data).then((response: any) => {
+      setUser(response.data);
+    });
   };
 
   return (
@@ -77,6 +90,7 @@ function Profile() {
                     id="language"
                     name="language"
                     value={user?.lang}
+                    onChange={(event) => setUser({ ...user, lang: event.target.value })}
                     className="bg-gray-50 border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                   >
                     <option value="en">English (US)</option>
@@ -101,6 +115,7 @@ function Profile() {
                       id="name"
                       name="name"
                       value={user?.name}
+                      onChange={(event) => setUser({ ...user, name: event.target.value })}
                       className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                       placeholder="Bonnie Lee"
                     />
@@ -129,18 +144,6 @@ function Profile() {
               <div className="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
                 <h3 className="mb-4 text-xl font-semibold dark:text-white">Password information</h3>
                 <div className="grid grid-cols-6 gap-6">
-                  <div className="col-span-6 sm:col-span-3">
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                      Current password
-                    </label>
-                    <input
-                      type="text"
-                      name="current-password"
-                      id="current-password"
-                      className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                      placeholder="••••••••"
-                    />
-                  </div>
                   <div className="col-span-6 sm:col-span-3">
                     <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New password</label>
                     <input
