@@ -24,6 +24,7 @@ function ProfileImage ({ id, className }: { id?: string; className?: string }) {
             setClassString('w-6 h-6 mr-2 rounded-full')
         }
     }, [id, auth, basePath, className])
+
     return (
     <img
       className={classString}

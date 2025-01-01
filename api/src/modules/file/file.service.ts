@@ -23,8 +23,13 @@ export class FileService {
    * @param path  The path to save the file to
    * @returns    The id of the file
    */
-  async saveFile(file: Express.Multer.File, userId: string, path: string = null): Promise<FileDto> {
-    const objectId = new Types.ObjectId();
+  async saveFile(
+    file: Express.Multer.File,
+    userId: string,
+    path: string = null,
+    id: string = null,
+  ): Promise<FileDto> {
+    const objectId = id ? id : new Types.ObjectId();
 
     // Check size < 3MB
     if (file.size > 3 * 1024 * 1024) {
@@ -40,7 +45,7 @@ export class FileService {
     // Create a folder for the current year and month
     const now = new Date();
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const month = String(now.getMonth() + 1).padStart(2, '0');
     path = join(path, year.toString(), month);
 
     const filePath = join(path, objectId.toString());
@@ -50,18 +55,37 @@ export class FileService {
     // Check if the name is too long and shorten it if necessary
     var fileName = file.originalname;
     if (fileName.length > 25) {
-      fileName = fileName.substring(0, 25) + file.originalname.substring(file.originalname.lastIndexOf('.'));
+      fileName =
+        fileName.substring(0, 25) +
+        file.originalname.substring(file.originalname.lastIndexOf('.'));
     }
 
-    const fileObject = await this.fileModel.create({
-      name: fileName,
-      file: objectId.toString(),
-      path: path,
-      mimetype: file.mimetype,
-      size: file.size,
-      status: 'temporal',
-      userId: userId,
-    });
+    // Check if the file is already in the database
+    const existingFile = await this.fileModel.findOne({ _id: objectId });
+    if (existingFile) {
+      //TODO: Test this
+      await promises.access(
+        join(existingFile.path, existingFile.file.toString()),
+      );
+    }
+
+    const fileObject = await this.fileModel.findOneAndUpdate(
+      { _id: objectId },
+      {
+        _id: objectId,
+        name: fileName,
+        file: objectId.toString(),
+        path: path,
+        mimetype: file.mimetype,
+        size: file.size,
+        status: 'temporal',
+        userId: userId,
+      },
+      {
+        new: true,
+        upsert: true, // Make this update into an upsert
+      },
+    );
 
     return plainToInstance(FileDto, fileObject.toJSON(), {
       excludeExtraneousValues: true,
@@ -71,16 +95,16 @@ export class FileService {
   /**
    * Get a file from the file system
    * @param id The id of the file
-   * @returns 
+   * @returns
    */
   async getFile(id: string): Promise<Buffer> {
     const file = await this.fileModel.findById(id);
     if (!file) {
-        throw new Error('ERROR_FILE_NOT_FOUND');
+      throw new Error('ERROR_FILE_NOT_FOUND');
     }
 
     // check if the file is exist
-    try{
+    try {
       await promises.access(join(file.path, file.file.toString()));
     } catch (error) {
       throw new Error('ERROR_FILE_NOT_FOUND');
@@ -91,27 +115,29 @@ export class FileService {
   /**
    * Get a public file from the file system
    * @param id The id of the file
-   * @returns 
+   * @returns
    */
   async getPublicFile(id: string): Promise<Buffer> {
     const file = await this.fileModel.findById(id);
     if (!file || !file.path.startsWith(join(this.uploadPath, 'public'))) {
-        throw new Error('ERROR_FILE_NOT_FOUND');
+      throw new Error('ERROR_FILE_NOT_FOUND');
     }
     return await promises.readFile(join(file.path, file.file.toString()));
   }
 
   /**
    * Get all files
-   * @returns 
+   * @returns
    */
   async getFiles(ids: string[]): Promise<FileDto[]> {
     const files = await this.fileModel.find({
       _id: { $in: ids },
     });
-    return files.map(file => plainToInstance(FileDto, file.toJSON(), {
-      excludeExtraneousValues: true,
-    }));
+    return files.map((file) =>
+      plainToInstance(FileDto, file.toJSON(), {
+        excludeExtraneousValues: true,
+      }),
+    );
   }
 
   /**
@@ -123,7 +149,7 @@ export class FileService {
     await this.fileModel.updateMany(
       { _id: { $in: ids } },
       { status: 'active' },
-    ), sessionOption;
+    ),
+      sessionOption;
   }
-  
 }

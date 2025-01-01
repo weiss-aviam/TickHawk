@@ -90,7 +90,7 @@ export class TicketController {
 
   /**  Customer and Agent Members **/
   @Get('file/:file')
-  @Roles(['customer', 'agent'])
+  @Roles(['customer', 'agent', 'admin'])
   @ApiOperation({ summary: 'Download a file from a ticket' })
   async downloadFile(@Req() req: Request, @Param('file') file: string): Promise<StreamableFile> {
     const user = req.user;
