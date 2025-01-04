@@ -2,13 +2,9 @@
 
 Welcome to **TickHawk**, a React.js-based front-end application designed to manage ticketing systems effectively
 
-## 🛠 Features
+## Environment
 
-- **Customer Portal** (`/`)
-  - User login and registration.
-  - Submit and track tickets.
-  - Intuitive and user-friendly interface.
-
-- **Agent Portal** (`/agent`)
-  - Role-based access for Admin and Agents.
-  - Manage tickets, assign tasks, and resolve issues.
+```
+REACT_APP_API_URL=http://localhost:4000
+NODE_ENV=development
+```
