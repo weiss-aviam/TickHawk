@@ -11,6 +11,8 @@ services:
       - S3_PROVIDER=local
       - PORT=3000
       - LOCAL_UPLOAD_PATH=/app/uploads
+      - LOG_LEVEL=info
+      - ENABLE_SWAGGER=true
     volumes:
       - uploads_data:/app/uploads
     depends_on:
