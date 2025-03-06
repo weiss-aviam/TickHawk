@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateCompanyDto } from './dtos/in/create-company.dto';
 import { Company } from './schemas/company.schema';
@@ -13,6 +13,7 @@ import { User } from '../user/schemas/user.schema';
 @Injectable()
 export class CompanyService {
   private readonly contractModel: Model<Contract>;
+  private readonly logger = new Logger(CompanyService.name);
 
   constructor(
     @InjectModel(Company.name) private readonly companyModel: Model<Company>,
@@ -27,11 +28,21 @@ export class CompanyService {
    * @returns The created company
    */
   async createCompany(createCompanyDto: CreateCompanyDto): Promise<CompanyDto> {
-    const company = new this.companyModel(createCompanyDto);
-    const savedCompany = await company.save();
-    return plainToInstance(CompanyDto, savedCompany.toJSON(), {
-      excludeExtraneousValues: true,
-    });
+    try {
+      this.logger.debug(`Creating new company: ${createCompanyDto.name}`);
+      
+      const company = new this.companyModel(createCompanyDto);
+      const savedCompany = await company.save();
+      
+      this.logger.debug(`Company created successfully with ID: ${savedCompany._id}`);
+      
+      return plainToInstance(CompanyDto, savedCompany.toJSON(), {
+        excludeExtraneousValues: true,
+      });
+    } catch (error) {
+      this.logger.error(`Error creating company: ${error.message}`, error.stack);
+      throw new HttpException('COMPANY_CREATION_FAILED', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   /**
@@ -39,14 +50,24 @@ export class CompanyService {
    * @returns
    */
   async getCompanies(): Promise<CompaniesDto[]> {
-    const companies = await this.companyModel.find();
-    return plainToInstance(
-      CompaniesDto,
-      companies.map((c) => c.toJSON()),
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+    try {
+      this.logger.debug('Retrieving all companies');
+      
+      const companies = await this.companyModel.find();
+      
+      this.logger.debug(`Retrieved ${companies.length} companies`);
+      
+      return plainToInstance(
+        CompaniesDto,
+        companies.map((c) => c.toJSON()),
+        {
+          excludeExtraneousValues: true,
+        },
+      );
+    } catch (error) {
+      this.logger.error(`Error retrieving companies: ${error.message}`, error.stack);
+      throw new HttpException('COMPANIES_RETRIEVAL_FAILED', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   /**
@@ -56,12 +77,34 @@ export class CompanyService {
    * @throws HttpException if the company is not found
    */
   async deleteCompany(id: string) {
-    const company = await this.companyModel.findById(id);
-    if (!company) {
-      throw new HttpException('COMPANY_NOT_FOUND', HttpStatus.NOT_FOUND);
-    }
+    try {
+      this.logger.debug(`Attempting to delete company with ID: ${id}`);
+      
+      const company = await this.companyModel.findById(id);
+      if (!company) {
+        this.logger.warn(`Company not found for deletion: ${id}`);
+        throw new HttpException('COMPANY_NOT_FOUND', HttpStatus.NOT_FOUND);
+      }
 
-    await this.companyModel.deleteOne({ _id: id });
+      // Check if company has users before deleting
+      const usersInCompany = await this.userModel.countDocuments({ companyId: new Types.ObjectId(id) });
+      if (usersInCompany > 0) {
+        this.logger.warn(`Cannot delete company ${id}, it has ${usersInCompany} users assigned`);
+        throw new HttpException('COMPANY_HAS_USERS', HttpStatus.BAD_REQUEST);
+      }
+      
+      const result = await this.companyModel.deleteOne({ _id: id });
+      
+      this.logger.debug(`Company deleted successfully: ${id}, deleted count: ${result.deletedCount}`);
+    } catch (error) {
+      this.logger.error(`Error deleting company ${id}: ${error.message}`, error.stack);
+      
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      
+      throw new HttpException('COMPANY_DELETION_FAILED', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
   /**
    * Add a contract to a company
