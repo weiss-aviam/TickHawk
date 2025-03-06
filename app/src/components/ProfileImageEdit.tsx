@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "./AuthProvider";
 import ProfileImage from "./ProfileImage";
 import { toast } from "react-toastify";
@@ -11,6 +11,7 @@ interface ProfileImageEditProps {
 function ProfileImageEdit({ userId, onImageChange }: ProfileImageEditProps) {
   const inputRef = useRef(null);
   const auth = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const notifyFileSize = () => toast.error("File size should be less than 3mb");
 
   const handleClick = () => {
@@ -43,24 +44,48 @@ function ProfileImageEdit({ userId, onImageChange }: ProfileImageEditProps) {
 
   // Function to handle file upload
   const onChange = async (files: FileList) => {
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await auth.axiosClient.post("/file/profile", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      if (response.status !== 201) {
-        toast.error("Failed to upload file with name: " + file.name);
-        return;
+    setIsLoading(true);
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+  
+        const formData = new FormData();
+        formData.append("file", file);
+  
+        const response = await auth.axiosClient.post("/file/profile", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        if (response.status !== 201) {
+          toast.error("Failed to upload file with name: " + file.name);
+          return;
+        }
+  
+        // Reload web
+        window.location.reload();
       }
+    } catch (error) {
+      toast.error("Failed to upload profile image");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      // Reload web
+  // Function to delete profile image
+  const handleDeleteImage = async () => {
+    setIsLoading(true);
+    try {
+      await auth.axiosClient.post("/user/me/remove-profile-image");
+      toast.success("Profile image removed successfully");
+      // Reload page to show changes
       window.location.reload();
+    } catch (error) {
+      toast.error("Failed to remove profile image");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -74,7 +99,8 @@ function ProfileImageEdit({ userId, onImageChange }: ProfileImageEditProps) {
           <button
             onClick={handleClick}
             type="button"
-            className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            disabled={isLoading}
+            className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 disabled:opacity-50"
           >
             <svg
               className="w-4 h-4 mr-2 -ml-1"
@@ -99,7 +125,9 @@ function ProfileImageEdit({ userId, onImageChange }: ProfileImageEditProps) {
           {!onImageChange && (
             <button
               type="button"
-              className="py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+              onClick={handleDeleteImage}
+              disabled={isLoading}
+              className="py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-red-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 disabled:opacity-50"
             >
               Delete
             </button>
@@ -108,7 +136,8 @@ function ProfileImageEdit({ userId, onImageChange }: ProfileImageEditProps) {
             <button
               type="button"
               onClick={() => onImageChange(null)}
-              className="py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+              disabled={isLoading}
+              className="py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 disabled:opacity-50"
             >
               Clear Selection
             </button>
