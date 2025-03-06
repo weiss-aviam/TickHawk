@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
@@ -6,7 +6,7 @@ import { ProfileDto } from './dtos/out/profile.dto';
 import { plainToInstance } from 'class-transformer';
 import { AssignDepartmentDto } from './dtos/in/assign-department.dto';
 import { CreateUserDto } from './dtos/in/create-user.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { UpdateProfileDto } from './dtos/in/update-profile.dto';
 import { UserListDto } from './dtos/out/user-list.dto';
 import { AssignCompanyDto } from './dtos/in/assign-company.dto';
@@ -14,6 +14,8 @@ import { FileService } from '../file/file.service';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
+  
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
     private readonly fileService: FileService,
@@ -24,7 +26,15 @@ export class UserService {
    * For init data propuse
    */
   async exist(): Promise<boolean> {
-    return (await this.userModel.findOne()) !== null;
+    try {
+      this.logger.debug('Checking if any users exist in the system');
+      const exists = (await this.userModel.findOne()) !== null;
+      this.logger.debug(`User existence check result: ${exists}`);
+      return exists;
+    } catch (error) {
+      this.logger.error(`Error checking user existence: ${error.message}`, error.stack);
+      throw new HttpException('USER_EXISTENCE_CHECK_FAILED', 500);
+    }
   }
 
   /**
@@ -33,7 +43,21 @@ export class UserService {
    * @returns
    */
   async findOne(email: string): Promise<User> {
-    return await this.userModel.findOne({ email: email });
+    try {
+      this.logger.debug(`Finding user by email: ${email}`);
+      const user = await this.userModel.findOne({ email: email });
+      
+      if (user) {
+        this.logger.debug(`User found with ID: ${user._id}`);
+      } else {
+        this.logger.debug(`No user found with email: ${email}`);
+      }
+      
+      return user;
+    } catch (error) {
+      this.logger.error(`Error finding user by email: ${error.message}`, error.stack);
+      throw new HttpException('USER_FIND_FAILED', 500);
+    }
   }
 
   /**
@@ -42,13 +66,26 @@ export class UserService {
    * @returns
    */
   async findById(id: Types.ObjectId): Promise<ProfileDto> {
-    const user = await this.userModel.findById(id);
-    if (!user) {
-      throw new Error('USER_NOT_FOUND');
+    try {
+      this.logger.debug(`Finding user by ID: ${id}`);
+      
+      const user = await this.userModel.findById(id);
+      if (!user) {
+        this.logger.warn(`User not found with ID: ${id}`);
+        throw new HttpException('USER_NOT_FOUND', 404);
+      }
+      
+      this.logger.debug(`User ${id} found successfully`);
+      return plainToInstance(ProfileDto, user.toJSON(), {
+        excludeExtraneousValues: true,
+      });
+    } catch (error) {
+      this.logger.error(`Error finding user by ID ${id}: ${error.message}`, error.stack);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('USER_FIND_FAILED', 500);
     }
-    return plainToInstance(ProfileDto, user.toJSON(), {
-      excludeExtraneousValues: true,
-    });
   }
 
   /**
@@ -62,66 +99,82 @@ export class UserService {
     page?: number;
     limit?: number;
   }): Promise<UserListDto> {
-    const filter: any = {};
-    
-    // Apply search filter if provided
-    if (options.search) {
-      filter.$or = [
-        { name: { $regex: options.search, $options: 'i' } },
-        { email: { $regex: options.search, $options: 'i' } },
-      ];
-    }
-    
-    // Apply role filter if provided
-    if (options.role) {
-      filter.role = options.role;
-    }
-    
-    const page = options.page || 1;
-    const limit = options.limit || 10;
-    const skip = (page - 1) * limit;
-    
-    const [users, total] = await Promise.all([
-      this.userModel.find(filter)
-        .populate('companyId', 'name') // Populate the company information
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      this.userModel.countDocuments(filter),
-    ]);
-    
-    // Map users and add company object for frontend
-    const mappedUsers = users.map(user => {
-      // Create a user object with ProfileDto fields
-      const userDto = plainToInstance(ProfileDto, user, { 
-        excludeExtraneousValues: true 
-      });
+    try {
+      this.logger.debug(`Finding users with filters: ${JSON.stringify(options)}`);
       
-      // Add company object if companyId exists and is populated
-      if (user.companyId && typeof user.companyId === 'object' && 'name' in user.companyId) {
-        // Type assertion to make TypeScript happy
-        const companyData = user.companyId as { _id: Types.ObjectId; name: string };
-        
-        // @ts-ignore - Add company property to match frontend model
-        userDto.company = {
-          _id: companyData._id.toString(),
-          name: companyData.name
-        };
+      const filter: any = {};
+      
+      // Apply search filter if provided
+      if (options.search) {
+        this.logger.debug(`Applying search filter: "${options.search}"`);
+        filter.$or = [
+          { name: { $regex: options.search, $options: 'i' } },
+          { email: { $regex: options.search, $options: 'i' } },
+        ];
       }
       
-      return userDto;
-    });
-    
-    return plainToInstance(
-      UserListDto,
-      {
-        users: mappedUsers,
-        total,
-        page,
-        limit,
-      },
-      { excludeExtraneousValues: true },
-    );
+      // Apply role filter if provided
+      if (options.role) {
+        this.logger.debug(`Filtering by role: ${options.role}`);
+        filter.role = options.role;
+      }
+      
+      const page = options.page || 1;
+      const limit = options.limit || 10;
+      const skip = (page - 1) * limit;
+      
+      this.logger.debug(`Pagination: page=${page}, limit=${limit}, skip=${skip}`);
+      
+      // Run queries in parallel for better performance
+      const [users, total] = await Promise.all([
+        this.userModel.find(filter)
+          .populate('companyId', 'name') // Populate the company information
+          .skip(skip)
+          .limit(limit)
+          .lean(),
+        this.userModel.countDocuments(filter),
+      ]);
+      
+      this.logger.debug(`Found ${users.length} users, total count: ${total}`);
+      
+      // Map users and add company object for frontend
+      const mappedUsers = users.map(user => {
+        // Create a user object with ProfileDto fields
+        const userDto = plainToInstance(ProfileDto, user, { 
+          excludeExtraneousValues: true 
+        });
+        
+        // Add company object if companyId exists and is populated
+        if (user.companyId && typeof user.companyId === 'object' && 'name' in user.companyId) {
+          // Type assertion to make TypeScript happy
+          const companyData = user.companyId as { _id: Types.ObjectId; name: string };
+          
+          // @ts-ignore - Add company property to match frontend model
+          userDto.company = {
+            _id: companyData._id.toString(),
+            name: companyData.name
+          };
+        }
+        
+        return userDto;
+      });
+      
+      this.logger.debug('Successfully mapped user data with company information');
+      
+      return plainToInstance(
+        UserListDto,
+        {
+          users: mappedUsers,
+          total,
+          page,
+          limit,
+        },
+        { excludeExtraneousValues: true },
+      );
+    } catch (error) {
+      this.logger.error(`Error finding users: ${error.message}`, error.stack);
+      throw new HttpException('USER_LIST_RETRIEVAL_FAILED', 500);
+    }
   }
 
   /**

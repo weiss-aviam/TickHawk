@@ -1,21 +1,25 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger } from '@nestjs/common';
+import { Logger, LogLevel } from '@nestjs/common';
 
 async function bootstrap() {
   // Configure logging level
-  const logLevels = ['error', 'warn', 'log', 'debug', 'verbose'];
+  const logLevels: LogLevel[] = ['error', 'warn', 'log', 'debug', 'verbose'];
   const logLevel = process.env.LOG_LEVEL || 'log';
   
   // Validate log level
-  if (!logLevels.includes(logLevel)) {
+  if (!logLevels.includes(logLevel as LogLevel)) {
     console.warn(`Invalid LOG_LEVEL: ${logLevel}. Using 'log' instead.`);
   }
+  
+  // Get index of log level or default to 'log' (index 2)
+  const levelIndex = logLevels.indexOf(logLevel as LogLevel);
+  const effectiveLevelIndex = levelIndex !== -1 ? levelIndex : 2;
   
   // Create app with configured logging
   const app = await NestFactory.create(AppModule, { 
     cors: true,
-    logger: logLevels.slice(0, logLevels.indexOf(logLevel) + 1),
+    logger: logLevels.slice(0, effectiveLevelIndex + 1) as LogLevel[],
   });
 
   // Get logger instance for bootstrap function

@@ -9,7 +9,8 @@ import ProfileImageEdit from 'components/ProfileImageEdit'
 import { toast } from 'react-toastify'
 
 function EditUser() {
-  const [user, setUser] = useState<User | null>(null)
+  // State for user data - we'll use it for reference but not accessing directly
+  const [, setUser] = useState<User | null>(null)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState<'admin' | 'agent' | 'customer'>('customer')

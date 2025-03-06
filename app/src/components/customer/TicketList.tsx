@@ -19,7 +19,7 @@ function TicketList () {
     navigate(`/ticket/${_id}`)
   }
 
-  const loadTickets = () => {
+  const loadTickets = React.useCallback(() => {
     setLoading(true)
     auth.axiosClient
       .get('/ticket/customer?page=' + page)
@@ -32,11 +32,11 @@ function TicketList () {
       }).finally(() => {
         setLoading(false)
       })
-  };
+  }, [page, auth.axiosClient]);
 
   useEffect(() => {
     loadTickets()
-  }, [page])
+  }, [loadTickets])
   return (
     <div>
       <table className='min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600'>

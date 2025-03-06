@@ -19,17 +19,7 @@ function Users() {
   
   const auth = useAuth()
 
-  // Load companies only once when component mounts
-  useEffect(() => {
-    loadCompanies()
-  }, [])
-
-  useEffect(() => {
-    loadUsers()
-  }, [page, roleFilter, searchTerm])
-  
-  // Load all companies to use for matching companyId to company name
-  const loadCompanies = () => {
+  const loadCompanies = React.useCallback(() => {
     auth.axiosClient.get('/company')
       .then((response: { data: CompanyTicket[] }) => {
         setCompanies(response.data)
@@ -37,9 +27,9 @@ function Users() {
       .catch((error: unknown) => {
         console.error('Error loading companies:', error)
       })
-  }
+  }, [auth.axiosClient])
 
-  const loadUsers = () => {
+  const loadUsers = React.useCallback(() => {
     setLoading(true)
     
     // Construct query parameters
@@ -68,7 +58,18 @@ function Users() {
       .finally(() => {
         setLoading(false)
       })
-  }
+  }, [auth.axiosClient, page, limit, searchTerm, roleFilter])
+  
+  useEffect(() => {
+    loadCompanies()
+  }, [loadCompanies])
+
+  useEffect(() => {
+    loadUsers()
+  }, [loadUsers])
+  
+  // Load all companies to use for matching companyId to company name
+  // Function declarations removed - using the useCallback versions above
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)

@@ -31,7 +31,7 @@ function TicketFilter({ onFilterChange }: { onFilterChange: (departmentId: strin
       .catch((error: any) => {
         console.error('Error fetching companies', error)
       })
-  }, [])
+  }, [auth.axiosClient])
 
   const handleDepartmentChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedDepartment(event.target.value)
