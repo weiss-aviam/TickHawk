@@ -16,7 +16,7 @@ function TicketList({ departmentId = '', companyId = '' }) {
   const auth = useAuth()
 
   const goToTicketHandler = (_id: string) => {
-    navigate(`/backoffice/ticket/${_id}`)
+    navigate(`/backoffice/tickets/${_id}`)
   }
 
   const loadTickets = () => {

@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "./AuthProvider";
 
-interface ProfileImageProps {
+export interface ProfileImageProps {
   id?: string;
   userId?: string;
   className?: string;
+  size?: string;
 }
 
-function ProfileImage({ id, userId, className }: ProfileImageProps) {
+function ProfileImage({ id, userId, className, size }: ProfileImageProps) {
     // The ProfileImage component is used to display the profile image of a user.
     const basePath = process.env.REACT_APP_API_URL;
     const [imagePath, setImagePath] = useState<string>('/assets/images/tickhawk.png')
@@ -25,10 +26,12 @@ function ProfileImage({ id, userId, className }: ProfileImageProps) {
 
         if (className) {
             setClassString(className)
+        } else if (size === 'sm') {
+            setClassString('w-8 h-8 rounded-full')
         } else {
             setClassString('w-6 h-6 mr-2 rounded-full')
         }
-    }, [id, userId, auth, basePath, className])
+    }, [id, userId, auth, basePath, className, size])
 
     return (
     <img

@@ -23,6 +23,8 @@ import EditDepartment from 'pages/agent/departments/edit/[id]'
 import Users from 'pages/agent/users'
 import EditUser from 'pages/agent/users/edit/[id]'
 import NewUser from 'pages/agent/users/new'
+import NewAgentTicket from 'pages/agent/tickets/new'
+import AgentTicketView from 'pages/agent/tickets/view'
 import ProtectedRoute from 'components/ProtectedRoute'
 import AuthProvider from 'components/AuthProvider'
 import { ToastContainer } from 'react-toastify'
@@ -50,6 +52,8 @@ function App () {
             </Route>
             <Route path='/backoffice' element={<BackofficeLayout />}>
               <Route path='' element={<HomeBackoffice />} />
+              <Route path='tickets/new' element={<NewAgentTicket />} />
+              <Route path='tickets/:id' element={<AgentTicketView />} />
               <Route path='companies' element={<Companies />} />
               <Route path='companies/new' element={<NewCompany />} />
               <Route path='companies/edit/:id' element={<EditCompany />} />

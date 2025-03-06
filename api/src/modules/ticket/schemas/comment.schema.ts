@@ -12,6 +12,7 @@ export class Comment extends Document {
     required: true,
   })
   user: UserTicket;
+  
 
   @Prop({
     required: true,

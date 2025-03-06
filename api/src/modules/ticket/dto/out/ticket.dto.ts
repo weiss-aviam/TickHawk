@@ -30,6 +30,9 @@ export class TicketDto {
 
   @Expose()
   content: string;
+  
+  @Expose()
+  content_user: string;
 
   @Expose()
   files: FileTicketDto[];

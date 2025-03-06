@@ -42,6 +42,7 @@ export interface Ticket {
     _id: string,
     subject: string,
     content: string,
+    content_user: UserTicket,
     status: string,
     priority: string,
     company: CompanyTicket,

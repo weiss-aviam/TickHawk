@@ -10,6 +10,7 @@ export class CommentDto {
 
     @Expose()
     user: UserTicketDto;
+    
 
     @Expose()
     content: string;

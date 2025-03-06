@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req, Res, StreamableFile, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, Res, StreamableFile, UseGuards } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { JWTGuard } from 'src/config/guard/jwt/jwt.guard';
 import { RolesGuard } from 'src/config/guard/roles/roles.guard';
@@ -9,6 +9,9 @@ import { Roles } from 'src/config/guard/roles/roles.decorator';
 import { ApiOperation } from '@nestjs/swagger';
 import { TicketDto } from './dto/out/ticket.dto';
 import { ReplyCommentCustomerTicketDto } from './dto/in/reply-comment-customer-ticket.dto';
+import { UpdateTicketStatusDto } from './dto/in/update-ticket-status.dto';
+import { AssignAgentDto } from './dto/in/assign-agent.dto';
+import { AgentReplyTicketDto } from './dto/in/agent-reply-ticket.dto';
 
 @Controller('ticket')
 @UseGuards(JWTGuard, RolesGuard)
@@ -74,8 +77,13 @@ export class TicketController {
     @Body() createTicketDto: CreateTicketDto,
     @Req() req: Request,
   ) {
-    const user = req.user;
-    return this.ticketService.createTicket(user, createTicketDto);
+    try {
+      const user = req.user;
+      return await this.ticketService.createTicket(user, createTicketDto);
+    } catch (error) {
+      console.error('Error creating ticket:', error);
+      throw error;
+    }
   }
 
   @Get('')
@@ -111,5 +119,40 @@ export class TicketController {
   async getTicket(@Req() req: Request, @Param('id') id: string) {
     const user = req.user;
     return this.ticketService.getTicketById(user, id);
+  }
+
+  @Patch(':id/status')
+  @Roles(['admin', 'agent'])
+  @ApiOperation({ summary: 'Update ticket status' })
+  async updateTicketStatus(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() updateStatusDto: UpdateTicketStatusDto
+  ): Promise<TicketDto> {
+    const user = req.user;
+    return await this.ticketService.updateTicketStatus(user, id, updateStatusDto);
+  }
+
+  @Patch(':id/assign')
+  @Roles(['admin', 'agent'])
+  @ApiOperation({ summary: 'Assign ticket to an agent' })
+  async assignTicket(
+    @Req() req: Request,
+    @Param('id') id: string,
+    @Body() assignAgentDto: AssignAgentDto
+  ): Promise<TicketDto> {
+    const user = req.user;
+    return await this.ticketService.assignTicketToAgent(user, id, assignAgentDto);
+  }
+
+  @Post('reply')
+  @Roles(['admin', 'agent'])
+  @ApiOperation({ summary: 'Reply to a ticket as an agent or admin' })
+  async replyToTicketAsAgent(
+    @Body() agentReplyDto: AgentReplyTicketDto,
+    @Req() req: Request,
+  ): Promise<TicketDto> {
+    const user = req.user;
+    return await this.ticketService.replyToTicketAsAgent(user, agentReplyDto);
   }
 }
