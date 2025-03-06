@@ -6,42 +6,78 @@
 
 ---
 
-## 🚀 **Features That Make Us Soar**
+## 🚀 **Features Implemented**
 
-### 🏢 **Multi-Tenant Architecture**
-- Manage multiple companies with ease.
-- Assign **clients**, **admins**, and **agents** with clear roles and permissions.
+### 🏢 **Multiple companies**
+- Role-based permissions system with admin, agent, and customer roles
+- Department organization within companies
 
-### ⏳ **Flexible Hour Tracking**
-- **Monthly Plans**: Automatically renew allocated hours.
-- **Hour Pool**: Track and decrement available hours as tickets are resolved.
-- **Unlimited Mode**: Perfect for businesses that never stop.
+### 🎫 **Complete Ticket Lifecycle Management**
+- Create, assign, track, and resolve tickets
+- Priority levels: Low, Medium, High, Critical
+- Status tracking: Open, In Progress, Resolved, Closed, Pending
+- Comment system with file attachments
+- Event history for all ticket changes
 
-### 🗂️ **Comprehensive Ticket Management**
-- **Statuses**: Pending, Open, In Progress, Closed.
-- **Work Logs**: Step-by-step tracking of hours spent solving the ticket.
-- **History**: Maintain a log of assignments, state changes, pauses, and more.
-- **Email Integration** (Currently not implemented): 
-  - Tickets sent via email are automatically added to the system. 
-  - When replying to tickets, responses can also be sent via email, allowing clients to continue the conversation directly from their inbox.
+### 📁 **File Management**
+- Upload and download file attachments
+- Multiple storage provider options:
+  - Local file system
+  - AWS S3
+  - MinIO
+  - OVH Object Storage
 
-### 👥 **Role-Based Access**
-- **Client Users**: Create and monitor their tickets.
-- **Agents**: Resolve tickets with precision and transparency.
-- **Admins**: Oversee all activities and manage roles seamlessly.
+### 👥 **User Management**
+- Comprehensive profile management
+- Role assignment
+- Company and department association
 
-### 🧾 **Invoice Management**
-- Generate and store **PDF invoices** linked to purchased hours.
+### 📊 **Reporting**
+- View tickets and metrics by date ranges
+- Customer and agent reporting views
 
 ---
 
 ## 🛠️ **Tech Stack**
 - **Backend**: NestJS, MongoDB, TypeScript
-- **Frontend**: React, TypeScript
-- **Tooling**: Turborepo, Docker, ESLint, Prettier
+- **Frontend**: React, Tailwind CSS, TypeScript
+- **Containerization**: Docker, Docker Compose
+- **Tooling**: Turborepo
 
 ---
 
-## 🌍 **Contributing**
+## 🚀 **Getting Started**
 
-We ❤️ contributions! Whether it's a bug fix, a new feature, or improved documentation, your help is always welcome. Here's how you can contribute:
+### Prerequisites
+- Node.js (v18+)
+- MongoDB
+- Docker and Docker Compose (for containerized deployment)
+
+### Development Setup
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Configure environment variables (see API and App README files for details)
+4. Start development servers: `npm run dev`
+
+### Docker Deployment
+1. Simply run: `docker compose up -d`
+2. Access the application at http://localhost
+
+---
+
+## 📂 **Project Structure**
+- **/api** - NestJS backend application
+- **/app** - React frontend application
+- **/doc** - Documentation files
+
+---
+
+## 🔐 **Environment Configuration**
+
+See the README files in the `/api` and `/app` directories for detailed environment configuration options.
+
+---
+
+## 🤝 **Contributing**
+
+We welcome contributions! Please feel free to submit a Pull Request.
