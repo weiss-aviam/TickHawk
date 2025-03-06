@@ -115,6 +115,15 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [token, navigate, axiosClient]);
 
+  // Logout function
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    setToken_(null);
+    setUser(null);
+    navigate("/auth");
+  };
+
   // Memoized value of the authentication context
   const contextValue = useMemo(
     () => ({
@@ -122,6 +131,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken,
       axiosClient,
       user,
+      logout,
     }),
     [token, axiosClient, user]
   );
@@ -135,6 +145,7 @@ type AuthContextType = {
   setToken: (token: string) => void;
   axiosClient: AxiosInstance;
   user: any;
+  logout: () => void;
 };
 
 export const useAuth = (): any => {
