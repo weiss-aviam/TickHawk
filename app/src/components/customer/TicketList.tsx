@@ -10,6 +10,7 @@ function TicketList () {
   const [tickets, setTickets] = useState([] as Ticket[])
   const [errors, setErrors] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
 
   const navigate = useNavigate()
   const auth = useAuth()
@@ -21,7 +22,7 @@ function TicketList () {
   const loadTickets = () => {
     setLoading(true)
     auth.axiosClient
-      .get('/ticket/customer')
+      .get('/ticket/customer?page=' + page)
       .then((response: { data: Ticket[] }) => {
         setTickets(response.data)
         setErrors(false)
@@ -35,7 +36,7 @@ function TicketList () {
 
   useEffect(() => {
     loadTickets()
-  }, [])
+  }, [page])
   return (
     <div>
       <table className='min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-600'>
@@ -144,7 +145,9 @@ function TicketList () {
       </div>
       <div className='sticky bottom-0 right-0 items-center w-full pt-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700'>
         <div className='flex items-center mb-0 sm:mb-0'>
-          <span className='inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white'>
+          <span 
+          onClick={() => setPage(Math.max(1, page - 1))}
+          className={`inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white ${page === 1 ? 'invisible' : 'block'}`}>
             <svg
               className='w-7 h-7'
               fill='currentColor'
@@ -158,7 +161,9 @@ function TicketList () {
               ></path>
             </svg>
           </span>
-          <span className='inline-flex justify-center p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white'>
+          <span 
+          onClick={() => setPage(page + 1)}
+          className={`inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white ${tickets.length <= 9 ? 'invisible' : 'block'}`}>
             <svg
               className='w-7 h-7'
               fill='currentColor'

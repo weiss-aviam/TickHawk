@@ -113,7 +113,7 @@ function Ticket () {
           <div className='grid gap-4 xl:grid-cols-3 2xl:grid-cols-4'>
             <div className='p-4 mb-5 bg-white border border-gray-200 rounded-lg shadow-sm xl:col-span-2 2xl:col-span-3 dark:border-gray-700 sm:p-6 dark:bg-gray-800'>
               <h3 className='mb-4 text-xl font-semibold dark:text-white'>
-                Ticket Thread
+                {ticket?.subject}
               </h3>
               <div className='overflow-y-auto lg:max-h-[60rem] 2xl:max-h-fit p-2'>
                 {ticket !== null && (

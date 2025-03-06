@@ -84,6 +84,9 @@ export class AuthController {
   @ApiOperation({ summary: 'Reset password endpoint to reset the password of the user' })
   @ApiResponse({ status: 200 , type: SignInTokenDto})
   async refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Req() request: Request): Promise<SignInTokenDto> {
+    if (!request.headers.authorization || !request.headers.authorization.split(' ')[1]) {
+      throw new UnauthorizedException('INVALID_TOKEN');
+    }
     refreshTokenDto.accessToken = request.headers.authorization.split(' ')[1];
     return this.authService.refresh(refreshTokenDto);
   }

@@ -1,30 +1,44 @@
-import axios from 'axios'
-import { jwtDecode } from 'jwt-decode'
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const AuthContext = createContext({})
+const AuthContext = createContext({});
 
 /**
  * AuthProvider component
- * @param children 
- * @returns 
+ * @param children
+ * @returns
  */
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const updateUser = (token: string | null ) => {
+    if (!token) {
+      return null;
+    }
+    const decode = jwtDecode(token) as any;
+    const userContext = {
+      companyId: decode.companyId,
+      departmentIds: decode.departmentIds,
+      email: decode.email,
+      id: decode.id,
+      role: decode.role,
+    };
+    return userContext;
+  };
 
-  const [token, setToken_] = useState(localStorage.getItem('token'))
-  const [user, setUser] = useState()
+  const [token, setToken_] = useState(localStorage.getItem("token"));
+  const [user, setUser] = useState(updateUser(localStorage.getItem("token")));
   const axiosClient = axios.create({
     baseURL: process.env.REACT_APP_API_URL,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-  })
+  });
 
   axiosClient.interceptors.request.use(
     (config) => {
-      const accessToken = localStorage.getItem('token');
+      const accessToken = localStorage.getItem("token");
       if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
       }
@@ -34,10 +48,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return Promise.reject(error);
     }
   );
-  
+
   // Function to set the authentication token
   const setToken = (newToken: string) => {
-    setToken_(newToken)
+    setToken_(newToken);
 
     // Get the user information from token
     const decode = jwtDecode(newToken) as any;
@@ -47,16 +61,17 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       email: decode.email,
       id: decode.id,
       role: decode.role,
-    }
-    setUser(userContext as any)
-  }
+    };
+    setUser(userContext as any);
+  };
+
 
 
   useEffect(() => {
     if (token) {
       axiosClient.interceptors.request.use(
         (config) => {
-          const accessToken = localStorage.getItem('token'); // get stored access token
+          const accessToken = localStorage.getItem("token"); // get stored access token
           if (accessToken) {
             config.headers.Authorization = `Bearer ${accessToken}`; // set in header
           }
@@ -74,29 +89,31 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const originalRequest = error.config;
           if (error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
-            const refreshToken = localStorage.getItem('refreshToken');
+            const refreshToken = localStorage.getItem("refreshToken");
             if (refreshToken) {
               try {
-                const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/refresh-token`, {refreshToken});
+                const response = await axios.post(`${process.env.REACT_APP_API_URL}/auth/refresh-token`, {
+                  refreshToken,
+                });
                 const newAccessToken = response.data.accessToken;
-                localStorage.setItem('accessToken', newAccessToken);  //set new access token
+                localStorage.setItem("accessToken", newAccessToken); //set new access token
                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
                 return axios(originalRequest); //recall Api with new token
               } catch (error) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('refreshToken');
-                navigate('/auth');
+                localStorage.removeItem("token");
+                localStorage.removeItem("refreshToken");
+                navigate("/auth");
               }
             }
           }
           return Promise.reject(error);
         }
       );
-      localStorage.setItem('token', token)
+      localStorage.setItem("token", token);
     } else {
-      localStorage.removeItem('token')
+      localStorage.removeItem("token");
     }
-  }, [token, navigate, axiosClient])
+  }, [token, navigate, axiosClient]);
 
   // Memoized value of the authentication context
   const contextValue = useMemo(
@@ -104,28 +121,24 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       token,
       setToken,
       axiosClient,
-      user
+      user,
     }),
     [token, axiosClient, user]
-  )
+  );
 
   // Provide the authentication context to the children components
-  return (
-    <AuthContext.Provider value={contextValue as AuthContextType}>
-      {children}
-    </AuthContext.Provider>
-  )
-}
+  return <AuthContext.Provider value={contextValue as AuthContextType}>{children}</AuthContext.Provider>;
+};
 
 type AuthContextType = {
-  token: string | null
-  setToken: (token: string) => void
-  axiosClient: axios.AxiosInstance,
-  user: any
-}
+  token: string | null;
+  setToken: (token: string) => void;
+  axiosClient: axios.AxiosInstance;
+  user: any;
+};
 
 export const useAuth = (): any => {
-  return useContext(AuthContext)
-}
+  return useContext(AuthContext);
+};
 
-export default AuthProvider
+export default AuthProvider;

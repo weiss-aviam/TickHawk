@@ -8,6 +8,7 @@ import { CompanyDto } from './dtos/out/company.dto';
 import { AddContractDto } from './dtos/in/add-contract.dto';
 import { Contract, ContractSchema } from './schemas/contract.schema';
 import { CompaniesDto } from './dtos/out/companies.dto';
+import { User } from '../user/schemas/user.schema';
 
 @Injectable()
 export class CompanyService {
@@ -15,6 +16,7 @@ export class CompanyService {
 
   constructor(
     @InjectModel(Company.name) private readonly companyModel: Model<Company>,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {
     this.contractModel = mongoose.model(Contract.name, ContractSchema);
   }
@@ -122,5 +124,94 @@ export class CompanyService {
     return plainToInstance(CompanyDto, company.toJSON(), {
       excludeExtraneousValues: true,
     });
+  }
+
+  /**
+   * Update a company
+   * @param id The company id
+   * @param updateCompanyDto The company data
+   * @returns The updated company
+   */
+  async updateCompany(id: string, updateCompanyDto: CreateCompanyDto): Promise<CompanyDto> {
+    const company = await this.companyModel.findById(id);
+    if (!company) {
+      throw new HttpException('COMPANY_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+
+    company.name = updateCompanyDto.name;
+    company.email = updateCompanyDto.email;
+
+    const savedCompany = await company.save();
+    return plainToInstance(CompanyDto, savedCompany.toJSON(), {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  /**
+   * Get all users from a company
+   * @param companyId The company id
+   * @returns List of users
+   */
+  async getCompanyUsers(companyId: string) {
+    const company = await this.companyModel.findById(companyId);
+    if (!company) {
+      throw new HttpException('COMPANY_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+    
+    const users = await this.userModel.find({ companyId: new Types.ObjectId(companyId) });
+    return users;
+  }
+
+  /**
+   * Assign a user to a company
+   * @param companyId The company id
+   * @param userId The user id
+   * @returns Confirmation message
+   */
+  async assignUserToCompany(companyId: string, userId: string) {
+    const company = await this.companyModel.findById(companyId);
+    if (!company) {
+      throw new HttpException('COMPANY_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+
+    // Update user's company
+    user.companyId = new Types.ObjectId(companyId);
+    await user.save();
+
+    return { message: 'USER_ASSIGNED_TO_COMPANY' };
+  }
+
+  /**
+   * Remove a user from a company
+   * @param companyId The company id
+   * @param userId The user id
+   * @returns Confirmation message
+   */
+  async removeUserFromCompany(companyId: string, userId: string) {
+    const company = await this.companyModel.findById(companyId);
+    if (!company) {
+      throw new HttpException('COMPANY_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new HttpException('USER_NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+
+    // Check if user belongs to this company
+    if (user.companyId.toString() !== companyId) {
+      throw new HttpException('USER_NOT_IN_COMPANY', HttpStatus.BAD_REQUEST);
+    }
+
+    // Remove user's company
+    user.companyId = null;
+    await user.save();
+
+    return { message: 'USER_REMOVED_FROM_COMPANY' };
   }
 }

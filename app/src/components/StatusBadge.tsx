@@ -2,25 +2,33 @@ function StatusBadge ({ status }: { status: string }) {
     let color = ''
     let text = ''
     switch (status) {
-      case 'open':
-        color = 'green'
-        text = 'Open'
-        break
-      case 'in-progress':
-        color = 'purple'
-        text = 'In progress'
-        break
-      case 'in-review':
-        color = 'orange'
-        text = 'In review'
-        break
-      case 'closed':
-        color = 'red'
-        text = 'Closed'
-        break
+      case "open":
+        color = "green";
+        text = "Open";
+        break;
+      case "in-progress":
+        color = "purple";
+        text = "In progress";
+        break;
+      case "in-review":
+        color = "orange";
+        text = "In review";
+        break;
+      case "closed":
+        color = "red";
+        text = "Closed";
+        break;
+      case "pending":
+        color = "purple";
+        text = "Pending";
+        break;
+      case "resolved":
+        color = "green";
+        text = "Resolved";
+        break;
       default:
-        color = 'gray'
-        text = 'Unknown'
+        color = "gray";
+        text = "Unknown";
     }
   
     return (

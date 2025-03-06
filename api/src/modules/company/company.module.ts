@@ -5,6 +5,7 @@ import { Company, CompanySchema } from './schemas/company.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { APP_PIPE } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { User, UserSchema } from '../user/schemas/user.schema';
 
 @Global()
 @Module({
@@ -20,6 +21,7 @@ import { JwtService } from '@nestjs/jwt';
   imports: [
     MongooseModule.forFeature([
       { name: Company.name, schema: CompanySchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   exports: [CompanyService],

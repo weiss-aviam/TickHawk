@@ -14,9 +14,15 @@ export class Event extends Document {
 
   @Prop({
     required: true,
-    enum: ['close', 'open', 're-open', 'transfer'],
+    enum: ['close', 'open', 're-open', 'transfer', 'status-change', 'assign-agent'],
   })
   type: string;
+  
+  @Prop({
+    required: false,
+    type: Object,
+  })
+  data: Record<string, any>;
 
   @Prop({})
   createdAt: Date;

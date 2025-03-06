@@ -6,6 +6,7 @@ export type TicketEventType = {
     name: string
   }
   type: string
+  data?: any
   createdAt: Date
   updatedAt: Date
 }
@@ -33,6 +34,20 @@ export default function TicketEvent ({ className, event }: TicketEventProps) {
           {event.type === 'close' && (
             <p className='text-gray-900 dark:text-white'>
               The ticket was closed
+            </p>
+          )}
+          {event.type === 'status-change' && event.data && (
+            <p className='text-gray-900 dark:text-white'>
+              Changed status from <span className="font-medium">{event.data.oldStatus}</span> to <span className="font-medium">{event.data.newStatus}</span>
+            </p>
+          )}
+          {event.type === 'assign-agent' && event.data && (
+            <p className='text-gray-900 dark:text-white'>
+              {!event.data.oldAgent ? (
+                <>Assigned to <span className="font-medium">{event.data.newAgent.name}</span></>
+              ) : (
+                <>Transferred from <span className="font-medium">{event.data.oldAgent.name}</span> to <span className="font-medium">{event.data.newAgent.name}</span></>
+              )}
             </p>
           )}
         </div>

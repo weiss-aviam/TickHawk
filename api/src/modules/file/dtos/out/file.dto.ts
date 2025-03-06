@@ -13,9 +13,6 @@ export class FileDto {
   file: string;
 
   @Expose()
-  path: string;
-
-  @Expose()
   mimetype: string;
 
   @Expose()

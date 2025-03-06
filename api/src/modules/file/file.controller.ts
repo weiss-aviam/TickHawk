@@ -41,4 +41,19 @@ export class FileController {
     const userId = req.user.id;
     return await this.fileService.saveFile(file, userId, 'ticket');
   }
+
+  /**
+   * Upload a file to the server
+   */
+  @Post('profile')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFileProfile(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: Request,
+  ): Promise<FileDto> {
+    const userId = req.user.id;
+    const f =  await this.fileService.saveFile(file, userId, 'profile', userId);
+    this.fileService.activeFiles([f._id]);
+    return f;
+  }
 }

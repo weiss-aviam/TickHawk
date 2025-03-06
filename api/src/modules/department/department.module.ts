@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Department, DepartmentSchema } from './schemas/department.schema';
 import { MongooseModule } from '@nestjs/mongoose';
+import { User, UserSchema } from '../user/schemas/user.schema';
 
 @Global()
 @Module({
@@ -18,7 +19,10 @@ import { MongooseModule } from '@nestjs/mongoose';
   ],
   controllers: [DepartmentController],
   imports: [
-    MongooseModule.forFeature([{ name: Department.name, schema: DepartmentSchema }]),
+    MongooseModule.forFeature([
+      { name: Department.name, schema: DepartmentSchema },
+      { name: User.name, schema: UserSchema },
+    ]),
     ConfigModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
