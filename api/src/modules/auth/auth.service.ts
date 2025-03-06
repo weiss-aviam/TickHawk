@@ -7,7 +7,6 @@ import { JwtService } from '@nestjs/jwt';
 import { Token } from './schemas/token.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import * as bcrypt from 'bcrypt';
 import { SignInDto } from './dtos/in/sign-in.dto';
 import { SignInTokenDto } from './dtos/out/sign-in-token.dto';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -16,6 +15,7 @@ import { UserService } from '../user/user.service';
 import { toMs } from 'ms-typescript';
 import { ForgotPasswordDto } from './dtos/in/forgot-password.dto';
 import { RefreshTokenDto } from './dtos/in/refresh-token.dto';
+import * as bcrypt from 'bcryptjs';
 
 
 @Injectable()
@@ -45,11 +45,18 @@ export class AuthService {
     try {
       const user = await this.userService.findOne(email);
 
+      console.log('user', user);
+
       if (!user) {
         throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);
       }
-
+      
+      console.log('pass', pass);
+      console.log(bcrypt);
       const isMatch = await bcrypt.compare(pass, user.password);
+      console.log('user password');
+
+      console.log('isMatch', isMatch);
       if (!isMatch) {
         throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);
       }
@@ -88,6 +95,7 @@ export class AuthService {
         refreshToken: refreshToken,
       };
     } catch (e) {
+      console.log('error', e);
       await session.abortTransaction();
       session.endSession();
       throw new HttpException('EMAIL_PASSWORD_NOT_MATCH', 401);

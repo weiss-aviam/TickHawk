@@ -6,7 +6,7 @@ import { ProfileDto } from './dtos/out/profile.dto';
 import { plainToInstance } from 'class-transformer';
 import { AssignDepartmentDto } from './dtos/in/assign-department.dto';
 import { CreateUserDto } from './dtos/in/create-user.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { UpdateProfileDto } from './dtos/in/update-profile.dto';
 import { UserListDto } from './dtos/out/user-list.dto';
 import { AssignCompanyDto } from './dtos/in/assign-company.dto';
