@@ -44,6 +44,7 @@ Create a `.env` file in the root directory with the following variables:
 # Server Configuration
 PORT=3000
 MONGODB_URI=mongodb://localhost:27017/tickhawk
+LOG_LEVEL=info  # Options: error, warn, log, debug, verbose
 
 # JWT Configuration
 JWT_SECRET=your_jwt_secret
@@ -58,6 +59,9 @@ DEFAULT_USER_EMAIL=admin@tickhawk.com
 # Storage Configuration
 S3_PROVIDER=local  # Options: local, aws, minio, ovh
 LOCAL_UPLOAD_PATH=/path/to/uploads
+
+# API Documentation
+ENABLE_SWAGGER=false  # Set to true to enable Swagger documentation
 
 # AWS S3 Configuration (only needed if S3_PROVIDER=aws)
 # AWS_S3_BUCKET_NAME=your-bucket-name
