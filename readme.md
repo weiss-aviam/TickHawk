@@ -5,9 +5,9 @@
 > **"Stay sharp. Stay organized. Let TickHawk handle the chaos."** 🦅
 
 > [!WARNING]
-> ⚠️ **Disclaimer**  
+> **Disclaimer**  
 > This project is still in development and **contains bugs** 🐛, as well as several **unfinished features** 🚧.  
-> Additionally, it **does not yet follow a clean architecture** and may undergo significant changes in future versions.  
+> Additionally, it **does not yet have a clean architecture** and may undergo significant changes in future versions. 
 >  
 > If you choose to use or contribute to this project, please keep these aspects in mind.  
 > Any **feedback** or **pull requests** are welcome! 🚀  
