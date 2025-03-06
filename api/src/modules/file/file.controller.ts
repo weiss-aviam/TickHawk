@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Logger,
   Param,
   Post,
   Req,
@@ -16,6 +17,8 @@ import { FileDto } from './dtos/out/file.dto';
 
 @Controller('file')
 export class FileController {
+  private readonly logger = new Logger(FileController.name);
+  
   constructor(private readonly fileService: FileService) {}
 
   /**
@@ -52,8 +55,8 @@ export class FileController {
     @Req() req: Request,
   ): Promise<FileDto> {
     const userId = req.user.id;
-    const f =  await this.fileService.saveFile(file, userId, 'profile', userId);
-    this.fileService.activeFiles([f._id]);
+    const f = await this.fileService.saveFile(file, userId, 'profile', userId);
+    await this.fileService.activeFiles([f._id]);
     return f;
   }
 }

@@ -11,6 +11,7 @@ import { ServiceException } from '../exceptions';
 
 /**
  * Exception filter that handles ServiceException and converts them to proper HTTP responses
+ * This filter automatically transforms service exceptions into appropriate HTTP exceptions
  */
 @Catch(ServiceException)
 export class ServiceExceptionFilter implements ExceptionFilter {
@@ -19,19 +20,21 @@ export class ServiceExceptionFilter implements ExceptionFilter {
   catch(exception: ServiceException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest();
     
     // Use the suggested status code or default to 500
     const statusCode = exception.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
     
-    this.logger.error(`Service exception: ${exception.message} (${exception.code})`);
+    this.logger.error(`Service exception: ${exception.message} (${exception.code}) [${statusCode}]`);
 
-    // Format the error response
+    // Format the error response with consistent structure
     const errorResponse = {
       statusCode,
+      error: this.getErrorName(statusCode),
       code: exception.code,
       message: exception.message,
       timestamp: new Date().toISOString(),
-      path: ctx.getRequest().url,
+      path: request.url,
     };
 
     // Include extra data if available
@@ -41,5 +44,27 @@ export class ServiceExceptionFilter implements ExceptionFilter {
 
     // Send the response
     response.status(statusCode).json(errorResponse);
+  }
+
+  /**
+   * Get a standardized error name based on status code
+   */
+  private getErrorName(statusCode: number): string {
+    switch (statusCode) {
+      case HttpStatus.BAD_REQUEST:
+        return 'Bad Request';
+      case HttpStatus.UNAUTHORIZED:
+        return 'Unauthorized';
+      case HttpStatus.FORBIDDEN:
+        return 'Forbidden';
+      case HttpStatus.NOT_FOUND:
+        return 'Not Found';
+      case HttpStatus.CONFLICT:
+        return 'Conflict';
+      case HttpStatus.INTERNAL_SERVER_ERROR:
+        return 'Internal Server Error';
+      default:
+        return `HTTP Error ${statusCode}`;
+    }
   }
 }

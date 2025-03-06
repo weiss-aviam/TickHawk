@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, LogLevel, ValidationPipe } from '@nestjs/common';
-import { ServiceExceptionFilter } from './common/filters';
+import { ServiceExceptionFilter, AllExceptionsFilter } from './common/filters';
 
 async function bootstrap() {
   // Configure logging level
@@ -28,12 +28,26 @@ async function bootstrap() {
 
   // Apply global pipes and filters
   app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
+    whitelist: true, 
     transform: true,
     forbidNonWhitelisted: true,
+    exceptionFactory: (errors) => {
+      // Create a more descriptive validation error message
+      const messages = errors.map(error => {
+        const constraints = Object.values(error.constraints || {});
+        return `${error.property}: ${constraints.join(', ')}`;
+      });
+      return new Error('Validation failed: ' + messages.join('; '));
+    }
   }));
-  app.useGlobalFilters(new ServiceExceptionFilter());
-  logger.log('Applied global filters and pipes');
+  
+  // Apply filters - order matters! The more specific filter should come first
+  app.useGlobalFilters(
+    new ServiceExceptionFilter(), // Handle service exceptions first
+    new AllExceptionsFilter()     // Then handle all other exceptions
+  );
+  
+  logger.log('Applied global pipes and exception filters');
 
   // Swagger
   if (process.env.ENABLE_SWAGGER === 'true') {

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
   HttpStatus,
   Logger,
   Param,
@@ -15,6 +16,13 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  InternalServerException,
+  NotFoundException,
+  ServiceException
+} from 'src/common/exceptions';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JWTGuard } from 'src/config/guard/jwt/jwt.guard';
 import { Roles } from 'src/config/guard/roles/roles.decorator';
@@ -56,9 +64,24 @@ export class UserController {
     type: ProfileDto,
   })
   async getMe(@Req() request: Request): Promise<ProfileDto> {
-    const userData = request.user;
-    const id = new Types.ObjectId(userData.id as string);
-    return await this.userService.findById(id);
+    try {
+      const userData = request.user;
+      const id = new Types.ObjectId(userData.id as string);
+      return await this.userService.findById(id);
+    } catch (error) {
+      this.logger.error(`Error retrieving user profile: ${error.message}`);
+      
+      if (error instanceof ServiceException) {
+        // Map service exceptions to HTTP exceptions
+        throw new HttpException({
+          message: error.message,
+          code: error.code
+        }, error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      
+      // For any other errors
+      throw new HttpException('Failed to retrieve user profile', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Put('/me')
