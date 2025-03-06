@@ -59,6 +59,7 @@ export class Ticket extends Document {
 
   @Prop({
     required: false,
+    default: 0
   })
   minutes: number;
 
@@ -92,15 +93,21 @@ export const TicketSchema = SchemaFactory.createForClass(Ticket);
 // Index by companyId and status
 TicketSchema.index({ companyId: 1, status: 1 });
 
-// Update minutes
+// Update minutes from hours tracked in comments
 TicketSchema.pre('save', function (next) {
   if (!this.isModified('comments')) {
-    this.minutes = 0;
     return next();
   }
 
-  this.minutes = (this.comments
-    .map((comment) => comment.minutes) as [number]).reduce((acc, curr) => acc + curr, 0);
+  // Convert hours to minutes and sum
+  const totalMinutes = this.comments.reduce((acc, comment) => {
+    // Skip comments with no hours tracked
+    if (!comment.hours) return acc;
+    // Convert hours to minutes (1 hour = 60 minutes)
+    return acc + (comment.hours * 60);
+  }, 0);
+
+  this.minutes = totalMinutes;
   next();
 });
 

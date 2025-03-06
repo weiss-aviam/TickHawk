@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Req, Res, StreamableFile, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, StreamableFile, UseGuards } from '@nestjs/common';
 import { TicketService } from './ticket.service';
 import { JWTGuard } from 'src/config/guard/jwt/jwt.guard';
 import { RolesGuard } from 'src/config/guard/roles/roles.guard';
@@ -86,6 +86,23 @@ export class TicketController {
     }
   }
 
+  @Get('company')
+  @Roles(['customer', 'admin', 'agent'])
+  @ApiOperation({ summary: 'Get tickets by company with date filtering for reports' })
+  async getTicketsByCompanyWithDateFilter(
+    @Req() req: Request, 
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Query('companyId') companyId?: string,
+    @Query('page') page?: number
+  ) {
+    const user = req.user;
+    if (!page || page < 1) {
+      page = 1;
+    }
+    return this.ticketService.getTicketsByCompanyWithDateFilter(user, startDate, endDate, page, companyId);
+  }
+
   @Get('')
   @Roles(['admin', 'agent'])
   @ApiOperation({ summary: 'Get tickets with optional department and company filters' })
@@ -155,4 +172,5 @@ export class TicketController {
     const user = req.user;
     return await this.ticketService.replyToTicketAsAgent(user, agentReplyDto);
   }
+
 }

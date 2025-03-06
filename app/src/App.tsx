@@ -25,6 +25,7 @@ import EditUser from 'pages/agent/users/edit/[id]'
 import NewUser from 'pages/agent/users/new'
 import NewAgentTicket from 'pages/agent/tickets/new'
 import AgentTicketView from 'pages/agent/tickets/view'
+import AgentReports from 'pages/agent/reports'
 import ProtectedRoute from 'components/ProtectedRoute'
 import AuthProvider from 'components/AuthProvider'
 import { ToastContainer } from 'react-toastify'
@@ -63,6 +64,7 @@ function App () {
               <Route path='users' element={<Users />} />
               <Route path='users/new' element={<NewUser />} />
               <Route path='users/edit/:id' element={<EditUser />} />
+              <Route path='reports' element={<AgentReports />} />
               <Route path='profile' element={<Profile />} />
               <Route path='*' element={<NoMatch />} />
             </Route>

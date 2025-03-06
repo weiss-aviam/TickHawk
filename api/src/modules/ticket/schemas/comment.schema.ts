@@ -21,8 +21,9 @@ export class Comment extends Document {
   
   @Prop({
     required: false,
+    default: 0
   })
-  minutes: number;
+  hours: number;
 
   @Prop({
     type: [FileTicketSchema],

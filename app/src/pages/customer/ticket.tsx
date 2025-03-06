@@ -4,6 +4,7 @@ import { useDialog } from 'components/DialogProvider'
 import FilePicker from 'components/FilePicker'
 import CrossIcon from 'components/icons/CrossIcon'
 import FileIcon from 'components/icons/FileIcon'
+import ProfileImage from 'components/ProfileImage'
 import StatusBadge from 'components/StatusBadge'
 import TicketComment from 'components/TicketComment'
 import TicketReplies from 'components/TicketReplies'
@@ -121,7 +122,8 @@ function Ticket () {
                     <TicketComment
                       comment={{
                         user: {
-                          name: ticket?.customer?.name
+                          name: ticket?.customer?.name,
+                          _id: ticket?.customer?._id
                         },
                         content: ticket?.content,
                         createdAt: ticket?.createdAt,
@@ -265,10 +267,9 @@ function Ticket () {
                       <div className='inline-flex items-center'>
                         <div className='flex-shrink-0'>
                           {ticket && ticket?.agent?._id && (
-                            <img
+                            <ProfileImage 
+                              userId={ticket?.agent?._id} 
                               className='w-6 h-6 rounded-full mr-2'
-                              src='https://flowbite.com/docs/images/people/profile-picture-5.jpg'
-                              alt='ticket agent'
                             />
                           )}
                         </div>

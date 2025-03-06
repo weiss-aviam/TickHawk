@@ -6,6 +6,7 @@ import ProfileImage from './ProfileImage'
 export type TicketCommentType = {
   user: {
     name: string
+    _id?: string
   }
   content: string
   minutes?: number
@@ -40,7 +41,7 @@ export default function TicketComment ({
       <div className='flex items-center justify-between mb-2'>
         <div className='flex items-center'>
           <p className='inline-flex items-center mr-3 text-sm font-semibold text-gray-900 dark:text-white'>
-            <ProfileImage />
+            <ProfileImage userId={comment.user._id} />
             {comment.user.name}
           </p>
           <p className='text-sm text-gray-600 dark:text-gray-400'>
