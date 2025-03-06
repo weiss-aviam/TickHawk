@@ -4,6 +4,7 @@ import { TicketController } from './ticket.controller';
 import { Ticket, TicketSchema } from './schemas/ticket.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { APP_PIPE } from '@nestjs/core';
+import { UserUpdatedListener } from './listeners/user-updated.listener';
 
 @Module({
   providers: [
@@ -12,6 +13,7 @@ import { APP_PIPE } from '@nestjs/core';
       useClass: ValidationPipe,
     },
     TicketService,
+    UserUpdatedListener,
   ],
   controllers: [TicketController],
   imports: [

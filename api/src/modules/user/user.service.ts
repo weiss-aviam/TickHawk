@@ -17,6 +17,8 @@ import { UpdateProfileDto } from './dtos/in/update-profile.dto';
 import { UserListDto } from './dtos/out/user-list.dto';
 import { AssignCompanyDto } from './dtos/in/assign-company.dto';
 import { FileService } from '../file/file.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UserUpdatedEvent } from './events/user-updated.event';
 
 @Injectable()
 export class UserService {
@@ -25,6 +27,7 @@ export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
     private readonly fileService: FileService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   /**
@@ -299,7 +302,22 @@ export class UserService {
       throw new NotFoundException('User not found', 'USER_NOT_FOUND');
     }
 
+    // Determine what fields have changed for the event
+    const updates = {
+      name: profile.name !== user.name ? profile.name : undefined,
+      email: profile.email !== user.email ? profile.email : undefined,
+    };
+
     await this.userModel.updateOne({ _id: profile._id }, profile);
+
+    // If user data relevant to tickets has changed, emit an event
+    if (updates.name || updates.email) {
+      this.logger.debug(`Emitting user update event for user ${profile._id}`);
+      this.eventEmitter.emit(
+        'user.updated', 
+        new UserUpdatedEvent(profile._id.toString(), updates)
+      );
+    }
 
     const newUser = await this.userModel.findById(profile._id);
     return plainToInstance(ProfileDto, newUser.toJSON(), {
