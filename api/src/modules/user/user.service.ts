@@ -97,12 +97,15 @@ export class UserService {
         excludeExtraneousValues: true 
       });
       
-      // Add company object if companyId exists
-      if (user.companyId) {
+      // Add company object if companyId exists and is populated
+      if (user.companyId && typeof user.companyId === 'object' && 'name' in user.companyId) {
+        // Type assertion to make TypeScript happy
+        const companyData = user.companyId as { _id: Types.ObjectId; name: string };
+        
         // @ts-ignore - Add company property to match frontend model
         userDto.company = {
-          _id: user.companyId._id,
-          name: user.companyId.name
+          _id: companyData._id.toString(),
+          name: companyData.name
         };
       }
       
