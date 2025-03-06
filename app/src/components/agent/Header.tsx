@@ -57,6 +57,14 @@ function Header() {
                     </li>
                   </>
                 )}
+                <li>
+                  <Link
+                    to="/backoffice/reports"
+                    className="text-sm font-medium text-gray-700 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-500"
+                  >
+                    Reports
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

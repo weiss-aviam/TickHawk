@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMaxSize, IsArray, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
 export class AgentReplyTicketDto {
   @ApiProperty({
@@ -16,6 +16,15 @@ export class AgentReplyTicketDto {
   @IsString()
   @MaxLength(500)
   content: string;
+
+  @ApiProperty({
+    description: 'The number of hours spent on this reply',
+    required: false,
+  })
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  hours?: number;
 
   @ApiProperty({
     description: 'The files to attach to the reply',

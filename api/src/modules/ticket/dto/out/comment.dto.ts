@@ -16,7 +16,7 @@ export class CommentDto {
     content: string;
 
     @Expose()
-    minutes: number;
+    hours: number;
 
     @Expose()
     files: FileTicketDto[];

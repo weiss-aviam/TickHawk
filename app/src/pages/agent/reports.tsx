@@ -5,7 +5,7 @@ import StatusBadge from '../../components/StatusBadge'
 import PriorityBadge from '../../components/PriorityBadge'
 import DateFormat from '../../components/DateFormat'
 
-function Reports () {
+function AgentReports () {
   const { axiosClient, user } = useAuth()
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
@@ -13,11 +13,36 @@ function Reports () {
   const [totalHours, setTotalHours] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [companies, setCompanies] = useState<any[]>([])
+  const [selectedCompanyId, setSelectedCompanyId] = useState('')
   const [searchPerformed, setSearchPerformed] = useState(false)
+
+  // Fetch companies for admin/agent
+  useEffect(() => {
+    if (user && (user.role === 'admin' || user.role === 'agent')) {
+      axiosClient
+        .get("/company")
+        .then((response:any) => {
+          setCompanies(response.data);
+          // Set default company selection if available
+          if (response.data.length > 0) {
+            setSelectedCompanyId(response.data[0]._id);
+          }
+        })
+        .catch((err: any) => {
+          console.error("Error fetching companies:", err);
+        });
+    }
+  }, [axiosClient, user])
 
   const fetchReports = async () => {
     if (!startDate || !endDate) {
       setError('Please select both start and end dates')
+      return
+    }
+
+    if (user.role !== 'customer' && !selectedCompanyId) {
+      setError('Please select a company')
       return
     }
 
@@ -30,8 +55,16 @@ function Reports () {
       const start = new Date(startDate).toISOString()
       const end = new Date(endDate).toISOString()
       
+      // Construct URL based on user role
+      let url = `/ticket/company?startDate=${start}&endDate=${end}`
+      
+      // For admin/agent, add companyId parameter
+      if (user.role !== 'customer' && selectedCompanyId) {
+        url += `&companyId=${selectedCompanyId}`
+      }
+      
       // Fetch tickets with date range filter
-      const response = await axiosClient.get(`/ticket/company?startDate=${start}&endDate=${end}`)
+      const response = await axiosClient.get(url)
       
       if (response.data) {
         setTickets(response.data)
@@ -67,11 +100,32 @@ function Reports () {
         <div className='container px-4 pt-20 mx-auto sm:pt-24 md:pt-24 lg:px-0 dark:bg-gray-900'>
           <div className='p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800'>
             <h3 className='mb-4 text-xl font-semibold dark:text-white'>
-              Company Reports
+              {user.role === 'customer' ? 'Company Reports' : 'Reports'}
             </h3>
             
             {/* Filtros en forma de flex más flexible */}
             <div className='flex flex-wrap items-end gap-4 mb-6'>
+              {/* Company selector for admin/agent */}
+              {(user.role === 'admin' || user.role === 'agent') && (
+                <div className='max-w-xs'>
+                  <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
+                    Company
+                  </label>
+                  <select
+                    value={selectedCompanyId}
+                    onChange={(e) => setSelectedCompanyId(e.target.value)}
+                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full max-w-xs p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
+                  >
+                    <option value="">Select a company</option>
+                    {companies.map(company => (
+                      <option key={company._id} value={company._id}>
+                        {company.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              
               <div>
                 <label className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'>
                   Start Date
@@ -208,7 +262,7 @@ function Reports () {
             
             {!searchPerformed && !loading && (
               <div className='p-4 mt-4 text-sm text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200'>
-                Select a date range and click "Generate Report" to see your company tickets.
+                Select a date range and company, then click "Generate Report" to see tickets data.
               </div>
             )}
           </div>
@@ -218,4 +272,4 @@ function Reports () {
   )
 }
 
-export default Reports
+export default AgentReports
