@@ -19,7 +19,7 @@ function TicketList({ departmentId = '', companyId = '' }) {
     navigate(`/backoffice/tickets/${_id}`)
   }
 
-  const loadTickets = () => {
+  const loadTickets = React.useCallback(() => {
     setLoading(true)
     // Construir la URL con filtros opcionales
     let url = `/ticket?page=${page}`
@@ -41,11 +41,11 @@ function TicketList({ departmentId = '', companyId = '' }) {
       }).finally(() => {
         setLoading(false)
       })
-  };
+  }, [page, departmentId, companyId, auth.axiosClient]);
 
   useEffect(() => {
     loadTickets()
-  }, [page, departmentId, companyId])
+  }, [page, departmentId, companyId, loadTickets])
   
   return (
     <div>

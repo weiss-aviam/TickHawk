@@ -3,7 +3,6 @@ import { useAuth } from 'components/AuthProvider'
 import { CompanyTicket } from 'models/ticket.model'
 import { Link } from 'react-router-dom'
 import Loading from 'components/Loading'
-import axios from 'axios'
 
 function Companies() {
   const [companies, setCompanies] = useState<CompanyTicket[]>([])
@@ -11,11 +10,7 @@ function Companies() {
   const [error, setError] = useState(false)
   const auth = useAuth()
 
-  useEffect(() => {
-    loadCompanies()
-  }, [])
-
-  const loadCompanies = () => {
+  const loadCompanies = React.useCallback(() => {
     setLoading(true)
     auth.axiosClient.get('/company')
       .then((response: { data: CompanyTicket[] }) => {
@@ -29,7 +24,11 @@ function Companies() {
       .finally(() => {
         setLoading(false)
       })
-  }
+  }, [auth.axiosClient])
+  
+  useEffect(() => {
+    loadCompanies()
+  }, [loadCompanies])
 
   const handleDeleteCompany = (id: string) => {
     if (window.confirm('Are you sure you want to delete this company?')) {

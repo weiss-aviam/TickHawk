@@ -10,11 +10,7 @@ function Departments() {
   const [error, setError] = useState(false)
   const auth = useAuth()
 
-  useEffect(() => {
-    loadDepartments()
-  }, [])
-
-  const loadDepartments = () => {
+  const loadDepartments = React.useCallback(() => {
     setLoading(true)
     auth.axiosClient.get('/department')
       .then((response: { data: Department[] }) => {
@@ -28,7 +24,11 @@ function Departments() {
       .finally(() => {
         setLoading(false)
       })
-  }
+  }, [auth.axiosClient])
+  
+  useEffect(() => {
+    loadDepartments()
+  }, [loadDepartments])
 
   const handleDeleteDepartment = (id: string) => {
     if (window.confirm('Are you sure you want to delete this department?')) {

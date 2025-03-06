@@ -6,7 +6,6 @@ import CrossIcon from 'components/icons/CrossIcon'
 import FileIcon from 'components/icons/FileIcon'
 import ProfileImage from 'components/ProfileImage'
 import StatusBadge from 'components/StatusBadge'
-import TicketComment from 'components/TicketComment'
 import TicketReplies from 'components/TicketReplies'
 import TimeFormat from 'components/TimeFormat'
 import { FileModel } from 'models/file.model'
@@ -24,7 +23,6 @@ function AgentTicketView() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [agents, setAgents] = useState<{id: string, name: string}[]>([])
-  const [loadingAgents, setLoadingAgents] = useState(false)
   const [statusOptions] = useState([
     { value: 'open', label: 'Open' },
     { value: 'in-progress', label: 'In Progress' },
@@ -73,7 +71,6 @@ function AgentTicketView() {
 
   // Fetch available agents
   const loadAgents = () => {
-    setLoadingAgents(true)
     auth.axiosClient.get('/user?role=agent')
       .then((response: any) => {
         const agentData = response.data.users || [];
@@ -83,11 +80,9 @@ function AgentTicketView() {
           name: agent.name
         }))
         setAgents(formattedAgents)
-        setLoadingAgents(false)
       })
       .catch((err: any) => {
         console.error('Error loading agents:', err)
-        setLoadingAgents(false)
       })
   }
 

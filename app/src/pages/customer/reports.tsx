@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useAuth } from '../../components/AuthProvider'
 import { Ticket } from '../../models/ticket.model'
 import StatusBadge from '../../components/StatusBadge'
@@ -6,7 +6,7 @@ import PriorityBadge from '../../components/PriorityBadge'
 import DateFormat from '../../components/DateFormat'
 
 function Reports () {
-  const { axiosClient, user } = useAuth()
+  const { axiosClient } = useAuth()
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [tickets, setTickets] = useState<Ticket[]>([])
