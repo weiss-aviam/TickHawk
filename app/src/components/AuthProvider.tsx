@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 import { jwtDecode } from "jwt-decode";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -133,7 +133,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 type AuthContextType = {
   token: string | null;
   setToken: (token: string) => void;
-  axiosClient: axios.AxiosInstance;
+  axiosClient: AxiosInstance;
   user: any;
 };
 
