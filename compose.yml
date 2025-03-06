@@ -6,13 +6,21 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/tickhawk
-      - JWT_SECRET=your_jwt_secret
+      - MONGO_URI=mongodb://mongodb:27017/tickhawk
+      - BASE_URL=http://localhost
       - S3_PROVIDER=local
       - PORT=3000
       - LOCAL_UPLOAD_PATH=/app/uploads
       - LOG_LEVEL=info
       - ENABLE_SWAGGER=true
+      - JWT_SECRET=secret
+      - JWT_ACCESS_TOKEN_EXPIRATION=60m
+      - JWT_REFRESH_TOKEN_EXPIRATION=7d
+      - EMAIL_HOST=smtp.gmail.com
+      - EMAIL_PORT=465
+      - EMAIL_SECURE=true
+      - EMAIL_USERNAME=test
+      - EMAIL_PASSWORD=test
     volumes:
       - uploads_data:/app/uploads
     depends_on:
@@ -23,6 +31,8 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=http://localhost:3000
     ports:
       - "80:80"
     depends_on:
