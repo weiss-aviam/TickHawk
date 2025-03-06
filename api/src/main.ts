@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, LogLevel } from '@nestjs/common';
+import { Logger, LogLevel, ValidationPipe } from '@nestjs/common';
+import { ServiceExceptionFilter } from './common/filters';
 
 async function bootstrap() {
   // Configure logging level
@@ -24,6 +25,15 @@ async function bootstrap() {
 
   // Get logger instance for bootstrap function
   const logger = new Logger('Bootstrap');
+
+  // Apply global pipes and filters
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    transform: true,
+    forbidNonWhitelisted: true,
+  }));
+  app.useGlobalFilters(new ServiceExceptionFilter());
+  logger.log('Applied global filters and pipes');
 
   // Swagger
   if (process.env.ENABLE_SWAGGER === 'true') {

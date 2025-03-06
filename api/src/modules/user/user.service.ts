@@ -1,4 +1,10 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  InternalServerException,
+  NotFoundException
+} from 'src/common/exceptions';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
@@ -33,7 +39,7 @@ export class UserService {
       return exists;
     } catch (error) {
       this.logger.error(`Error checking user existence: ${error.message}`, error.stack);
-      throw new HttpException('USER_EXISTENCE_CHECK_FAILED', 500);
+      throw new InternalServerException('Error checking user existence', 'USER_EXISTENCE_CHECK_FAILED');
     }
   }
 
@@ -56,7 +62,7 @@ export class UserService {
       return user;
     } catch (error) {
       this.logger.error(`Error finding user by email: ${error.message}`, error.stack);
-      throw new HttpException('USER_FIND_FAILED', 500);
+      throw new InternalServerException('Error finding user by email', 'USER_FIND_FAILED');
     }
   }
 
@@ -72,7 +78,7 @@ export class UserService {
       const user = await this.userModel.findById(id);
       if (!user) {
         this.logger.warn(`User not found with ID: ${id}`);
-        throw new HttpException('USER_NOT_FOUND', 404);
+        throw new NotFoundException('User not found', 'USER_NOT_FOUND');
       }
       
       this.logger.debug(`User ${id} found successfully`);
@@ -81,10 +87,10 @@ export class UserService {
       });
     } catch (error) {
       this.logger.error(`Error finding user by ID ${id}: ${error.message}`, error.stack);
-      if (error instanceof HttpException) {
+      if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new HttpException('USER_FIND_FAILED', 500);
+      throw new InternalServerException('Error finding user', 'USER_FIND_FAILED');
     }
   }
 
@@ -173,7 +179,7 @@ export class UserService {
       );
     } catch (error) {
       this.logger.error(`Error finding users: ${error.message}`, error.stack);
-      throw new HttpException('USER_LIST_RETRIEVAL_FAILED', 500);
+      throw new InternalServerException('Error retrieving user list', 'USER_LIST_RETRIEVAL_FAILED');
     }
   }
 
@@ -203,7 +209,7 @@ export class UserService {
     // Get the user
     const user = await this.userModel.findById(assignCompanyDto.userId);
     if (!user) {
-      throw new Error('USER_NOT_FOUND');
+      throw new NotFoundException('User not found', 'USER_NOT_FOUND');
     }
     
     // Check if user is a customer - removed restriction to allow all roles
@@ -246,7 +252,7 @@ export class UserService {
   async create(user: CreateUserDto): Promise<User> {
     if (!user.password) {
       //TODO: Add block user if password is empty
-      throw new Error('PASSWORD_REQUIRED');
+      throw new BadRequestException('Password is required', 'PASSWORD_REQUIRED');
     } else {
       user.password = bcrypt.hashSync(user.password, 10);
     }
@@ -264,7 +270,7 @@ export class UserService {
     // Check if email is already in use
     const existingUser = await this.userModel.findOne({ email: createUserDto.email });
     if (existingUser) {
-      throw new Error('EMAIL_ALREADY_IN_USE');
+      throw new ConflictException('Email is already in use', 'EMAIL_ALREADY_IN_USE');
     }
     
     // Create the user
@@ -290,7 +296,7 @@ export class UserService {
 
     const user = await this.userModel.findById(profile._id);
     if (!user) {
-      throw new Error('USER_NOT_FOUND');
+      throw new NotFoundException('User not found', 'USER_NOT_FOUND');
     }
 
     await this.userModel.updateOne({ _id: profile._id }, profile);
@@ -312,19 +318,51 @@ export class UserService {
     id: string, 
     updateProfileDto: UpdateProfileDto, 
     file?: Express.Multer.File
-  ): Promise<ProfileDto> {
-    updateProfileDto._id = id;
-    
+  ): Promise<ProfileDto> {    
     // Handle profile image upload if provided
     if (file) {
       try {
         const savedFile = await this.fileService.saveFile(file, id);
         updateProfileDto.profileImage = savedFile._id.toString();
       } catch (error) {
-        throw new Error('PROFILE_IMAGE_UPLOAD_FAILED');
+        throw new BadRequestException('Failed to upload profile image', 'PROFILE_IMAGE_UPLOAD_FAILED');
       }
     }
     
     return this.update(updateProfileDto);
+  }
+  
+  /**
+   * Remove profile image for a user
+   * @param id User ID
+   * @returns Updated user profile
+   */
+  async removeProfileImage(id: Types.ObjectId): Promise<ProfileDto> {
+    try {
+      this.logger.debug(`Removing profile image for user: ${id}`);
+
+      // Get current user
+      const user = await this.userModel.findById(id);
+      if (!user) {
+        this.logger.warn(`User not found with ID: ${id}`);
+        throw new NotFoundException('User not found', 'USER_NOT_FOUND');
+      }
+
+      // Remove image from storage provider
+      this.fileService.removeFile(user._id.toString());
+
+      // Update user profile image field
+      this.logger.debug(`Profile image removed for user: ${id}`);
+
+      return plainToInstance(ProfileDto, user.toJSON(), {
+        excludeExtraneousValues: true,
+      });
+    } catch (error) {
+      this.logger.error(`Error removing profile image: ${error.message}`, error.stack);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerException('Failed to remove profile image', 'PROFILE_IMAGE_REMOVAL_FAILED');
+    }
   }
 }

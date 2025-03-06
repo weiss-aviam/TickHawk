@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Logger,
   Param,
   Post,
   Put,
@@ -34,6 +35,8 @@ import { CreateUserDto } from './dtos/in/create-user.dto';
 @Controller('user')
 @UseGuards(JWTGuard, RolesGuard)
 export class UserController {
+  private readonly logger = new Logger(UserController.name);
+  
   constructor(
     private readonly userService: UserService,
     private readonly fileService: FileService,
@@ -137,15 +140,112 @@ export class UserController {
     description: 'Profile image retrieved successfully',
   })
   async getImage(@Param('id') id: string, @Res() res) {
+    // Import modules at the top level
+    const fs = require('fs');
+    const path = require('path');
+    
+    // Handle both development and production paths
+    let defaultImagePath;
     try {
-      const buffer = await this.fileService.getFile(id);
+      // First try the production path (when compiled to dist)
+      defaultImagePath = path.join(__dirname, '../../../assets/tickhawk.png');
+      // Check if file exists at this path
+      fs.accessSync(defaultImagePath, fs.constants.R_OK);
+      this.logger.debug(`Using production assets path: ${defaultImagePath}`);
+    } catch (err) {
+      // Fallback to development path
+      defaultImagePath = path.join(__dirname, '../../assets/tickhawk.png');
+      this.logger.debug(`Using development assets path: ${defaultImagePath}`);
+    }
+    
+    try {
+      // First try to get the user to check if they have a profile image
+      try {
+        const user = await this.userService.findById(new Types.ObjectId(id));
+        
+        // If user doesn't exist or has no profile image, return default
+        if (!user) {
+          this.logger.debug(`User ${id} has no profile image, returning default`);
+          const defaultImage = fs.readFileSync(defaultImagePath);
+          res.writeHead(200, { 'Content-Type': 'image/png' });
+          res.end(defaultImage);
+          return;
+        }
+        
+        // Check if the file exists before trying to retrieve it
+        const fileExists = await this.fileService.fileExists(user._id);
+        if (!fileExists) {
+          this.logger.debug(
+            `Profile image ID ${user._id} doesn't exist, returning default`,
+          );
+          const defaultImage = fs.readFileSync(defaultImagePath);
+          res.writeHead(200, { 'Content-Type': 'image/png' });
+          res.end(defaultImage);
+          return;
+        }
+        
+        // If user has a profile image that exists, try to get it
+        try {
+          const buffer = await this.fileService.getFile(user._id);
+          res.writeHead(200, { 'Content-Type': 'image/png' });
+          res.end(buffer);
+          return;
+        } catch (fileError) {
+          this.logger.warn(`Error getting profile image file: ${fileError.message}`);
+          // Continue to default image if file retrieval fails
+        }
+      } catch (userError) {
+        this.logger.warn(`Error finding user: ${userError.message}`);
+        // If user lookup fails, try direct file lookup by ID
+        
+        // Check if the ID is a valid file ID
+        const fileExists = await this.fileService.fileExists(id);
+        if (fileExists) {
+          try {
+            // As a fallback, try direct file lookup (legacy behavior)
+            const buffer = await this.fileService.getFile(id);
+            res.writeHead(200, { 'Content-Type': 'image/png' });
+            res.end(buffer);
+            return;
+          } catch (directFileError) {
+            this.logger.warn(`Direct file lookup failed: ${directFileError.message}`);
+            // Continue to default image
+          }
+        } else {
+          this.logger.debug(`ID ${id} is not a valid file ID, returning default`);
+        }
+      }
+      
+      // Default image if all above attempts fail
+      this.logger.debug(`Returning default image for user ${id}`);
+      const defaultImage = fs.readFileSync(defaultImagePath);
       res.writeHead(200, { 'Content-Type': 'image/png' });
-      res.end(buffer);
-    } catch (e) {
-      const image =
-        '';
-      res.writeHead(200, { 'Content-Type': 'image/png' });
-      res.end(Buffer.from(image, 'base64'));
+      res.end(defaultImage);
+      
+    } catch (error) {
+      this.logger.error(`Unexpected error in getImage: ${error.message}`);
+      // Ultimate fallback - try both paths explicitly before giving up
+      try {
+        // First try production path
+        try {
+          const prodPath = path.join(__dirname, '../../../assets/tickhawk.png');
+          const defaultImage = fs.readFileSync(prodPath);
+          res.writeHead(200, { 'Content-Type': 'image/png' });
+          res.end(defaultImage);
+          return;
+        } catch (prodError) {
+          // Try development path
+          const devPath = path.join(__dirname, '../../assets/tickhawk.png');
+          const defaultImage = fs.readFileSync(devPath);
+          res.writeHead(200, { 'Content-Type': 'image/png' });
+          res.end(defaultImage);
+          return;
+        }
+      } catch (fsError) {
+        this.logger.error(`Could not read default profile image from any path: ${fsError.message}`);
+        res.writeHead(200, { 'Content-Type': 'image/png' });
+        res.end(Buffer.from('', 'base64'));
+      }
     }
   }
 
@@ -220,6 +320,25 @@ export class UserController {
   ): Promise<ProfileDto> {
     updateProfileDto._id = id;
     return await this.userService.update(updateProfileDto);
+  }
+  
+  /**
+   * Delete profile image for a user
+   * @param request
+   * @returns Updated user profile
+   */
+  @Post('/me/remove-profile-image')
+  @Roles(['customer', 'admin', 'agent'])
+  @ApiOperation({ summary: 'Delete profile image for current user' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Profile image deleted successfully',
+    type: ProfileDto,
+  })
+  async removeProfileImage(@Req() request: Request): Promise<ProfileDto> {
+    const userData = request.user;
+    const id = new Types.ObjectId(userData.id as string);
+    return await this.userService.removeProfileImage(id);
   }
   
   /**
