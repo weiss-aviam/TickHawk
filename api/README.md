@@ -1,45 +1,75 @@
-# 🦅 TickHawk
+# 🦅 TickHawk API
 
-Welcome to **TickHawk**, a Nestjs app
+Welcome to **TickHawk API**, the backend for the TickHawk ticket management system built with NestJS and MongoDB.
 
-## Environment
+## 🚀 Features
+
+- **Authentication** - JWT-based auth with access and refresh tokens
+- **Company Management** - Create and manage multiple companies
+- **Department Organization** - Organize teams within companies
+- **Ticket System** - Complete ticket lifecycle management
+- **File Management** - Support for multiple storage providers
+- **User Management** - Role-based access control
+
+## 🔧 Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Development mode
+npm run start:dev
+
+# Production build
+npm run build
+npm run start:prod
+```
+
+## 🐳 Docker
+
+```bash
+# Build and run with Docker
+docker build -t tickhawk-api .
+docker run -p 3000:3000 tickhawk-api
+
+# Or use Docker Compose from the root directory
+docker compose up api
+```
+
+## 🔐 Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
 
 ```
 # Server Configuration
-BASE_URL=http://localhost:4000
-MONGO_URI=mongodb://xxxxxxx/yyy
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/tickhawk
+LOG_LEVEL=info  # Options: error, warn, log, debug, verbose
 
 # JWT Configuration
-JWT_SECRET=secret
+JWT_SECRET=your_jwt_secret
 JWT_ACCESS_TOKEN_EXPIRATION=15m
 JWT_REFRESH_TOKEN_EXPIRATION=7d
 
-# Email Configuration
-EMAIL_HOST=smtp.xxx.com
-EMAIL_PORT=465
-EMAIL_SECURE=true
-EMAIL_USERNAME=test
-EMAIL_PASSWORD=test
-
-# Default User Configuration
-DEFAULT_USER_USERNAME=tickhawk
-DEFAULT_USER_PASSWORD=tickhawk
-DEFAULT_USER_EMAIL=email@email.com
+# Default Admin User
+DEFAULT_USER_USERNAME=admin
+DEFAULT_USER_PASSWORD=tickhawk_admin
+DEFAULT_USER_EMAIL=admin@tickhawk.com
 
 # Storage Configuration
-# Type of storage to use (aws, minio, ovh, local)
-STORAGE_TYPE=local
-
-# Local Storage Configuration (only needed if STORAGE_TYPE=local)
+S3_PROVIDER=local  # Options: local, aws, minio, ovh
 LOCAL_UPLOAD_PATH=/path/to/uploads
 
-# AWS S3 Configuration (only needed if STORAGE_TYPE=aws)
+# API Documentation
+ENABLE_SWAGGER=false  # Set to true to enable Swagger documentation
+
+# AWS S3 Configuration (only needed if S3_PROVIDER=aws)
 # AWS_S3_BUCKET_NAME=your-bucket-name
 # AWS_S3_REGION=your-aws-region
 # AWS_S3_ACCESS_KEY=your-aws-access-key
 # AWS_S3_SECRET_KEY=your-aws-secret-key
 
-# Minio Configuration (only needed if STORAGE_TYPE=minio)
+# Minio Configuration (only needed if S3_PROVIDER=minio)
 # MINIO_BUCKET_NAME=your-minio-bucket
 # MINIO_ENDPOINT=your-minio-endpoint
 # MINIO_PORT=9000
@@ -48,7 +78,7 @@ LOCAL_UPLOAD_PATH=/path/to/uploads
 # MINIO_SECRET_KEY=your-minio-secret-key
 # MINIO_REGION=us-east-1
 
-# OVH Object Storage Configuration (only needed if STORAGE_TYPE=ovh)
+# OVH Object Storage Configuration (only needed if S3_PROVIDER=ovh)
 # OVH_S3_BUCKET_NAME=your-ovh-bucket
 # OVH_S3_ENDPOINT=s3.your-region.cloud.ovh.net
 # OVH_S3_PORT=443
@@ -57,7 +87,16 @@ LOCAL_UPLOAD_PATH=/path/to/uploads
 # OVH_S3_REGION=GRA # Your region (GRA, SBG, etc)
 ```
 
-## Storage Providers
+## 📁 API Modules
+
+- **Auth** - Authentication and token management
+- **Company** - Company and contract management
+- **Department** - Department organization
+- **File** - File storage and retrieval
+- **Ticket** - Ticket management with comments
+- **User** - User management and profiles
+
+## 📚 Storage Providers
 
 TickHawk supports multiple storage providers for file uploads:
 
@@ -66,6 +105,4 @@ TickHawk supports multiple storage providers for file uploads:
 3. **MinIO**: Files are stored in a MinIO server
 4. **OVH Object Storage**: Files are stored in OVH's Object Storage service (compatible with S3)
 
-To configure the storage provider, set the `STORAGE_TYPE` environment variable to one of: `local`, `aws`, `minio`, or `ovh`, and then set the appropriate provider-specific environment variables as listed above.
-
-Only the configuration for the selected provider needs to be included in your `.env` file.
+To configure the storage provider, set the `S3_PROVIDER` environment variable to one of: `local`, `aws`, `minio`, or `ovh`, and then set the appropriate provider-specific environment variables as listed above.

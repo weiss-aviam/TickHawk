@@ -1,150 +1,201 @@
-# **Especificación de Entidades para el Sistema de Tickets/Issues**
+# **TickHawk - System Entity Specification**
 
-## **1. Empresa**
-**Descripción:** Representa a la organización que contrata el servicio y tiene asociados usuarios cliente (cliente user).
+## **Architecture Overview**
 
-### **Atributos:**
-- `id`: Identificador único.
-- `nombre`: Nombre de la empresa.
-- `horas_mensuales`: Cantidad de horas asignadas mensualmente (nullable si tiene horas infinitas).
-- `bolsa_horas`: Cantidad de horas disponibles en la bolsa (nullable si tiene horas infinitas o mensuales).
-- `horas_infinitas`: Booleano que indica si tiene horas ilimitadas.
-- `facturas`: Relación con las facturas asociadas.
-- `fecha_renovación_horas`: Fecha en la que se renuevan las horas mensuales (si aplica).
-
-### **Relaciones:**
-- **1:N** con `ClienteUser`.
-- **1:N** con `Factura`.
+TickHawk is a comprehensive ticket management system built on a multi-tenant architecture. The system allows different companies to manage their customer support and internal issues through a role-based access system.
 
 ---
 
-## **2. ClienteUser**
-**Descripción:** Usuario perteneciente a una empresa que puede abrir y participar en tickets.
+## **Key Entities**
 
-### **Atributos:**
-- `id`: Identificador único.
-- `nombre`: Nombre del usuario.
-- `email`: Correo electrónico del usuario.
-- `empresa_id`: Referencia a la empresa a la que pertenece.
+## **1. Company**
+**Description:** Represents an organization that contracts the service and has associated customer users.
 
-### **Relaciones:**
-- **N:1** con `Empresa`.
-- **1:N** con `Ticket`.
+### **Attributes:**
+- `id`: Unique identifier
+- `name`: Company name
+- `monthlyHours`: Monthly allocated hours (null if unlimited)
+- `hourPool`: Available hours in the pool (null if unlimited or monthly)
+- `unlimitedHours`: Boolean indicating unlimited hours
+- `renewalDate`: Date when monthly hours are renewed (if applicable)
+- `contracts`: Relationship with contracts/subscriptions
 
----
-
-## **3. UserAdmin**
-**Descripción:** Usuario administrador que gestiona el sistema.
-
-### **Atributos:**
-- `id`: Identificador único.
-- `nombre`: Nombre del administrador.
-- `email`: Correo electrónico.
+### **Relationships:**
+- **1:N** with `User` (customer role)
+- **1:N** with `Department`
 
 ---
 
-## **4. UserTecnico**
-**Descripción:** Usuario técnico que resuelve tickets.
+## **2. User**
+**Description:** System user with role-based access (admin, agent, or customer)
 
-### **Atributos:**
-- `id`: Identificador único.
-- `nombre`: Nombre del técnico.
-- `email`: Correo electrónico.
+### **Attributes:**
+- `id`: Unique identifier
+- `username`: Username for login
+- `email`: Email address
+- `password`: Encrypted password
+- `role`: User role (admin, agent, customer)
+- `name`: Full name
+- `profileImage`: Profile picture
+- `companyId`: Reference to associated company (for customers and agents)
+- `departmentId`: Reference to associated department (for agents)
 
-### **Relaciones:**
-- **1:N** con `Ticket` (asignado como técnico).
-
----
-
-## **5. Ticket**
-**Descripción:** Representa un problema o tarea abierta por un ClienteUser.
-
-### **Atributos:**
-- `id`: Identificador único.
-- `estado`: Estado actual del ticket (`pendiente`, `abierto`, `en proceso`, `cerrado`).
-- `subject`: Título o resumen del problema.
-- `contenido`: Descripción detallada del problema.
-- `horas_usadas`: Array que almacena los registros de horas trabajadas en el ticket.
-- `fecha_creacion`: Fecha en la que se creó el ticket.
-- `fecha_inicio`: Fecha en la que se comenzó a trabajar en el ticket.
-- `fecha_cierre`: Fecha en la que se cerró el ticket.
-- `usuario_client_id`: Referencia al usuario cliente que abrió el ticket.
-- `usuario_tecnico_id`: Referencia al técnico asignado.
-- `usuarios_espectadores`: Lista de usuarios (técnicos o clientes) que pueden observar el ticket.
-- `historial`: Lista de eventos asociados al ticket (e.g., cambio de estado, asignación de técnico).
-- `status`: Estado general del ticket (e.g., cerrado, en proceso).
-- `adjuntos`: Archivos asociados al ticket.
-- `subtareas`: Lista de subtareas (modo TODO list).
-- `comentarios`: Lista de comentarios asociados al ticket.
-
-### **Relaciones:**
-- **N:1** con `ClienteUser` (quien abre el ticket).
-- **N:1** con `UserTecnico` (técnico asignado).
-- **N:N** con `ClienteUser` y `UserTecnico` (como espectadores).
-- **1:N** con `Comentario`.
+### **Relationships:**
+- **N:1** with `Company` (if customer or agent)
+- **N:1** with `Department` (if agent)
+- **1:N** with `Ticket` (as creator)
+- **1:N** with `Ticket` (as assigned agent)
+- **1:N** with `Comment`
 
 ---
 
-## **6. Comentario**
-**Descripción:** Respuesta o mensaje dentro de un ticket.
+## **3. Department**
+**Description:** Organizational unit within a company for ticket categorization
 
-### **Atributos:**
-- `id`: Identificador único.
-- `fecha`: Fecha en la que se hizo el comentario.
-- `contenido`: Texto del comentario.
-- `adjuntos`: Archivos adjuntos al comentario.
-- `usuario_id`: Referencia al usuario que realizó el comentario.
+### **Attributes:**
+- `id`: Unique identifier
+- `name`: Department name
+- `companyId`: Reference to parent company
+- `description`: Department description
 
-### **Relaciones:**
-- **N:1** con `Ticket`.
-
----
-
-## **7. Factura**
-**Descripción:** Documento asociado a la compra de una bolsa de horas o al uso del sistema.
-
-### **Atributos:**
-- `id`: Identificador único.
-- `fecha_emision`: Fecha de emisión de la factura.
-- `monto`: Monto total de la factura.
-- `archivo_pdf`: Archivo PDF de la factura.
-- `empresa_id`: Referencia a la empresa asociada.
-
-### **Relaciones:**
-- **N:1** con `Empresa`.
+### **Relationships:**
+- **N:1** with `Company`
+- **1:N** with `User` (agents)
+- **1:N** with `Ticket`
 
 ---
 
-## **8. HistorialEvento**
-**Descripción:** Registro de cambios o acciones realizadas sobre un ticket.
+## **4. Ticket**
+**Description:** Represents an issue or task opened by a user
 
-### **Atributos:**
-- `id`: Identificador único.
-- `fecha`: Fecha del evento.
-- `descripcion`: Descripción del cambio o acción.
-- `usuario_id`: Referencia al usuario que realizó la acción.
+### **Attributes:**
+- `id`: Unique identifier
+- `status`: Current ticket status (`pending`, `open`, `in_progress`, `resolved`, `closed`)
+- `priority`: Ticket priority (`low`, `medium`, `high`, `critical`)
+- `subject`: Title or summary
+- `content`: Detailed description
+- `createdAt`: Creation timestamp
+- `updatedAt`: Last update timestamp
+- `closedAt`: Closure timestamp
+- `customerId`: Reference to customer who opened the ticket
+- `assignedAgentId`: Reference to assigned agent
+- `departmentId`: Reference to associated department
+- `companyId`: Reference to associated company
+- `tags`: Array of tags/keywords
 
-### **Relaciones:**
-- **N:1** con `Ticket`.
+### **Relationships:**
+- **N:1** with `User` (as customer)
+- **N:1** with `User` (as assigned agent)
+- **N:1** with `Department`
+- **N:1** with `Company`
+- **1:N** with `Comment`
+- **1:N** with `Event` (history)
+- **1:N** with `FileTicket` (attachments)
 
 ---
 
-## **Relaciones Clave**
-1. **Empresa**:
-   - Tiene múltiples `ClienteUser`.
-   - Puede tener múltiples `Factura`.
+## **5. Comment**
+**Description:** Response or message within a ticket thread
 
-2. **ClienteUser**:
-   - Puede abrir múltiples `Ticket`.
-   - Puede ser espectador de múltiples `Ticket`.
+### **Attributes:**
+- `id`: Unique identifier
+- `content`: Comment text
+- `createdAt`: Creation timestamp
+- `userId`: Reference to the user who made the comment
+- `ticketId`: Reference to the associated ticket
+- `timeSpent`: Time spent by agent (in minutes)
+- `isInternal`: Boolean indicating if comment is for internal use only
 
-3. **UserTecnico**:
-   - Puede resolver múltiples `Ticket`.
-   - Puede ser espectador de múltiples `Ticket`.
+### **Relationships:**
+- **N:1** with `Ticket`
+- **N:1** with `User`
+- **1:N** with `FileTicket` (attachments)
 
-4. **Ticket**:
-   - Relación con `ClienteUser` (creador).
-   - Relación con `UserTecnico` (resolutor).
-   - Relación con múltiples `ClienteUser` y `UserTecnico` (espectadores).
-   - Relación con múltiples `Comentario`.
-   - Relación con múltiples `HistorialEvento`.
+---
+
+## **6. File**
+**Description:** File uploaded to the system
+
+### **Attributes:**
+- `id`: Unique identifier
+- `originalName`: Original file name
+- `mimeType`: File MIME type
+- `size`: File size in bytes
+- `path`: Storage path
+- `file`: File identifier in storage
+- `createdAt`: Upload timestamp
+
+### **Relationships:**
+- **1:N** with `FileTicket` (as file attachment to tickets)
+
+---
+
+## **7. Event**
+**Description:** Record of changes or actions performed on a ticket
+
+### **Attributes:**
+- `id`: Unique identifier
+- `type`: Event type (status_change, assignment, etc.)
+- `description`: Description of the change or action
+- `timestamp`: Event timestamp
+- `userId`: Reference to the user who performed the action
+- `ticketId`: Reference to the associated ticket
+- `metadata`: Additional event data
+
+### **Relationships:**
+- **N:1** with `Ticket`
+- **N:1** with `User`
+
+---
+
+## **8. Contract**
+**Description:** Subscription or service contract for a company
+
+### **Attributes:**
+- `id`: Unique identifier
+- `startDate`: Contract start date
+- `endDate`: Contract end date (if applicable)
+- `type`: Contract type (monthly, hour_pool, unlimited)
+- `hours`: Allocated hours (if applicable)
+- `notes`: Additional contract information
+- `companyId`: Reference to associated company
+
+### **Relationships:**
+- **N:1** with `Company`
+
+---
+
+## **File Storage Providers**
+
+TickHawk supports multiple file storage providers:
+
+1. **Local Storage**: Files stored on the local filesystem
+2. **AWS S3**: Files stored in Amazon S3 buckets
+3. **MinIO**: Files stored in MinIO object storage
+4. **OVH Object Storage**: Files stored in OVH's S3-compatible storage
+
+---
+
+## **Key Features Implemented**
+
+1. **Multi-Tenant Architecture**
+   - Companies, departments, and role-based access control
+
+2. **Ticket Management**
+   - Full ticket lifecycle
+   - Comments and replies
+   - File attachments
+   - Event history
+
+3. **User Management**
+   - Role-based access (admin, agent, customer)
+   - Profile management
+   - Company and department association
+
+4. **Reporting**
+   - Ticket statistics by date range
+   - Customer and agent views
+
+5. **File Management**
+   - Multiple storage provider options
+   - Upload and download functionality
