@@ -80,14 +80,20 @@ export class TicketController {
 
   @Get('')
   @Roles(['admin', 'agent'])
-  async getTickets(@Req() req: Request, @Query('page') page?: number) {
+  @ApiOperation({ summary: 'Get tickets with optional department and company filters' })
+  async getTickets(
+    @Req() req: Request, 
+    @Query('page') page?: number,
+    @Query('departmentId') departmentId?: string,
+    @Query('companyId') companyId?: string
+  ) {
     const user = req.user;
     if (!page || page < 1) {
       page = 1;
     }
-    return this.ticketService.getTickets(user, page);
+    return this.ticketService.getTickets(user, page, departmentId, companyId);
   }
-
+  
   /**  Customer and Agent Members **/
   @Get('file/:file')
   @Roles(['customer', 'agent', 'admin'])
@@ -97,5 +103,13 @@ export class TicketController {
     const buffer = await this.ticketService.downloadFile(user, file);
     
     return new StreamableFile(buffer);
+  }
+  
+  @Get(':id')
+  @Roles(['admin', 'agent'])
+  @ApiOperation({ summary: 'Get a specific ticket by ID' })
+  async getTicket(@Req() req: Request, @Param('id') id: string) {
+    const user = req.user;
+    return this.ticketService.getTicketById(user, id);
   }
 }

@@ -3,7 +3,12 @@ import { useAuth } from "./AuthProvider";
 import ProfileImage from "./ProfileImage";
 import { toast } from "react-toastify";
 
-function ProfileImageEdit() {
+interface ProfileImageEditProps {
+  userId?: string;
+  onImageChange?: (file: File | null) => void;
+}
+
+function ProfileImageEdit({ userId, onImageChange }: ProfileImageEditProps) {
   const inputRef = useRef(null);
   const auth = useAuth();
   const notifyFileSize = () => toast.error("File size should be less than 3mb");
@@ -15,14 +20,23 @@ function ProfileImageEdit() {
   };
 
   const handleChange = async (ev: React.ChangeEvent<HTMLInputElement>) => {
-    if (!ev.target.files) return;
+    if (!ev.target.files || ev.target.files.length === 0) return;
+    
     // Size of files < 3mb, then alert
-    for (let i = 0; i < ev.target.files.length; i++) {
-      if (ev.target.files[i].size > 3 * 1024 * 1024) {
-        notifyFileSize();
-        return;
-      }
+    const file = ev.target.files[0];
+    if (file.size > 3 * 1024 * 1024) {
+      notifyFileSize();
+      return;
     }
+    
+    // If onImageChange is provided, use it instead of direct upload
+    if (onImageChange) {
+      onImageChange(file);
+      (ev.target as HTMLInputElement).value = "";
+      return;
+    }
+    
+    // Otherwise fallback to default behavior
     await onChange(ev.target.files);
     (ev.target as HTMLInputElement).value = "";
   };
@@ -45,8 +59,6 @@ function ProfileImageEdit() {
         return;
       }
 
-      //const fileModel: FileModel = response.data;
-
       // Reload web
       window.location.reload();
     }
@@ -54,10 +66,10 @@ function ProfileImageEdit() {
 
   return (
     <div className="items-center sm:flex xl:block 2xl:flex sm:space-x-4 xl:space-x-0 2xl:space-x-4">
-      <ProfileImage className="mb-4 rounded-lg w-28 h-28 sm:mb-0 xl:mb-4 2xl:mb-0" />
+      <ProfileImage userId={userId} className="mb-4 rounded-lg w-28 h-28 sm:mb-0 xl:mb-4 2xl:mb-0" />
       <div>
         <h3 className="mb-1 text-xl font-bold text-gray-900 dark:text-white">Profile picture</h3>
-        <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">JPG, GIF or PNG. Max size of 800K</div>
+        <div className="mb-4 text-sm text-gray-500 dark:text-gray-400">JPG, GIF or PNG. Max size of 3MB</div>
         <div className="flex items-center space-x-4">
           <button
             onClick={handleClick}
@@ -80,16 +92,27 @@ function ProfileImageEdit() {
             aria-label="add files"
             className="sr-only"
             ref={inputRef}
-            multiple={true}
+            multiple={false}
             onChange={handleChange}
-            accept="jpg, gif, png, jpeg"
+            accept="image/jpeg,image/png,image/gif"
           />
-          <button
-            type="button"
-            className="py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-          >
-            Delete
-          </button>
+          {!onImageChange && (
+            <button
+              type="button"
+              className="py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+            >
+              Delete
+            </button>
+          )}
+          {onImageChange && (
+            <button
+              type="button"
+              onClick={() => onImageChange(null)}
+              className="py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+            >
+              Clear Selection
+            </button>
+          )}
         </div>
       </div>
     </div>

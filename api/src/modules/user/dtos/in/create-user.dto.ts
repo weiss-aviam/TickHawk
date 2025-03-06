@@ -17,7 +17,7 @@ export class CreateUserDto {
   password: string;
 
   @IsString()
-  @ApiProperty()
-  @IsIn(['admin', 'user', 'agent'])
+  @ApiProperty({ enum: ['admin', 'agent', 'customer'] })
+  @IsIn(['admin', 'agent', 'customer'])
   role: string;
 }

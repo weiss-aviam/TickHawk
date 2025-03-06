@@ -242,16 +242,23 @@ export class TicketService {
   }
 
   /**
-   * Get ticket by id for an agent
+   * Get ticket by id for an agent or admin
    * @param auth The authenticated user
    * @param id The ticket id
    * @returns TicketDto
    */
   async getTicketById(auth: AuthDto, id: string): Promise<TicketDto> {
-    const ticket = await this.ticketModel.findOne({
-      _id: new Types.ObjectId(id),
-      'agent._id': new Types.ObjectId(auth.id),
-    });
+    // Build query based on role
+    const query: any = {
+      _id: new Types.ObjectId(id)
+    };
+    
+    // If agent, only show tickets assigned to them
+    if (auth.role === 'agent') {
+      query['agent._id'] = new Types.ObjectId(auth.id);
+    }
+
+    const ticket = await this.ticketModel.findOne(query);
 
     if (!ticket) {
       throw new HttpException('TICKET_NOT_FOUND', 404);
@@ -264,15 +271,38 @@ export class TicketService {
 
   /**
    * Get all tickets for an agent order by date created descending
-   * @param auth
-   * @param page
+   * @param auth Authenticated user
+   * @param page Page number
+   * @param departmentId Optional department ID to filter by
+   * @param companyId Optional company ID to filter by
    */
-  async getTickets(auth: AuthDto, page: number): Promise<TicketDto[]> {
+  async getTickets(
+    auth: AuthDto, 
+    page: number, 
+    departmentId?: string, 
+    companyId?: string
+  ): Promise<TicketDto[]> {
     const limit = 15;
+    
+    // Build the query based on user role and filters
+    const query: any = {};
+    
+    // For agents, only show tickets assigned to them
+    if (auth.role === 'agent') {
+      query['agent._id'] = new Types.ObjectId(auth.id);
+    }
+    
+    // Apply filters if provided
+    if (departmentId) {
+      query['department._id'] = new Types.ObjectId(departmentId);
+    }
+    
+    if (companyId) {
+      query['company._id'] = new Types.ObjectId(companyId);
+    }
+
     const tickets = await this.ticketModel
-      .find({
-        'agent._id': new Types.ObjectId(auth.id),
-      })
+      .find(query)
       .sort({ createdAt: -1 })
       .limit(limit)
       .skip((page - 1) * limit)

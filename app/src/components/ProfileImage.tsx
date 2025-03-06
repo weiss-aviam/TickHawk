@@ -1,18 +1,23 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "./AuthProvider";
 
+interface ProfileImageProps {
+  id?: string;
+  userId?: string;
+  className?: string;
+}
 
-function ProfileImage ({ id, className }: { id?: string; className?: string }) {
+function ProfileImage({ id, userId, className }: ProfileImageProps) {
     // The ProfileImage component is used to display the profile image of a user.
     const basePath = process.env.REACT_APP_API_URL;
-    const [imagePath, setImagePath] = useState<string>('/assets/tickhawk.png')
+    const [imagePath, setImagePath] = useState<string>('/assets/images/tickhawk.png')
     const [classString, setClassString] = useState<string>('')
     const auth = useAuth()
     
     // Check if the id is provided, if not, use the id of the authenticated user.
     useEffect(() => {
-        let identifier = id;
-        if (!id ) {
+        let identifier = userId || id;
+        if (!identifier) {
             identifier = auth?.user?.id
         }
         const path = `${basePath}/user/profile/image/${identifier}`
@@ -20,10 +25,10 @@ function ProfileImage ({ id, className }: { id?: string; className?: string }) {
 
         if (className) {
             setClassString(className)
-        }else{
+        } else {
             setClassString('w-6 h-6 mr-2 rounded-full')
         }
-    }, [id, auth, basePath, className])
+    }, [id, userId, auth, basePath, className])
 
     return (
     <img

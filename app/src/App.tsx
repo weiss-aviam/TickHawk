@@ -11,8 +11,18 @@ import CustomerLayout from 'components/customer/Layout'
 import CustomerTicket from 'pages/customer/ticket'
 import CustomerReports from 'pages/customer/reports'
 import CustomerNewTicket from 'pages/customer/new-ticket'
-// Agent
-import Layout from 'pages/layout'
+// Agent & Admin
+import BackofficeLayout from 'components/agent/Layout'
+import HomeBackoffice from 'pages/agent/home'
+import Companies from 'pages/agent/companies'
+import NewCompany from 'pages/agent/companies/new'
+import EditCompany from 'pages/agent/companies/edit/[id]'
+import Departments from 'pages/agent/departments'
+import NewDepartment from 'pages/agent/departments/new'
+import EditDepartment from 'pages/agent/departments/edit/[id]'
+import Users from 'pages/agent/users'
+import EditUser from 'pages/agent/users/edit/[id]'
+import NewUser from 'pages/agent/users/new'
 import ProtectedRoute from 'components/ProtectedRoute'
 import AuthProvider from 'components/AuthProvider'
 import { ToastContainer } from 'react-toastify'
@@ -38,7 +48,18 @@ function App () {
               <Route path='profile' element={<Profile />} />
               <Route path='*' element={<NoMatch />} />
             </Route>
-            <Route path='/backoffice' element={<Layout />}>
+            <Route path='/backoffice' element={<BackofficeLayout />}>
+              <Route path='' element={<HomeBackoffice />} />
+              <Route path='companies' element={<Companies />} />
+              <Route path='companies/new' element={<NewCompany />} />
+              <Route path='companies/edit/:id' element={<EditCompany />} />
+              <Route path='departments' element={<Departments />} />
+              <Route path='departments/new' element={<NewDepartment />} />
+              <Route path='departments/edit/:id' element={<EditDepartment />} />
+              <Route path='users' element={<Users />} />
+              <Route path='users/new' element={<NewUser />} />
+              <Route path='users/edit/:id' element={<EditUser />} />
+              <Route path='profile' element={<Profile />} />
               <Route path='*' element={<NoMatch />} />
             </Route>
           </Route>

@@ -7,10 +7,18 @@ export interface UserTicket {
     role: string,
 }
 
+export interface Contract {
+    _id: string,
+    name: string,
+    startDate: Date,
+    endDate: Date,
+}
+
 export interface CompanyTicket {
     _id: string,
     name: string,
     email: string,
+    contracts?: Contract[],
 }
 
 export interface Comment {
