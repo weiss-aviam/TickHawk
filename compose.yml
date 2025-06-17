@@ -4,12 +4,12 @@ services:
       context: ./api
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3333:3333"
     environment:
       - MONGO_URI=mongodb://mongodb:27017/tickhawk
       - BASE_URL=http://localhost
       - S3_PROVIDER=local
-      - PORT=3000
+      - PORT=3333
       - LOCAL_UPLOAD_PATH=/app/uploads
       - LOG_LEVEL=info
       - ENABLE_SWAGGER=true
@@ -32,9 +32,9 @@ services:
       context: ./app
       dockerfile: Dockerfile
       args:
-        - REACT_APP_API_URL=http://localhost:3000
+        - REACT_APP_API_URL=http://localhost:3333
     ports:
-      - "80:80"
+      - "4444:80"
     depends_on:
       - api
     restart: unless-stopped
