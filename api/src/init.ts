@@ -4,6 +4,7 @@ import { plainToInstance } from 'class-transformer';
 import { CreateUserDto } from './modules/user/presentation/dtos/in/create-user.dto';
 import { USER_REPOSITORY, UserRepository } from './modules/user/domain/ports/user.repository';
 import { UserEntity } from './modules/user/domain/entities/user.entity';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AppInit implements OnModuleInit {
@@ -22,12 +23,11 @@ export class AppInit implements OnModuleInit {
     } 
 
     //TODO: Init company
-
     const defaultUser = {
       name:
         this.configService.get<string>('DEFAULT_USER_USERNAME') || 'tickhawk',
       password:
-        this.configService.get<string>('DEFAULT_USER_PASSWORD') || 'tickhawk',
+        await bcrypt.hash(this.configService.get<string>('DEFAULT_USER_PASSWORD') || 'tickhawk', 12),
       email:
         this.configService.get<string>('DEFAULT_USER_EMAIL') ||
         'admin@tickhawk.com',
